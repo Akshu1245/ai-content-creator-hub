@@ -1,0 +1,10 @@
+project_id = "fqrsuwidouduzynqvhny"
+
+[functions.generate-script]
+verify_jwt = false
+
+[functions.compliance-check]
+verify_jwt = false
+
+[functions.compliance-fix]
+verify_jwt = false
