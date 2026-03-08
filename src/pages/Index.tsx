@@ -4,6 +4,7 @@ import { Shield, TrendingUp, ChevronRight, Play, Star, Check, Brain, Globe, Arro
 import WordCycler from "@/components/shared/WordCycler";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
+import VideoPlayerGate from "@/components/shared/VideoPlayerGate";
 
 const features = [
   { icon: TrendingUp, title: "Trend Intelligence", desc: "Real-time niche analysis with opportunity scoring before you create.", color: "text-accent" },
@@ -20,6 +21,7 @@ const pricingPlans = [
 
 const Index = () => {
   return (
+    <VideoPlayerGate>
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="bg-noise" />
 
@@ -293,6 +295,7 @@ const Index = () => {
         </div>
       </footer>
     </div>
+    </VideoPlayerGate>
   );
 };
 
