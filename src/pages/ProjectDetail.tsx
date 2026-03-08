@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ChevronRight, Brain, Sparkles } from "lucide-react";
+import { ChevronRight, Brain, Sparkles, Download, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
 
@@ -18,6 +18,10 @@ const channelDna = {
 };
 
 const ProjectDetail = () => {
+  const handleDownload = (videoTitle: string) => {
+    alert(`Download starting for: "${videoTitle}.mp4"\n\nIn production, this would download the video file from storage.`);
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-5xl mx-auto">
@@ -81,7 +85,7 @@ const ProjectDetail = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                {["Title", "Status", "Compliance", "Views", "Retention", "CTR", "Date"].map((h) => (
+                {["Title", "Status", "Compliance", "Views", "Retention", "CTR", "Date", "Actions"].map((h) => (
                   <th key={h} className={`px-5 py-3.5 text-[11px] font-label text-muted-foreground ${h === "Title" ? "text-left" : "text-center"}`}>{h.toUpperCase()}</th>
                 ))}
               </tr>
@@ -102,6 +106,28 @@ const ProjectDetail = () => {
                   <td className="px-5 py-3.5 text-center font-mono text-muted-foreground">{v.retention}</td>
                   <td className="px-5 py-3.5 text-center font-mono text-muted-foreground">{v.ctr}</td>
                   <td className="px-5 py-3.5 text-center text-[11px] font-label text-muted-foreground">{v.date.toUpperCase()}</td>
+                  <td className="px-5 py-3.5 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      {v.status === "Published" && (
+                        <>
+                          <button
+                            onClick={() => handleDownload(v.title)}
+                            className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                            title="Download video"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => alert(`Playing preview of: "${v.title}"`)}
+                            className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                            title="Preview video"
+                          >
+                            <Play className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
