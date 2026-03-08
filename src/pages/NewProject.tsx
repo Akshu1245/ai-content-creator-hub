@@ -156,7 +156,7 @@ const NewProject = () => {
       const videoPrompt = `${data.style} style video about: ${data.topic}. ${data.niche} niche. High quality, professional faceless content.`;
 
       const { data: createData, error: createError } = await supabase.functions.invoke('generate-video', {
-        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9' },
+        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9', media_urls: data.selectedMedia },
       });
 
       if (createError) throw new Error(`Video creation failed: ${createError.message}`);
