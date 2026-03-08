@@ -48,6 +48,8 @@ const NewProject = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [showYouTube, setShowYouTube] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [data, setData] = useState<WizardData>({
