@@ -66,6 +66,8 @@ export default {
         rose: "hsl(var(--rose))",
         golden: "hsl(var(--golden))",
         olive: "hsl(var(--olive))",
+        neon: "hsl(var(--neon))",
+        cyan: "hsl(var(--cyan))",
       },
       borderRadius: {
         lg: "var(--radius)",
