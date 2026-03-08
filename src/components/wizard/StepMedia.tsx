@@ -142,7 +142,7 @@ const StepMedia = ({ data, updateData }: Props) => {
                 const id = `photo-${p.id}`;
                 const isSelected = selectedMedia.includes(id);
                 return (
-                  <div key={p.id} onClick={() => toggleSelect(id)}
+                  <div key={p.id} onClick={() => toggleSelect(id, p.src?.landscape || p.src?.medium || "")}
                     className={`relative rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? "border-primary shadow-lg shadow-primary/10" : "border-transparent hover:border-primary/20"}`}>
                     <img src={p.src?.medium || p.src?.small || ""} alt={p.alt || ""} className="w-full aspect-video object-cover" loading="lazy" />
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
