@@ -1,0 +1,17 @@
+{
+  "name": "FacelessForge",
+  "short_name": "FacelessForge",
+  "description": "AI-powered faceless video creation with compliance scoring",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0d0b",
+  "theme_color": "#d4532a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
