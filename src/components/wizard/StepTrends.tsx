@@ -67,7 +67,7 @@ const StepTrends = ({ data, updateData }: Props) => {
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 6</span>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 8</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Researching Market</h2>
           <p className="text-xs text-muted-foreground">
             Searching the internet for: <span className="text-primary font-semibold">{data.topic}</span>
@@ -88,7 +88,7 @@ const StepTrends = ({ data, updateData }: Props) => {
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-[10px] font-label text-destructive block mb-2">ERROR</span>
+          <span className="text-[10px] font-label text-destructive block mb-2">RESEARCH ERROR</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Research Failed</h2>
           <p className="text-xs text-muted-foreground">{error}</p>
         </div>
@@ -103,7 +103,7 @@ const StepTrends = ({ data, updateData }: Props) => {
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 6</span>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 8</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Trend Intelligence</h2>
           <p className="text-xs text-muted-foreground">Select a niche and topic first</p>
         </div>
@@ -116,7 +116,7 @@ const StepTrends = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-6">
       <div>
-        <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 6</span>
+        <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 8</span>
         <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Trend Intelligence</h2>
         <p className="text-xs text-muted-foreground">
           Live research for: <span className="text-primary font-semibold">{data.topic}</span>

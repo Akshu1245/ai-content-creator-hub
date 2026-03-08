@@ -20,7 +20,7 @@ const StepPublish = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <span className="text-[10px] font-label text-primary block mb-2">STEP 6 OF 6</span>
+        <span className="text-[10px] font-label text-primary block mb-2">STEP 8 OF 8</span>
         <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Schedule & Publish</h2>
         <p className="text-xs text-muted-foreground">Choose platforms, set upload time, and maximize revenue</p>
       </div>

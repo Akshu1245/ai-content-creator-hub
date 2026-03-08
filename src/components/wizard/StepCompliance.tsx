@@ -78,7 +78,7 @@ const StepCompliance = ({ data, updateData }: Props) => {
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="text-[10px] font-label text-primary block mb-2">STEP 5 OF 6</span>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 6 OF 8</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Compliance & Safety Review</h2>
           <p className="text-xs text-muted-foreground">Monetization safety + copyright risk analysis</p>
         </div>

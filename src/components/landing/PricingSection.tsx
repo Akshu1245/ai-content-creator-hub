@@ -62,7 +62,7 @@ const PricingSection = () => {
                   ))}
                 </ul>
 
-                <Link to="/dashboard" className="block">
+                <Link to="/auth" className="block">
                   {plan.popular ? (
                     <button className="btn-primary w-full text-xs">{plan.cta}</button>
                   ) : (
