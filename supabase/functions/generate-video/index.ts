@@ -18,7 +18,7 @@ serve(async (req) => {
       throw new Error('JSON2VIDEO_API_KEY is not configured');
     }
 
-    const { action, prompt, task_id, duration, aspect_ratio } = await req.json();
+    const { action, prompt, task_id, duration, aspect_ratio, media_urls } = await req.json();
 
     const apiHeaders = {
       'x-api-key': JSON2VIDEO_API_KEY,
@@ -29,32 +29,55 @@ serve(async (req) => {
     if (action === 'create') {
       if (!prompt) throw new Error('Missing prompt for video generation');
 
-      // Map aspect ratio to resolution
-      const resolutionMap: Record<string, [number, number]> = {
-        '16:9': [1920, 1080],
-        '9:16': [1080, 1920],
-        '1:1': [1080, 1080],
-        '4:3': [1440, 1080],
-        '3:4': [1080, 1440],
-      };
-      const [width, height] = resolutionMap[aspect_ratio || '16:9'] || [1920, 1080];
+      const sceneDuration = duration ? Number(duration) : 5;
+      const urls: string[] = media_urls || [];
 
-      const movieJson = {
-        resolution: "full-hd",
-        scenes: [
+      // Build scenes: if media URLs provided, create a scene per media item
+      // Otherwise fall back to a text-only scene
+      let scenes;
+      if (urls.length > 0) {
+        const perSceneDuration = Math.max(3, Math.round(sceneDuration * 3 / urls.length));
+        scenes = urls.map((url: string, i: number) => {
+          const isVideo = url.includes('.mp4') || url.includes('/video/') || url.includes('videos.pexels');
+          return {
+            duration: perSceneDuration,
+            elements: [
+              {
+                type: isVideo ? "video" : "image",
+                src: url,
+                duration: perSceneDuration,
+              },
+              {
+                type: "text",
+                text: i === 0 ? prompt.slice(0, 120) : "",
+                style: "001",
+                duration: Math.min(3, perSceneDuration),
+              }
+            ].filter(el => el.type !== "text" || el.text),
+          };
+        });
+      } else {
+        scenes = [
           {
-            duration: duration ? Number(duration) : 5,
+            duration: sceneDuration,
             elements: [
               {
                 type: "text",
                 text: prompt,
                 style: "001",
-                duration: duration ? Number(duration) : 5,
+                duration: sceneDuration,
               }
             ]
           }
-        ]
+        ];
+      }
+
+      const movieJson = {
+        resolution: "full-hd",
+        scenes,
       };
+
+      console.log('JSON2Video create payload:', JSON.stringify(movieJson));
 
       const response = await fetch(`${JSON2VIDEO_API_BASE}/movies`, {
         method: 'POST',
@@ -93,7 +116,6 @@ serve(async (req) => {
       const data = await response.json();
       console.log('JSON2Video query raw response:', JSON.stringify(data));
 
-      // Response is nested: { success, movie: { status, url, duration, ... } }
       const movie = data.movie || data;
 
       // JSON2Video statuses: "rendering", "done", "error"
