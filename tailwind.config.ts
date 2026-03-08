@@ -12,9 +12,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["DM Serif Display", "Georgia", "serif"],
-        sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
-        mono: ["IBM Plex Mono", "monospace"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
+        sans: ["Outfit", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -60,11 +60,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        teal: "hsl(var(--teal))",
-        terracotta: "hsl(var(--terracotta))",
-        olive: "hsl(var(--olive))",
+        gold: "hsl(var(--gold))",
+        arctic: "hsl(var(--arctic))",
+        emerald: "hsl(var(--emerald))",
+        rose: "hsl(var(--rose))",
         golden: "hsl(var(--golden))",
-        ink: "hsl(var(--ink))",
+        olive: "hsl(var(--olive))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -92,7 +93,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.4s ease-out",
+        "fade-in": "fade-in 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
       },
     },

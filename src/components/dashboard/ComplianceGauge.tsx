@@ -11,7 +11,7 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  const strokeWidth = size > 120 ? 10 : 7;
+  const strokeWidth = size > 120 ? 8 : 6;
   const center = size / 2;
   const radius = (size - strokeWidth * 2) / 2;
 
@@ -34,9 +34,9 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   const dotY = center + radius * Math.sin(toRad(scoreAngle));
 
   const getColor = (s: number) => {
-    if (s >= 80) return { stroke: "hsl(174, 72%, 22%)", label: "SAFE TO MONETIZE" };
-    if (s >= 60) return { stroke: "hsl(40, 70%, 52%)", label: "REVIEW SUGGESTED" };
-    return { stroke: "hsl(0, 65%, 48%)", label: "HIGH RISK" };
+    if (s >= 80) return { stroke: "hsl(160, 55%, 45%)", glow: "hsl(160, 55%, 45%)", label: "SAFE TO MONETIZE" };
+    if (s >= 60) return { stroke: "hsl(42, 78%, 58%)", glow: "hsl(42, 78%, 58%)", label: "REVIEW SUGGESTED" };
+    return { stroke: "hsl(0, 62%, 55%)", glow: "hsl(0, 62%, 55%)", label: "HIGH RISK" };
   };
 
   const color = getColor(score);
@@ -45,7 +45,7 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
     const timer = setTimeout(() => {
       setMounted(true);
       let start: number | null = null;
-      const duration = 1000;
+      const duration = 1200;
       const animate = (ts: number) => {
         if (!start) start = ts;
         const t = Math.min((ts - start) / duration, 1);
@@ -61,7 +61,9 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size * 0.72} viewBox={`0 0 ${size} ${size * 0.82}`}>
-        <path d={arcPath} fill="none" stroke="hsl(30, 12%, 85%)" strokeWidth={strokeWidth} strokeLinecap="round" />
+        {/* Background track */}
+        <path d={arcPath} fill="none" stroke="hsl(225, 12%, 16%)" strokeWidth={strokeWidth} strokeLinecap="round" />
+        {/* Score arc */}
         <path
           d={arcPath}
           fill="none"
@@ -70,24 +72,33 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
           strokeLinecap="round"
           strokeDasharray={`${circumference}`}
           strokeDashoffset={circumference - animatedProgress}
+          style={{ filter: `drop-shadow(0 0 6px ${color.glow})` }}
         />
-        {mounted && <circle cx={dotX} cy={dotY} r={4} fill={color.stroke} />}
+        {/* Endpoint dot */}
+        {mounted && (
+          <>
+            <circle cx={dotX} cy={dotY} r={5} fill={color.stroke} style={{ filter: `drop-shadow(0 0 4px ${color.glow})` }} />
+            <circle cx={dotX} cy={dotY} r={2} fill="hsl(225, 20%, 7%)" />
+          </>
+        )}
+        {/* Score number */}
         <text
           x={center} y={center - 2}
           textAnchor="middle" dominantBaseline="central"
-          fill="hsl(20, 14%, 12%)"
+          fill="hsl(220, 15%, 90%)"
           fontSize={size / 3.5}
-          fontFamily="'IBM Plex Mono', monospace"
-          fontWeight="600"
+          fontFamily="'JetBrains Mono', monospace"
+          fontWeight="700"
         >
           {mounted ? score : 0}
         </text>
+        {/* Label */}
         <text
           x={center} y={center + size * 0.15}
           textAnchor="middle"
-          fill="hsl(20, 8%, 52%)"
-          fontSize={9}
-          fontFamily="'Plus Jakarta Sans', sans-serif"
+          fill="hsl(220, 10%, 50%)"
+          fontSize={8}
+          fontFamily="'Outfit', sans-serif"
           fontWeight="600"
           letterSpacing="1.5"
         >
