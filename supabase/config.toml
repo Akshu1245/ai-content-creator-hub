@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.compliance-fix]
 verify_jwt = false
+
+[functions.copyright-scan]
+verify_jwt = false

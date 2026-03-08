@@ -1,5 +1,6 @@
 import { WizardData } from "@/pages/NewProject";
 import { Sparkles } from "lucide-react";
+import RevenueEstimatorCard from "@/components/differentiators/RevenueEstimatorCard";
 
 const niches = [
   { name: "Finance", emoji: "💰" },
@@ -56,6 +57,13 @@ const StepNiche = ({ data, updateData }: Props) => {
           </button>
         ))}
       </div>
+
+      {/* Revenue Estimator — appears immediately after niche selection */}
+      {data.niche && (
+        <div className="animate-fade-in">
+          <RevenueEstimatorCard niche={data.niche} />
+        </div>
+      )}
 
       {topics.length > 0 && (
         <div className="animate-fade-in space-y-4">

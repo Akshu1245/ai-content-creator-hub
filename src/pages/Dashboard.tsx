@@ -2,6 +2,8 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link } from "react-router-dom";
 import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
+import YPPTrackerCard from "@/components/differentiators/YPPTrackerCard";
+import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCenter";
 
 const stats = [
   { label: "Total Videos", value: 24, icon: Video, suffix: "", trend: "+3 this week" },
@@ -57,7 +59,7 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        {/* Stats — staggered grid */}
+        {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {stats.map((stat, i) => (
             <div key={stat.label} className="surface-raised p-5 surface-hover" style={{ animationDelay: `${i * 0.05}s` }}>
@@ -75,9 +77,20 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6">
-          {/* Projects — main area */}
-          <div className="lg:col-span-8 space-y-4">
+        {/* ═══ REVENUE COMMAND CENTER — the emotional centerpiece ═══ */}
+        <div className="mb-10">
+          <RevenueCommandCenter />
+        </div>
+
+        {/* YPP Tracker + Projects */}
+        <div className="grid lg:grid-cols-12 gap-6 mb-10">
+          {/* YPP Tracker */}
+          <div className="lg:col-span-5">
+            <YPPTrackerCard />
+          </div>
+
+          {/* Projects */}
+          <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-display text-foreground font-bold">Active Projects</h2>
               <span className="text-[10px] font-label text-muted-foreground">{projects.length} PROJECTS</span>
@@ -116,47 +129,47 @@ const Dashboard = () => {
               </Link>
             ))}
           </div>
+        </div>
 
-          {/* Right sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Quick actions */}
-            <div>
-              <h2 className="text-sm font-display text-foreground font-bold mb-3">Quick Actions</h2>
-              <div className="space-y-2">
-                {[
-                  { to: "/new-project", icon: Play, label: "Generate New Video", desc: "Create from scratch" },
-                  { to: "/analytics", icon: TrendingUp, label: "View Analytics", desc: "Performance data" },
-                ].map((action) => (
-                  <Link key={action.to} to={action.to}>
-                    <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <action.icon className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs font-medium text-foreground block">{action.label}</span>
-                        <span className="text-[10px] text-muted-foreground">{action.desc}</span>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+        {/* Bottom row — Quick Actions + Activity */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Quick actions */}
+          <div>
+            <h2 className="text-sm font-display text-foreground font-bold mb-3">Quick Actions</h2>
+            <div className="space-y-2">
+              {[
+                { to: "/new-project", icon: Play, label: "Generate New Video", desc: "Create from scratch" },
+                { to: "/analytics", icon: TrendingUp, label: "View Analytics", desc: "Performance data" },
+              ].map((action) => (
+                <Link key={action.to} to={action.to}>
+                  <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <action.icon className="w-4 h-4 text-primary" />
                     </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Activity feed */}
-            <div>
-              <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
-              <div className="surface-raised p-5 space-y-4">
-                {recentActivity.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className={`status-dot mt-1.5 shrink-0 ${getActivityDot(item.type)}`} />
-                    <div className="min-w-0">
-                      <p className="text-xs text-foreground leading-snug">{item.text}</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">{item.time}</p>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-medium text-foreground block">{action.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{action.desc}</span>
                     </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
-                ))}
-              </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Activity feed */}
+          <div>
+            <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
+            <div className="surface-raised p-5 space-y-4">
+              {recentActivity.map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className={`status-dot mt-1.5 shrink-0 ${getActivityDot(item.type)}`} />
+                  <div className="min-w-0">
+                    <p className="text-xs text-foreground leading-snug">{item.text}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{item.time}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
