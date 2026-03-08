@@ -13,6 +13,9 @@ const voices = [
   { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female", sarvamVoice: "simran", sample: "Okay so here's the thing, nobody talks about this, and honestly it's kind of wild." },
   { id: "brian", name: "Leo", desc: "Calm, educational tone", gender: "Male", sarvamVoice: "amit", sample: "Let's take a step back and understand the fundamentals. When we look at the data, a clear pattern emerges." },
   { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female", sarvamVoice: "shreya", sample: "The numbers don't lie. In today's analysis, we're examining three key trends that will shape the industry." },
+  { id: "amelia", name: "Luna", desc: "Soft, storytelling warmth", gender: "Female", sarvamVoice: "amelia", sample: "Picture this: a quiet morning, the sun just rising, and a story waiting to be told." },
+  { id: "tanya", name: "Aria", desc: "Bold, confident anchor", gender: "Female", sarvamVoice: "tanya", sample: "Breaking it down for you today, here are the facts you need to know right now." },
+  { id: "neha", name: "Ivy", desc: "Friendly, conversational host", gender: "Female", sarvamVoice: "neha", sample: "Hey there! So I've been digging into this topic and honestly, the results blew my mind." },
 ];
 
 const styles = [

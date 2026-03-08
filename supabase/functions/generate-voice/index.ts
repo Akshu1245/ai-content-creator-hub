@@ -30,6 +30,9 @@ serve(async (req) => {
       lily: "simran",      // Young, energetic
       brian: "amit",       // Calm, educational
       jessica: "shreya",   // Professional, clear
+      amelia: "amelia",    // Soft, storytelling
+      tanya: "tanya",      // Bold, confident
+      neha: "neha",        // Friendly, conversational
     };
 
     const sarvamSpeaker = speakerMap[speaker] || "shubh";
