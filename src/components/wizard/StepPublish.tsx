@@ -1,5 +1,5 @@
 import { WizardData } from "@/pages/NewProject";
-import { Clock } from "lucide-react";
+import { Clock, Check } from "lucide-react";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
@@ -13,58 +13,64 @@ const platforms = [
 const StepPublish = ({ data, updateData }: Props) => {
   const togglePlatform = (id: string) => {
     const current = data.platforms;
-    updateData({
-      platforms: current.includes(id) ? current.filter((p) => p !== id) : [...current, id],
-    });
+    updateData({ platforms: current.includes(id) ? current.filter((p) => p !== id) : [...current, id] });
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <span className="font-label text-primary block mb-1">STEP 6</span>
-        <h2 className="text-xl font-display text-foreground mb-1">Schedule & Publish</h2>
-        <p className="text-sm text-muted-foreground">Choose platforms and schedule your upload</p>
+        <span className="text-[10px] font-label text-primary block mb-2">STEP 6 OF 6</span>
+        <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Schedule & Publish</h2>
+        <p className="text-xs text-muted-foreground">Choose platforms and set your upload time</p>
       </div>
 
+      {/* Platforms */}
       <div>
-        <h3 className="text-sm font-display text-foreground mb-3">Target Platforms</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <h3 className="text-xs font-display text-foreground font-bold mb-3">Target Platforms</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {platforms.map((p) => {
             const selected = data.platforms.includes(p.id);
             return (
               <button
                 key={p.id}
                 onClick={() => togglePlatform(p.id)}
-                className={`text-center px-3 py-4 rounded-lg transition-all border ${
+                className={`relative text-center px-4 py-5 rounded-xl transition-all border ${
                   selected
-                    ? "bg-primary/8 border-primary"
-                    : "bg-card border-border hover:border-primary/30"
+                    ? "bg-primary/8 border-primary/30 shadow-lg shadow-primary/5"
+                    : "bg-secondary/20 border-border/50 hover:border-primary/20"
                 }`}
               >
-                <div className="font-display text-sm text-foreground">{p.name}</div>
-                <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
+                {selected && (
+                  <div className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                  </div>
+                )}
+                <div className="font-display text-xs text-foreground font-bold">{p.name}</div>
+                <p className="text-[10px] text-muted-foreground mt-1">{p.desc}</p>
               </button>
             );
           })}
         </div>
       </div>
 
+      {/* Schedule */}
       <div>
-        <h3 className="text-sm font-display text-foreground mb-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-primary" /> Schedule Upload
+        <h3 className="text-xs font-display text-foreground font-bold mb-3 flex items-center gap-2">
+          <Clock className="w-3.5 h-3.5 text-primary" /> Schedule
         </h3>
         <input
           type="datetime-local"
           value={data.scheduledAt}
           onChange={(e) => updateData({ scheduledAt: e.target.value })}
-          className="px-4 py-3 rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background border border-border transition-colors"
+          className="px-5 py-4 rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 bg-secondary/30 border border-border transition-all"
         />
-        <p className="text-xs text-muted-foreground mt-1.5">Leave empty to publish immediately after generation</p>
+        <p className="text-[10px] text-muted-foreground mt-2">Leave empty to publish immediately after generation</p>
       </div>
 
-      <div className="surface-raised p-5">
-        <h3 className="text-sm font-display text-foreground mb-4">Video Summary</h3>
-        <div className="space-y-2.5 text-sm">
+      {/* Summary */}
+      <div className="surface-raised p-6">
+        <h3 className="text-xs font-display text-foreground font-bold mb-5">Video Summary</h3>
+        <div className="space-y-0 text-xs">
           {[
             { label: "Niche", value: data.niche || "—" },
             { label: "Topic", value: data.topic || "—" },
@@ -73,9 +79,9 @@ const StepPublish = ({ data, updateData }: Props) => {
             { label: "Compliance", value: data.complianceScore ?? "Not checked", isScore: true },
             { label: "Platforms", value: `${data.platforms.length} selected` },
           ].map((row) => (
-            <div key={row.label} className="flex justify-between items-center py-2 border-b border-border last:border-b-0">
-              <span className="font-label text-muted-foreground">{row.label.toUpperCase()}</span>
-              <span className={`font-medium ${row.isScore && typeof row.value === "number" ? (row.value >= 80 ? "text-primary" : "text-golden") : "text-foreground"} ${row.isScore ? "font-mono" : ""}`}>
+            <div key={row.label} className="flex justify-between items-center py-3 border-b border-border/50 last:border-b-0">
+              <span className="text-[10px] font-label text-muted-foreground">{row.label.toUpperCase()}</span>
+              <span className={`font-medium ${row.isScore && typeof row.value === "number" ? (row.value >= 80 ? "text-emerald" : "text-primary") : "text-foreground"} ${row.isScore ? "font-mono" : ""}`}>
                 {row.value}
               </span>
             </div>

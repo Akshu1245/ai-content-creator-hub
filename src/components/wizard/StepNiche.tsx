@@ -1,8 +1,17 @@
 import { WizardData } from "@/pages/NewProject";
+import { Sparkles } from "lucide-react";
 
 const niches = [
-  "Finance", "Technology", "Horror", "Motivation", "History",
-  "Health", "Gaming", "Science", "True Crime", "Psychology"
+  { name: "Finance", emoji: "💰" },
+  { name: "Technology", emoji: "⚡" },
+  { name: "Horror", emoji: "👻" },
+  { name: "Motivation", emoji: "🔥" },
+  { name: "History", emoji: "📜" },
+  { name: "Health", emoji: "🧬" },
+  { name: "Gaming", emoji: "🎮" },
+  { name: "Science", emoji: "🔬" },
+  { name: "True Crime", emoji: "🔍" },
+  { name: "Psychology", emoji: "🧠" },
 ];
 
 const suggestedTopics: Record<string, string[]> = {
@@ -26,53 +35,56 @@ const StepNiche = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <span className="font-label text-primary block mb-1">STEP 1</span>
-        <h2 className="text-xl font-display text-foreground mb-1">Choose Your Niche</h2>
-        <p className="text-sm text-muted-foreground">Select a content category to discover trending topics</p>
+        <span className="text-[10px] font-label text-primary block mb-2">STEP 1 OF 6</span>
+        <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Choose Your Niche</h2>
+        <p className="text-xs text-muted-foreground">Select a content category to get started</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {niches.map((niche) => (
           <button
-            key={niche}
-            onClick={() => updateData({ niche, topic: "" })}
-            className={`px-3 py-3 rounded-lg text-sm font-medium transition-all text-center border ${
-              data.niche === niche
-                ? "bg-primary/8 border-primary text-primary"
-                : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+            key={niche.name}
+            onClick={() => updateData({ niche: niche.name, topic: "" })}
+            className={`px-4 py-4 rounded-xl text-xs font-medium transition-all text-center border ${
+              data.niche === niche.name
+                ? "bg-primary/10 border-primary/30 text-primary shadow-lg shadow-primary/5"
+                : "bg-secondary/30 border-border text-muted-foreground hover:text-foreground hover:border-primary/20 hover:bg-secondary/50"
             }`}
           >
-            {niche}
+            <span className="text-lg block mb-1">{niche.emoji}</span>
+            {niche.name}
           </button>
         ))}
       </div>
 
       {topics.length > 0 && (
         <div className="animate-fade-in space-y-4">
-          <h3 className="text-sm font-display text-foreground">
-            Trending in {data.niche}
-          </h3>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <h3 className="text-xs font-display text-foreground font-bold">Trending in {data.niche}</h3>
+          </div>
           <div className="space-y-2">
             {topics.map((topic) => (
               <button
                 key={topic}
                 onClick={() => updateData({ topic })}
-                className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all border ${
+                className={`w-full text-left px-5 py-4 rounded-xl text-xs transition-all border ${
                   data.topic === topic
-                    ? "bg-primary/8 border-primary text-foreground"
-                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+                    ? "bg-primary/10 border-primary/30 text-foreground"
+                    : "bg-secondary/20 border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/20"
                 }`}
               >
                 {topic}
               </button>
             ))}
           </div>
+          <div className="gradient-strip" />
           <input
             type="text"
             placeholder="Or type your own topic..."
             value={!suggestedTopics[data.niche]?.includes(data.topic) ? data.topic : ""}
             onChange={(e) => updateData({ topic: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background border border-border transition-colors"
+            className="w-full px-5 py-4 rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 bg-secondary/30 border border-border transition-all"
           />
         </div>
       )}
