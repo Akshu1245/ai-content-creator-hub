@@ -4,91 +4,157 @@
 
 AI-powered faceless video creation platform with built-in YouTube monetization compliance scoring.
 
-## Design System (v3 — Editorial Light Theme)
+---
 
-- **Background**: Warm cream — feels like premium paper
-- **Primary**: Deep teal — sophisticated, not generic
-- **Accent**: Terracotta — warm contrast
-- **Typography**: DM Serif Display (headings) + Plus Jakarta Sans (body) + IBM Plex Mono (data)
-- **Cards**: White surfaces with subtle warm shadows — no glass morphism
+## 🏗️ Architecture
 
-## What's Built
+| Layer | Stack |
+|-------|-------|
+| Frontend | React 18 + Vite + TypeScript + Tailwind CSS |
+| UI Components | shadcn/ui (Radix primitives) |
+| Backend | Lovable Cloud (Supabase Edge Functions) |
+| Database | Supabase (PostgreSQL) |
+| AI Script | Google Gemini 2.5 Flash (direct API) |
+| Market Research | Google Gemini 2.5 Flash + Google Search Grounding |
+| Voice Generation | Sarvam AI (Bulbul v3 TTS) |
+| Video Generation | Kling AI (text-to-video) |
 
-### Pages
-- Landing, Dashboard, New Project Wizard (6 steps), Analytics, Project Detail, Settings
+---
 
-### Key Components
-- ComplianceGauge, PipelineProgress, WordCycler, AnimatedNumber, TiltCard
+## 🔑 API Keys & Secrets
 
-### Backend (Edge Functions)
-- generate-script, compliance-check, compliance-fix
+| Secret Name | Service | Purpose |
+|-------------|---------|---------|
+| `GEMINI_API_KEY` | Google AI | Script generation + market research with Search grounding |
+| `SARVAM_API_KEY` | Sarvam AI | Text-to-speech with 6 unique voices |
+| `KLING_ACCESS_KEY` | Kling AI | Video generation (JWT auth) |
+| `KLING_SECRET_KEY` | Kling AI | Video generation (JWT signing) |
+| `LOVABLE_API_KEY` | Lovable Cloud | Auto-provisioned, used for AI gateway |
 
-## Project info
+---
 
-## How can I edit this code?
+## 📁 Edge Functions
 
-There are several ways of editing your application.
+### `generate-script`
+- **API**: Google Gemini 2.5 Flash (direct)
+- **Input**: `{ niche, topic }`
+- **Output**: `{ script }` — structured video script with HOOK, SECTIONS, CTA, OUTRO
 
-**Use Lovable**
+### `market-research`
+- **API**: Google Gemini 2.5 Flash + Google Search Grounding
+- **Input**: `{ niche, topic }`
+- **Output**: `{ research, sources }` — trend score, search volume, competitors, content gaps, audience insights
+- **Features**: Real-time internet search via Gemini's `google_search` tool, returns grounded sources with URLs
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### `generate-voice`
+- **API**: Sarvam AI (Bulbul v3)
+- **Input**: `{ text, speaker, speed }`
+- **Output**: `{ audio_base64, request_id, speaker }`
+- **Voice Mapping**:
+  - Marcus → `shubh` (deep, authoritative)
+  - Sophia → `anushka` (warm, engaging)
+  - Atlas → `ratan` (classic documentary)
+  - Nova → `meera` (young, energetic)
+  - Leo → `amit` (calm, educational)
+  - Zara → `advika` (professional, clear)
 
-Changes made via Lovable will be committed automatically to this repo.
+### `generate-video`
+- **API**: Kling AI (official)
+- **Input**: `{ action: 'create'|'query', prompt?, task_id?, duration?, aspect_ratio? }`
+- **Output**: `{ task_id, status, video_url }`
+- **Auth**: JWT token signed with HMAC-SHA256 using access_key/secret_key
 
-**Use your preferred IDE**
+### `compliance-check` / `compliance-fix` / `copyright-scan`
+- YouTube policy compliance checking and auto-fixing
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 📄 Pages
 
-Follow these steps:
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/` | `Index.tsx` | Landing page with hero, features, pricing |
+| `/dashboard` | `Dashboard.tsx` | Project overview dashboard |
+| `/new-project` | `NewProject.tsx` | 6-step video creation wizard |
+| `/analytics` | `Analytics.tsx` | Channel analytics |
+| `/settings` | `Settings.tsx` | Account, API connections, billing |
+| `/project/:id` | `ProjectDetail.tsx` | Individual project details |
+
+---
+
+## 🧙 Video Creation Wizard (6 Steps)
+
+### Step 1: Niche Selection (`StepNiche.tsx`)
+- 10 preset niches · Suggested trending topics · Revenue estimator · Custom topic input
+
+### Step 2: Trend Intelligence (`StepTrends.tsx`) — **LIVE**
+- Calls Gemini with Google Search grounding for real-time market research
+- Trend score, search volume, competition, ideal length, best post time
+- Competitor video analysis · Trending angles · Content gaps · Audience insights
+- Key search terms · Cited web sources
+
+### Step 3: Script Generation (`StepScript.tsx`) — **LIVE**
+- AI-generated via Gemini 2.5 Flash · Structured sections · Editable
+
+### Step 4: Voice & Style (`StepVoice.tsx`) — **LIVE**
+- 6 unique AI voices via Sarvam AI · Real audio preview
+- Fallback to Web Speech API · 4 visual styles · Speed control
+
+### Step 5: Compliance Review (`StepCompliance.tsx`)
+- YouTube policy check · Copyright scan · Auto-fix
+
+### Step 6: Publish (`StepPublish.tsx`)
+- Platform selection · Scheduling
+
+---
+
+## 🎨 Design System
+
+**Aesthetic**: Editorial magazine / warm earth tones
+- **Primary**: Terracotta · **Accent**: Sage green · **Highlight**: Ochre/gold
+- **Background**: Deep charcoal
+- **Fonts**: Syne (headings) + Inter (body)
+
+---
+
+## 🚀 Video Generation Pipeline
+
+1. User completes 6-step wizard → clicks "Launch Video"
+2. **Phase 1**: Sarvam AI generates voiceover from script
+3. **Phase 2**: Kling AI generates video from topic + style prompt
+4. Polls Kling every 5s until ready (max 5 min timeout)
+5. Video plays inline · Download video + audio-only
+
+---
+
+## 📋 Changelog
+
+### 2026-03-08
+- ✅ Integrated Sarvam AI TTS with 6 unique speaker voices
+- ✅ Integrated Kling AI for real video generation with JWT auth
+- ✅ Added market research with Gemini + Google Search grounding (real internet data)
+- ✅ StepTrends now shows live research: competitors, trends, gaps, sources
+- ✅ Switched script generation to direct Gemini API (user's own key)
+- ✅ Added video download + audio-only download
+- ✅ Error handling, retry flows, loading states
+- ✅ Created comprehensive README documentation
+
+### Previous
+- Landing page with editorial warm earth-tone design
+- 6-step video creation wizard (UI)
+- Dashboard, Analytics, Settings pages
+- Compliance check & copyright scan edge functions
+- Revenue estimator & differentiator components
+
+---
+
+## Project Setup
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Built with: Vite · TypeScript · React · shadcn/ui · Tailwind CSS
