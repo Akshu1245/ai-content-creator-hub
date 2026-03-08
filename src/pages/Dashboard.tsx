@@ -1,48 +1,50 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight } from "lucide-react";
+import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2, Loader2 } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import YPPTrackerCard from "@/components/differentiators/YPPTrackerCard";
 import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCenter";
-
-const stats = [
-  { label: "Total Videos", value: 24, icon: Video, suffix: "", trend: "+3 this week" },
-  { label: "Total Views", value: 128400, icon: Eye, suffix: "", trend: "+12.3%" },
-  { label: "Avg Retention", value: 67, icon: Clock, suffix: "%", trend: "+4.2%" },
-  { label: "Compliance Score", value: 91, icon: Shield, suffix: "", trend: "Excellent" },
-];
-
-const projects = [
-  { id: "1", name: "AI Finance Tips", niche: "Finance", videos: 8, status: "Live", compliance: 94, views: "45K", lastVideo: "How Compound Interest Actually Works" },
-  { id: "2", name: "Horror Stories", niche: "Horror", videos: 6, status: "Generating", compliance: 87, views: "62K", lastVideo: "The Backrooms — Level 9999" },
-  { id: "3", name: "Tech Explained", niche: "Technology", videos: 10, status: "Scheduled", compliance: 92, views: "21K", lastVideo: "Why GPUs Cost So Much in 2026" },
-];
-
-const recentActivity = [
-  { text: "Video published: 'Compound Interest Explained'", time: "2h ago", type: "success" },
-  { text: "Compliance check flagged: mild clickbait risk", time: "4h ago", type: "warning" },
-  { text: "New trending topic found in Finance niche", time: "6h ago", type: "info" },
-  { text: "Horror Stories channel DNA updated", time: "12h ago", type: "info" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
-    case "Live": return "text-emerald bg-emerald/10 border-emerald/20";
-    case "Generating": return "text-primary bg-primary/10 border-primary/20";
-    case "Scheduled": return "text-accent bg-accent/10 border-accent/20";
+    case "complete": return "text-emerald bg-emerald/10 border-emerald/20";
+    case "generating": return "text-primary bg-primary/10 border-primary/20";
+    case "draft": return "text-accent bg-accent/10 border-accent/20";
     default: return "text-muted-foreground bg-secondary border-border";
   }
 };
 
-const getActivityDot = (type: string) => {
-  switch (type) {
-    case "success": return "bg-emerald";
-    case "warning": return "bg-primary";
-    default: return "bg-accent";
-  }
-};
-
 const Dashboard = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ["projects"],
+    queryFn: fetchProjects,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success("Project deleted");
+    },
+  });
+
+  const completedCount = projects.filter((p) => p.status === "complete").length;
+  const draftCount = projects.filter((p) => p.status === "draft").length;
+
+  const stats = [
+    { label: "Total Projects", value: projects.length, icon: Video, suffix: "", trend: `${draftCount} drafts` },
+    { label: "Completed", value: completedCount, icon: Eye, suffix: "", trend: "Videos ready" },
+    { label: "This Week", value: projects.filter((p) => new Date(p.created_at) > new Date(Date.now() - 7 * 86400000)).length, icon: Clock, suffix: "", trend: "New projects" },
+    { label: "With Video", value: projects.filter((p) => p.video_url).length, icon: Shield, suffix: "", trend: "Generated" },
+  ];
+
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
@@ -50,7 +52,9 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
             <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-1">Welcome back. Here's your overview.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}.
+            </p>
           </div>
           <Link to="/new-project">
             <button className="btn-primary flex items-center gap-2 text-xs">
@@ -77,63 +81,75 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* ═══ REVENUE COMMAND CENTER — the emotional centerpiece ═══ */}
+        {/* Revenue Center */}
         <div className="mb-10">
           <RevenueCommandCenter />
         </div>
 
-        {/* YPP Tracker + Projects */}
+        {/* YPP + Projects */}
         <div className="grid lg:grid-cols-12 gap-6 mb-10">
-          {/* YPP Tracker */}
           <div className="lg:col-span-5">
             <YPPTrackerCard />
           </div>
 
-          {/* Projects */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-display text-foreground font-bold">Active Projects</h2>
+              <h2 className="text-lg font-display text-foreground font-bold">Your Projects</h2>
               <span className="text-[10px] font-label text-muted-foreground">{projects.length} PROJECTS</span>
             </div>
 
-            {projects.map((project) => (
-              <Link key={project.id} to={`/project/${project.id}`}>
-                <div className="surface-raised p-5 surface-hover cursor-pointer group">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
-                        <span className="text-xs font-display text-muted-foreground">{project.niche.slice(0, 2).toUpperCase()}</span>
+            {isLoading ? (
+              <div className="surface-raised p-8 flex items-center justify-center">
+                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="surface-raised p-8 text-center">
+                <p className="text-sm text-muted-foreground mb-3">No projects yet.</p>
+                <Link to="/new-project">
+                  <button className="btn-primary text-xs"><Plus className="w-3 h-3 inline mr-1" /> Create Your First Video</button>
+                </Link>
+              </div>
+            ) : (
+              projects.slice(0, 10).map((project) => (
+                <div key={project.id} className="surface-raised p-5 surface-hover group relative">
+                  <Link to={`/project/${project.id}`} className="block">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                          <span className="text-xs font-display text-muted-foreground">{(project.niche || "??").slice(0, 2).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors">{project.title}</h3>
+                          <p className="text-[10px] font-label text-muted-foreground mt-0.5">
+                            {project.niche || "No niche"} · {project.style || "default"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors">{project.name}</h3>
-                        <p className="text-[10px] font-label text-muted-foreground mt-0.5">{project.niche} · {project.videos} VIDEOS</p>
+                      <div className="flex items-center gap-3">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold border ${getStatusStyle(project.status)}`}>
+                          {project.status.toUpperCase()}
+                        </span>
+                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold border ${getStatusStyle(project.status)}`}>{project.status.toUpperCase()}</span>
-                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="pl-[52px]">
+                      <span className="text-xs text-muted-foreground">{project.topic || "Untitled topic"}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pl-[52px]">
-                    <span className="text-muted-foreground truncate mr-4 text-xs">{project.lastVideo}</span>
-                    <div className="flex items-center gap-5 shrink-0 text-xs">
-                      <span className="flex items-center gap-1.5 font-mono text-muted-foreground">
-                        <Eye className="w-3 h-3" /> {project.views}
-                      </span>
-                      <span className={`font-mono font-bold ${project.compliance >= 80 ? "text-emerald" : "text-primary"}`}>
-                        {project.compliance}
-                      </span>
-                    </div>
-                  </div>
+                  </Link>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(project.id); }}
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              </Link>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
-        {/* Bottom row — Quick Actions + Activity */}
+        {/* Quick Actions */}
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Quick actions */}
           <div>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Quick Actions</h2>
             <div className="space-y-2">
@@ -157,19 +173,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Activity feed */}
+          {/* Recent projects timeline */}
           <div>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
             <div className="surface-raised p-5 space-y-4">
-              {recentActivity.map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className={`status-dot mt-1.5 shrink-0 ${getActivityDot(item.type)}`} />
+              {projects.slice(0, 4).map((p) => (
+                <div key={p.id} className="flex items-start gap-3">
+                  <div className={`status-dot mt-1.5 shrink-0 ${p.status === "complete" ? "bg-emerald" : p.status === "generating" ? "bg-primary" : "bg-accent"}`} />
                   <div className="min-w-0">
-                    <p className="text-xs text-foreground leading-snug">{item.text}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">{item.time}</p>
+                    <p className="text-xs text-foreground leading-snug">{p.title}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {new Date(p.updated_at).toLocaleDateString()} · {p.status}
+                    </p>
                   </div>
                 </div>
               ))}
+              {projects.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-2">No activity yet</p>
+              )}
             </div>
           </div>
         </div>
