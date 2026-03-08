@@ -1,13 +1,13 @@
 import { WizardData } from "@/pages/NewProject";
-import { Youtube, Clock, Globe, MonitorPlay } from "lucide-react";
+import { Clock } from "lucide-react";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
 const platforms = [
-  { id: "youtube", name: "YouTube", desc: "Full-length video", icon: "📺" },
-  { id: "shorts", name: "YT Shorts", desc: "60s vertical clip", icon: "⚡" },
-  { id: "tiktok", name: "TikTok", desc: "9:16 optimized", icon: "🎵" },
-  { id: "reels", name: "IG Reels", desc: "9:16 format", icon: "📱" },
+  { id: "youtube", name: "YouTube", desc: "Full-length video" },
+  { id: "shorts", name: "YT Shorts", desc: "60s vertical clip" },
+  { id: "tiktok", name: "TikTok", desc: "9:16 optimized" },
+  { id: "reels", name: "IG Reels", desc: "9:16 format" },
 ];
 
 const StepPublish = ({ data, updateData }: Props) => {
@@ -21,29 +21,27 @@ const StepPublish = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-display font-bold mb-1">Schedule & Publish</h2>
-        <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>Choose platforms and schedule your upload</p>
+        <h2 className="text-lg font-display font-semibold text-foreground mb-1">Schedule & Publish</h2>
+        <p className="text-sm text-muted-foreground">Choose platforms and schedule your upload</p>
       </div>
 
       <div>
-        <h3 className="text-base font-display font-bold mb-3">Target Platforms</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Target Platforms</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {platforms.map((p) => {
             const selected = data.platforms.includes(p.id);
             return (
               <button
                 key={p.id}
                 onClick={() => togglePlatform(p.id)}
-                className="text-center px-4 py-5 rounded-xl transition-all"
-                style={{
-                  background: selected ? "rgba(14,165,233,0.12)" : "rgba(8,13,20,0.65)",
-                  border: `1px solid ${selected ? "rgba(14,165,233,0.4)" : "rgba(42,72,112,0.35)"}`,
-                  backdropFilter: "blur(12px)",
-                }}
+                className={`text-center px-3 py-4 rounded-lg transition-all border ${
+                  selected
+                    ? "bg-primary/10 border-primary"
+                    : "bg-card border-border hover:border-muted"
+                }`}
               >
-                <span className="text-2xl block mb-2">{p.icon}</span>
-                <div className="font-display font-bold text-sm text-foreground">{p.name}</div>
-                <p className="text-xs mt-1" style={{ color: "hsl(205 40% 55%)" }}>{p.desc}</p>
+                <div className="font-display font-semibold text-sm text-foreground">{p.name}</div>
+                <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
               </button>
             );
           })}
@@ -51,28 +49,22 @@ const StepPublish = ({ data, updateData }: Props) => {
       </div>
 
       <div>
-        <h3 className="text-base font-display font-bold mb-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-cyan" /> Schedule Upload
+        <h3 className="text-sm font-display font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-primary" /> Schedule Upload
         </h3>
         <input
           type="datetime-local"
           value={data.scheduledAt}
           onChange={(e) => updateData({ scheduledAt: e.target.value })}
-          className="px-5 py-3 rounded-xl text-sm text-foreground focus:outline-none"
-          style={{
-            background: "rgba(8,13,20,0.65)",
-            border: "1px solid rgba(42,72,112,0.35)",
-            backdropFilter: "blur(12px)",
-            colorScheme: "dark",
-          }}
+          className="px-4 py-3 rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary bg-card border border-border"
+          style={{ colorScheme: "dark" }}
         />
-        <p className="text-xs mt-2" style={{ color: "hsl(210 25% 40%)" }}>Leave empty to publish immediately after generation</p>
+        <p className="text-xs text-muted-foreground mt-1.5">Leave empty to publish immediately after generation</p>
       </div>
 
-      {/* Summary */}
-      <div className="glass-elevated p-6">
-        <h3 className="text-base font-display font-bold mb-5">Video Summary</h3>
-        <div className="space-y-3 text-sm">
+      <div className="surface-raised p-5">
+        <h3 className="text-sm font-display font-semibold text-foreground mb-4">Video Summary</h3>
+        <div className="space-y-2.5 text-sm">
           {[
             { label: "Niche", value: data.niche || "—" },
             { label: "Topic", value: data.topic || "—" },
@@ -81,9 +73,9 @@ const StepPublish = ({ data, updateData }: Props) => {
             { label: "Compliance", value: data.complianceScore ?? "Not checked", isScore: true },
             { label: "Platforms", value: `${data.platforms.length} selected` },
           ].map((row) => (
-            <div key={row.label} className="flex justify-between items-center" style={{ borderBottom: "1px solid rgba(42,72,112,0.15)", paddingBottom: "10px" }}>
-              <span className="font-label text-xs" style={{ color: "hsl(210 25% 40%)" }}>{row.label}</span>
-              <span className={`font-medium ${row.isScore && typeof row.value === "number" ? (row.value >= 80 ? "text-mint" : "text-amber") : "text-foreground"} ${row.isScore ? "font-mono font-bold" : ""}`}>
+            <div key={row.label} className="flex justify-between items-center py-2 border-b border-border last:border-b-0">
+              <span className="font-label text-muted-foreground">{row.label.toUpperCase()}</span>
+              <span className={`font-medium ${row.isScore && typeof row.value === "number" ? (row.value >= 80 ? "text-accent" : "text-golden") : "text-foreground"} ${row.isScore ? "font-mono" : ""}`}>
                 {row.value}
               </span>
             </div>

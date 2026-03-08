@@ -4,86 +4,76 @@ import { Volume2, Play } from "lucide-react";
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
 const voices = [
-  { id: "roger", name: "Marcus", desc: "Deep, authoritative narrator", gender: "Male", icon: "🎙️" },
-  { id: "sarah", name: "Sophia", desc: "Warm, engaging female voice", gender: "Female", icon: "🎤" },
-  { id: "george", name: "Atlas", desc: "Classic documentary style", gender: "Male", icon: "📡" },
-  { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female", icon: "⚡" },
-  { id: "brian", name: "Leo", desc: "Calm, educational tone", gender: "Male", icon: "📚" },
-  { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female", icon: "🌟" },
+  { id: "roger", name: "Marcus", desc: "Deep, authoritative narrator", gender: "Male" },
+  { id: "sarah", name: "Sophia", desc: "Warm, engaging voice", gender: "Female" },
+  { id: "george", name: "Atlas", desc: "Classic documentary style", gender: "Male" },
+  { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female" },
+  { id: "brian", name: "Leo", desc: "Calm, educational tone", gender: "Male" },
+  { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female" },
 ];
 
 const styles = [
-  { id: "cinematic", name: "Cinematic", desc: "Dramatic visuals, film-like grading", icon: "🎬" },
-  { id: "minimal", name: "Minimal", desc: "Clean layouts, subtle motion", icon: "✨" },
-  { id: "dynamic", name: "Dynamic", desc: "Fast cuts, bold text, energy", icon: "💥" },
-  { id: "retro", name: "Retro", desc: "Vintage aesthetics, nostalgic feel", icon: "📼" },
+  { id: "cinematic", name: "Cinematic", desc: "Dramatic visuals, film-like grading" },
+  { id: "minimal", name: "Minimal", desc: "Clean layouts, subtle motion" },
+  { id: "dynamic", name: "Dynamic", desc: "Fast cuts, bold text, energy" },
+  { id: "retro", name: "Retro", desc: "Vintage aesthetics, nostalgic feel" },
 ];
 
 const StepVoice = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-display font-bold mb-1">Voice Selection</h2>
-        <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>Choose the narrator voice for your video</p>
+        <h2 className="text-lg font-display font-semibold text-foreground mb-1">Voice & Style</h2>
+        <p className="text-sm text-muted-foreground">Choose narrator voice and visual style for your video</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-3">
-        {voices.map((voice) => (
-          <button
-            key={voice.id}
-            onClick={() => updateData({ voice: voice.id })}
-            className="text-left px-5 py-5 rounded-xl transition-all"
-            style={{
-              background: data.voice === voice.id ? "rgba(14,165,233,0.12)" : "rgba(8,13,20,0.65)",
-              border: `1px solid ${data.voice === voice.id ? "rgba(14,165,233,0.4)" : "rgba(42,72,112,0.35)"}`,
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-display font-bold text-sm text-foreground">{voice.icon} {voice.name}</span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-label" style={{ color: "hsl(210 25% 40%)" }}>{voice.gender}</span>
-                <button className="p-1.5 rounded-lg transition-colors" style={{ background: "rgba(14,165,233,0.1)" }} onClick={(e) => e.stopPropagation()}>
-                  <Play className="w-3 h-3 text-cyan" />
-                </button>
-              </div>
-            </div>
-            <p className="text-xs" style={{ color: "hsl(205 40% 55%)" }}>{voice.desc}</p>
-          </button>
-        ))}
-      </div>
-
-      {/* Speed */}
       <div>
-        <h3 className="text-base font-display font-bold mb-3 flex items-center gap-2">
-          <Volume2 className="w-4 h-4 text-cyan" /> Narration Speed
-        </h3>
-        <div className="glass p-5 flex items-center gap-4">
-          <span className="text-xs font-mono" style={{ color: "hsl(210 25% 40%)" }}>0.8×</span>
-          <input type="range" min="0.8" max="1.2" step="0.1" defaultValue="1.0" className="flex-1 accent-cyan" style={{ accentColor: "#0EA5E9" }} />
-          <span className="text-xs font-mono" style={{ color: "hsl(210 25% 40%)" }}>1.2×</span>
+        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Narrator Voice</h3>
+        <div className="grid md:grid-cols-3 gap-2">
+          {voices.map((voice) => (
+            <button
+              key={voice.id}
+              onClick={() => updateData({ voice: voice.id })}
+              className={`text-left px-4 py-4 rounded-lg transition-all border ${
+                data.voice === voice.id
+                  ? "bg-primary/10 border-primary"
+                  : "bg-card border-border hover:border-muted"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-display font-semibold text-sm text-foreground">{voice.name}</span>
+                <span className="text-xs text-muted-foreground">{voice.gender}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">{voice.desc}</p>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Style */}
       <div>
-        <h2 className="text-xl font-display font-bold mb-1">Visual Style</h2>
-        <p className="text-sm mb-4" style={{ color: "hsl(205 40% 55%)" }}>Choose the look and feel of your video</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Narration Speed</h3>
+        <div className="surface p-4 flex items-center gap-4">
+          <span className="text-xs font-mono text-muted-foreground">0.8×</span>
+          <input type="range" min="0.8" max="1.2" step="0.1" defaultValue="1.0" className="flex-1" style={{ accentColor: "hsl(28 72% 55%)" }} />
+          <span className="text-xs font-mono text-muted-foreground">1.2×</span>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Visual Style</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {styles.map((style) => (
             <button
               key={style.id}
               onClick={() => updateData({ style: style.id })}
-              className="text-left px-4 py-5 rounded-xl transition-all text-center"
-              style={{
-                background: data.style === style.id ? "rgba(14,165,233,0.12)" : "rgba(8,13,20,0.65)",
-                border: `1px solid ${data.style === style.id ? "rgba(14,165,233,0.4)" : "rgba(42,72,112,0.35)"}`,
-                backdropFilter: "blur(12px)",
-              }}
+              className={`text-center px-3 py-4 rounded-lg transition-all border ${
+                data.style === style.id
+                  ? "bg-primary/10 border-primary"
+                  : "bg-card border-border hover:border-muted"
+              }`}
             >
-              <span className="text-2xl block mb-2">{style.icon}</span>
-              <div className="font-display font-bold text-sm text-foreground">{style.name}</div>
-              <p className="text-xs mt-1" style={{ color: "hsl(205 40% 55%)" }}>{style.desc}</p>
+              <div className="font-display font-semibold text-sm text-foreground">{style.name}</div>
+              <p className="text-xs text-muted-foreground mt-1">{style.desc}</p>
             </button>
           ))}
         </div>
