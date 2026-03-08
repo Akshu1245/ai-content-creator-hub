@@ -9,6 +9,7 @@ import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCen
 import OnboardingTips from "@/components/dashboard/OnboardingTips";
 import WhatsNewModal from "@/components/dashboard/WhatsNewModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSearchParams } from "react-router-dom";
 import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
