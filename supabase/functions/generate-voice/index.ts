@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,45 +7,43 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const SARVAM_API_KEY = Deno.env.get('SARVAM_API_KEY');
-    if (!SARVAM_API_KEY) {
-      throw new Error('SARVAM_API_KEY is not configured');
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+    const { data, error: authError } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (authError || !data?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const SARVAM_API_KEY = Deno.env.get('SARVAM_API_KEY');
+    if (!SARVAM_API_KEY) throw new Error('SARVAM_API_KEY is not configured');
 
     const { text, speaker, speed } = await req.json();
 
-    if (!text || !speaker) {
-      throw new Error('Missing required fields: text, speaker');
+    const safeText = (text ?? "").substring(0, 5000).replace(/[\x00-\x1f]/g, "");
+    const safeSpeaker = (speaker ?? "").substring(0, 50).replace(/[^a-zA-Z0-9_-]/g, "");
+
+    if (!safeText || !safeSpeaker) {
+      return new Response(JSON.stringify({ error: "Missing required fields: text, speaker" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Map our voice IDs to Sarvam speaker names
     const speakerMap: Record<string, string> = {
-      roger: "shubh",      // Deep, authoritative
-      sarah: "priya",      // Warm, engaging
-      george: "ratan",     // Classic documentary
-      lily: "simran",      // Young, energetic
-      brian: "amit",       // Calm, educational
-      jessica: "shreya",   // Professional, clear
-      amelia: "amelia",    // Soft, storytelling
-      tanya: "tanya",      // Bold, confident
-      neha: "neha",        // Friendly, conversational
+      roger: "shubh", sarah: "priya", george: "ratan", lily: "simran",
+      brian: "amit", jessica: "shreya", amelia: "amelia", tanya: "tanya", neha: "neha",
     };
 
-    const sarvamSpeaker = speakerMap[speaker] || "shubh";
+    const sarvamSpeaker = speakerMap[safeSpeaker] || "shubh";
 
     const response = await fetch('https://api.sarvam.ai/text-to-speech', {
       method: 'POST',
-      headers: {
-        'api-subscription-key': SARVAM_API_KEY,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'api-subscription-key': SARVAM_API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text,
+        text: safeText,
         target_language_code: "en-IN",
         model: "bulbul:v3",
         speaker: sarvamSpeaker,
@@ -55,24 +54,22 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`Sarvam API error [${response.status}]: ${errorBody}`);
+      console.error("Sarvam API error:", response.status, await response.text());
+      throw new Error("Voice generation failed");
     }
 
-    const data = await response.json();
+    const voiceData = await response.json();
 
     return new Response(JSON.stringify({
-      audio_base64: data.audios?.[0] || null,
-      request_id: data.request_id,
+      audio_base64: voiceData.audios?.[0] || null,
+      request_id: voiceData.request_id,
       speaker: sarvamSpeaker,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Voice generation error:', error);
-    return new Response(JSON.stringify({
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }), {
+    return new Response(JSON.stringify({ error: "Request failed, please try again" }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

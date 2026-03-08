@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,9 +10,23 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+    const { data, error: authError } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (authError || !data?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const { script, topic, niche } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const safeScript = (script ?? "").substring(0, 10000).replace(/[\x00-\x1f]/g, "");
+    const safeTopic = (topic ?? "").substring(0, 200).replace(/[\x00-\x1f]/g, "");
+    const safeNiche = (niche ?? "").substring(0, 100).replace(/[\x00-\x1f]/g, "");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -36,10 +51,10 @@ You MUST respond with valid JSON only, no markdown.`
           },
           {
             role: "user",
-            content: `Topic: "${topic}" (Niche: ${niche})
+            content: `Topic: "${safeTopic}" (Niche: ${safeNiche})
 
 Script to analyze:
-${script}
+${safeScript}
 
 Return this exact JSON structure:
 {
@@ -58,15 +73,13 @@ Return this exact JSON structure:
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      console.error("AI gateway error:", response.status, errText);
+      console.error("AI gateway error:", response.status, await response.text());
       throw new Error("AI analysis failed");
     }
 
     const aiResult = await response.json();
     const content = aiResult.choices?.[0]?.message?.content || "";
 
-    // Parse JSON from response
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse AI response");
 
@@ -77,7 +90,7 @@ Return this exact JSON structure:
     });
   } catch (e) {
     console.error("copyright-scan error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Request failed, please try again" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

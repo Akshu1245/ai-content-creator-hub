@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,45 +10,45 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+    const { data, error: authError } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (authError || !data?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
 
     const { script, topic, niche, platforms } = await req.json();
-    if (!script || !topic) throw new Error("Missing script or topic");
 
-    const platformList = (platforms || ["youtube", "instagram"]).join(", ");
+    const safeScript = (script ?? "").substring(0, 10000).replace(/[\x00-\x1f]/g, "");
+    const safeTopic = (topic ?? "").substring(0, 200).replace(/[\x00-\x1f]/g, "");
+    const safeNiche = (niche ?? "").substring(0, 100).replace(/[\x00-\x1f]/g, "");
+    if (!safeScript || !safeTopic) {
+      return new Response(JSON.stringify({ error: "Missing script or topic" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const allowedPlatforms = ["youtube", "instagram", "tiktok", "shorts"];
+    const safePlatforms = (platforms || ["youtube", "instagram"]).filter((p: string) => allowedPlatforms.includes(p));
+    const platformList = safePlatforms.join(", ");
 
     const prompt = `You are a social media expert. Generate optimized captions and metadata for posting a video on these platforms: ${platformList}.
 
-Video topic: ${topic}
-Niche: ${niche || "general"}
-Script summary (first 500 chars): ${script.substring(0, 500)}
+Video topic: ${safeTopic}
+Niche: ${safeNiche || "general"}
+Script summary (first 500 chars): ${safeScript.substring(0, 500)}
 
 Return ONLY valid JSON (no markdown) with this structure:
 {
-  "youtube": {
-    "title": "<SEO optimized title, max 100 chars>",
-    "description": "<full description with keywords, links placeholder, 200-500 words>",
-    "tags": ["<tag1>", "<tag2>", "...up to 15 tags"],
-    "hashtags": ["#tag1", "#tag2", "...3-5 hashtags"]
-  },
-  "instagram": {
-    "caption": "<engaging caption with emojis, 150-300 words, include CTA>",
-    "hashtags": ["#tag1", "#tag2", "...up to 30 hashtags"],
-    "altText": "<accessibility alt text for the video>"
-  },
-  "tiktok": {
-    "caption": "<short punchy caption, max 150 chars>",
-    "hashtags": ["#tag1", "#tag2", "...5-10 hashtags"]
-  },
-  "shorts": {
-    "title": "<catchy title for YouTube Shorts, max 100 chars>",
-    "description": "<short description>",
-    "hashtags": ["#Shorts", "#tag1", "#tag2"]
-  }
-}
-
-Make captions viral-worthy, platform-native, and SEO optimized. Use trending formats for each platform.`;
+  "youtube": { "title": "<SEO optimized title, max 100 chars>", "description": "<full description, 200-500 words>", "tags": ["<tag1>", "...up to 15"], "hashtags": ["#tag1", "...3-5"] },
+  "instagram": { "caption": "<engaging caption, 150-300 words>", "hashtags": ["#tag1", "...up to 30"], "altText": "<alt text>" },
+  "tiktok": { "caption": "<short caption, max 150 chars>", "hashtags": ["#tag1", "...5-10"] },
+  "shorts": { "title": "<catchy title, max 100 chars>", "description": "<short description>", "hashtags": ["#Shorts", "#tag1"] }
+}`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
@@ -63,12 +64,12 @@ Make captions viral-worthy, platform-native, and SEO optimized. Use trending for
     );
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`Gemini API error [${response.status}]: ${errorBody}`);
+      console.error("Gemini API error:", response.status, await response.text());
+      throw new Error("Caption generation failed");
     }
 
-    const data = await response.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const apiData = await response.json();
+    const rawText = apiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     let captions;
     try {
@@ -85,7 +86,7 @@ Make captions viral-worthy, platform-native, and SEO optimized. Use trending for
     });
   } catch (e) {
     console.error("generate-captions error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Request failed, please try again" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

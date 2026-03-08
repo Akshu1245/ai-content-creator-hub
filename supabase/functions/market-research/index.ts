@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,16 +10,30 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+    const { data, error: authError } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (authError || !data?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const { niche, topic } = await req.json();
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
 
-    if (!niche || !topic) throw new Error("Missing niche or topic");
+    const safeNiche = (niche ?? "").substring(0, 100).replace(/[\x00-\x1f]/g, "");
+    const safeTopic = (topic ?? "").substring(0, 200).replace(/[\x00-\x1f]/g, "");
+    if (!safeNiche || !safeTopic) {
+      return new Response(JSON.stringify({ error: "Missing niche or topic" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const prompt = `You are a YouTube market research analyst. Analyze this topic for a faceless YouTube video:
 
-Niche: ${niche}
-Topic: ${topic}
+Niche: ${safeNiche}
+Topic: ${safeTopic}
 
 Research the internet and provide a comprehensive market analysis with REAL, current data. Return your analysis in this exact JSON format (no markdown, just raw JSON):
 
@@ -53,51 +68,36 @@ Include 4-5 real competitors. Base everything on actual current internet data. B
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           tools: [{ google_search: {} }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 4096,
-          },
+          generationConfig: { temperature: 0.3, maxOutputTokens: 4096 },
         }),
       }
     );
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`Gemini API error [${response.status}]: ${errorBody}`);
+      console.error("Gemini API error:", response.status, await response.text());
+      throw new Error("Market research failed");
     }
 
-    const data = await response.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const apiData = await response.json();
+    const rawText = apiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Extract JSON from the response (handle markdown code blocks)
     let jsonStr = rawText;
     const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
+    if (jsonMatch) jsonStr = jsonMatch[1].trim();
 
     let research;
     try {
       research = JSON.parse(jsonStr);
     } catch {
-      // If JSON parsing fails, return raw text with defaults
       research = {
-        trendScore: 70,
-        searchVolume: "N/A",
-        competition: "Medium",
-        idealLength: "8-12 min",
-        bestPostTime: "Tue 6PM",
-        competitors: [],
-        trendingAngles: [],
-        audienceInsight: rawText,
-        contentGaps: [],
-        suggestedTitle: topic,
-        keySearchTerms: [],
+        trendScore: 70, searchVolume: "N/A", competition: "Medium",
+        idealLength: "8-12 min", bestPostTime: "Tue 6PM", competitors: [],
+        trendingAngles: [], audienceInsight: rawText, contentGaps: [],
+        suggestedTitle: safeTopic, keySearchTerms: [],
       };
     }
 
-    // Extract grounding metadata (search sources)
-    const groundingMetadata = data.candidates?.[0]?.groundingMetadata;
+    const groundingMetadata = apiData.candidates?.[0]?.groundingMetadata;
     const sources = groundingMetadata?.groundingChunks?.map((chunk: any) => ({
       title: chunk.web?.title || "",
       url: chunk.web?.uri || "",
@@ -108,7 +108,7 @@ Include 4-5 real competitors. Base everything on actual current internet data. B
     });
   } catch (e) {
     console.error("market-research error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Request failed, please try again" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,15 +9,21 @@ const corsHeaders = {
 const JSON2VIDEO_API_BASE = 'https://api.json2video.com/v2';
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const JSON2VIDEO_API_KEY = Deno.env.get('JSON2VIDEO_API_KEY');
-    if (!JSON2VIDEO_API_KEY) {
-      throw new Error('JSON2VIDEO_API_KEY is not configured');
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+    const { data, error: authError } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (authError || !data?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const JSON2VIDEO_API_KEY = Deno.env.get('JSON2VIDEO_API_KEY');
+    if (!JSON2VIDEO_API_KEY) throw new Error('JSON2VIDEO_API_KEY is not configured');
 
     const { action, prompt, task_id, duration, aspect_ratio, media_urls } = await req.json();
 
@@ -25,15 +32,15 @@ serve(async (req) => {
       'Content-Type': 'application/json',
     };
 
-    // CREATE a new video rendering job
     if (action === 'create') {
-      if (!prompt) throw new Error('Missing prompt for video generation');
+      const safePrompt = (prompt ?? "").substring(0, 500).replace(/[\x00-\x1f]/g, "");
+      if (!safePrompt) {
+        return new Response(JSON.stringify({ error: "Missing prompt" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
 
-      const sceneDuration = duration ? Number(duration) : 5;
-      const urls: string[] = media_urls || [];
+      const sceneDuration = duration ? Math.min(Math.max(Number(duration), 1), 60) : 5;
+      const urls: string[] = (media_urls || []).slice(0, 20);
 
-      // Build scenes: if media URLs provided, create a scene per media item
-      // Otherwise fall back to a text-only scene
       let scenes;
       if (urls.length > 0) {
         const perSceneDuration = Math.max(3, Math.round(sceneDuration * 3 / urls.length));
@@ -42,42 +49,16 @@ serve(async (req) => {
           return {
             duration: perSceneDuration,
             elements: [
-              {
-                type: isVideo ? "video" : "image",
-                src: url,
-                duration: perSceneDuration,
-              },
-              {
-                type: "text",
-                text: i === 0 ? prompt.slice(0, 120) : "",
-                style: "001",
-                duration: Math.min(3, perSceneDuration),
-              }
-            ].filter(el => el.type !== "text" || el.text),
+              { type: isVideo ? "video" : "image", src: url, duration: perSceneDuration },
+              ...(i === 0 ? [{ type: "text", text: safePrompt.slice(0, 120), style: "001", duration: Math.min(3, perSceneDuration) }] : []),
+            ],
           };
         });
       } else {
-        scenes = [
-          {
-            duration: sceneDuration,
-            elements: [
-              {
-                type: "text",
-                text: prompt,
-                style: "001",
-                duration: sceneDuration,
-              }
-            ]
-          }
-        ];
+        scenes = [{ duration: sceneDuration, elements: [{ type: "text", text: safePrompt, style: "001", duration: sceneDuration }] }];
       }
 
-      const movieJson = {
-        resolution: "full-hd",
-        scenes,
-      };
-
-      console.log('JSON2Video create payload:', JSON.stringify(movieJson));
+      const movieJson = { resolution: "full-hd", scenes };
 
       const response = await fetch(`${JSON2VIDEO_API_BASE}/movies`, {
         method: 'POST',
@@ -86,47 +67,42 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`JSON2Video API create error [${response.status}]: ${errorBody}`);
+        console.error("JSON2Video create error:", response.status, await response.text());
+        throw new Error("Video creation failed");
       }
 
-      const data = await response.json();
-      return new Response(JSON.stringify({
-        task_id: data.project,
-        status: 'submitted',
-      }), {
+      const vData = await response.json();
+      return new Response(JSON.stringify({ task_id: vData.project, status: 'submitted' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // QUERY task status
     if (action === 'query') {
-      if (!task_id) throw new Error('Missing task_id for query');
+      const safeTaskId = (task_id ?? "").substring(0, 100).replace(/[^a-zA-Z0-9_-]/g, "");
+      if (!safeTaskId) {
+        return new Response(JSON.stringify({ error: "Missing task_id" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
 
-      const response = await fetch(`${JSON2VIDEO_API_BASE}/movies?project=${task_id}`, {
+      const response = await fetch(`${JSON2VIDEO_API_BASE}/movies?project=${safeTaskId}`, {
         method: 'GET',
         headers: apiHeaders,
       });
 
       if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`JSON2Video API query error [${response.status}]: ${errorBody}`);
+        console.error("JSON2Video query error:", response.status, await response.text());
+        throw new Error("Video query failed");
       }
 
-      const data = await response.json();
-      console.log('JSON2Video query raw response:', JSON.stringify(data));
-
-      const movie = data.movie || data;
-
-      // JSON2Video statuses: "rendering", "done", "error"
+      const qData = await response.json();
+      const movie = qData.movie || qData;
       let status = movie.status;
       if (status === 'rendering') status = 'processing';
       if (status === 'done') status = 'completed';
       if (status === 'error') status = 'failed';
 
       return new Response(JSON.stringify({
-        task_id: movie.project || task_id,
-        status: status,
+        task_id: movie.project || safeTaskId,
+        status,
         video_url: movie.url || null,
         duration: movie.duration || null,
       }), {
@@ -134,12 +110,10 @@ serve(async (req) => {
       });
     }
 
-    throw new Error(`Unknown action: ${action}`);
+    return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     console.error('Video generation error:', error);
-    return new Response(JSON.stringify({
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }), {
+    return new Response(JSON.stringify({ error: "Request failed, please try again" }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
