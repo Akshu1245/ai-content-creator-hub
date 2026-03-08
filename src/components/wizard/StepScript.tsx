@@ -36,7 +36,7 @@ const StepScript = ({ data, updateData }: Props) => {
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="text-[10px] font-label text-primary block mb-2">STEP 3 OF 6</span>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 3 OF 8</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Video Script</h2>
           <p className="text-xs text-muted-foreground">AI-generated and optimized for retention</p>
         </div>
