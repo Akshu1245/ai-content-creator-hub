@@ -14,19 +14,19 @@ const Index = () => {
       <div className="min-h-screen bg-background relative overflow-hidden">
         <div className="bg-noise" />
 
-        {/* Ambient glow orbs */}
+        {/* Ambient warm glow orbs */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div
             className="absolute top-[-15%] left-[-5%] w-[700px] h-[700px] rounded-full blur-[180px]"
-            style={{ background: "radial-gradient(circle, hsl(265 85% 65% / 0.07), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, hsl(12 76% 56% / 0.05), transparent 70%)" }}
           />
           <div
             className="absolute bottom-[-15%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[160px]"
-            style={{ background: "radial-gradient(circle, hsl(38 95% 60% / 0.05), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, hsl(158 32% 45% / 0.04), transparent 70%)" }}
           />
           <div
             className="absolute top-[50%] left-[50%] w-[500px] h-[500px] rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"
-            style={{ background: "radial-gradient(circle, hsl(195 90% 55% / 0.03), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, hsl(42 72% 52% / 0.025), transparent 70%)" }}
           />
         </div>
 

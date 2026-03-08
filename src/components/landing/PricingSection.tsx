@@ -27,12 +27,12 @@ const PricingSection = () => {
             >
               {plan.popular && (
                 <div className="absolute -inset-[1px] rounded-[25px] opacity-60" style={{
-                  background: "linear-gradient(135deg, hsl(265 85% 65% / 0.4), hsl(38 95% 60% / 0.4))",
+                  background: "linear-gradient(135deg, hsl(12 76% 56% / 0.4), hsl(158 32% 45% / 0.4))",
                 }} />
               )}
 
               <div className={`surface-raised p-8 relative h-full ${plan.popular ? "border-transparent" : ""}`}
-                style={plan.popular ? { background: "linear-gradient(145deg, hsl(230 22% 12%), hsl(230 25% 7%))" } : undefined}
+                style={plan.popular ? { background: "linear-gradient(145deg, hsl(22 10% 12%), hsl(24 12% 6%))" } : undefined}
               >
                 {plan.popular && (
                   <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-b-xl text-[9px] font-label bg-gradient-to-r from-primary to-accent text-background font-bold tracking-widest">
@@ -51,8 +51,8 @@ const PricingSection = () => {
                     <li key={f} className="flex items-center gap-3 text-xs text-muted-foreground">
                       <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
                         style={{
-                          background: plan.popular ? "hsl(265 85% 65% / 0.1)" : "hsl(38 95% 60% / 0.08)",
-                          border: `1px solid ${plan.popular ? "hsl(265 85% 65% / 0.2)" : "hsl(38 95% 60% / 0.12)"}`,
+                          background: plan.popular ? "hsl(12 76% 56% / 0.1)" : "hsl(158 32% 45% / 0.08)",
+                          border: `1px solid ${plan.popular ? "hsl(12 76% 56% / 0.2)" : "hsl(158 32% 45% / 0.12)"}`,
                         }}
                       >
                         <Check className={`w-2.5 h-2.5 ${plan.popular ? "text-primary" : "text-accent"}`} />

@@ -1,10 +1,10 @@
 import { TrendingUp, Sparkles, Shield, ArrowUpRight } from "lucide-react";
 
 const steps = [
-  { step: "01", title: "Pick your niche", desc: "Choose a topic and discover high-opportunity angles with AI trend analysis.", icon: TrendingUp },
-  { step: "02", title: "AI generates", desc: "Script, voiceover, visuals — assembled automatically in minutes.", icon: Sparkles },
-  { step: "03", title: "Review & comply", desc: "Get a monetization score with actionable fixes before publishing.", icon: Shield },
-  { step: "04", title: "Publish", desc: "Push optimized videos to YouTube, Shorts, TikTok & Reels.", icon: ArrowUpRight },
+  { step: "01", title: "Pick your niche", desc: "Choose a topic and discover high-opportunity angles with AI trend analysis.", icon: TrendingUp, iconColor: "primary" },
+  { step: "02", title: "AI generates", desc: "Script, voiceover, visuals — assembled automatically in minutes.", icon: Sparkles, iconColor: "gold" },
+  { step: "03", title: "Review & comply", desc: "Get a monetization score with actionable fixes before publishing.", icon: Shield, iconColor: "accent" },
+  { step: "04", title: "Publish", desc: "Push optimized videos to YouTube, Shorts, TikTok & Reels.", icon: ArrowUpRight, iconColor: "mauve" },
 ];
 
 const HowItWorksSection = () => {
@@ -22,17 +22,21 @@ const HowItWorksSection = () => {
         <div className="grid md:grid-cols-4 gap-6">
           {steps.map((item, i) => (
             <div key={item.step} className="relative group">
-              {/* Connector line */}
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-10 right-0 w-full h-[1px] translate-x-1/2 bg-gradient-to-r from-border to-transparent z-0" />
               )}
               <div className="surface-raised p-7 surface-hover relative z-10 h-full">
-                {/* Step number */}
                 <span className="text-[64px] font-display font-bold leading-none text-muted/30 absolute -top-2 -right-1 select-none pointer-events-none">
                   {item.step}
                 </span>
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 bg-primary/10 border border-primary/15 group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="w-5 h-5 text-primary" />
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(var(--${item.iconColor}) / 0.12), hsl(var(--${item.iconColor}) / 0.04))`,
+                    border: `1px solid hsl(var(--${item.iconColor}) / 0.15)`,
+                  }}
+                >
+                  <item.icon className={`w-5 h-5 text-${item.iconColor}`} />
                 </div>
                 <h3 className="text-base font-display text-foreground mb-2">{item.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>

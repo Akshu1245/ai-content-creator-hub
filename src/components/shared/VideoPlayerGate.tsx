@@ -12,7 +12,6 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
   const [tick, setTick] = useState(0);
   const gateRef = useRef<HTMLDivElement>(null);
 
-  // Slow tick for ambient animations
   useEffect(() => {
     const interval = setInterval(() => setTick((t) => t + 1), 60);
     return () => clearInterval(interval);
@@ -49,19 +48,19 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
         style={{
           opacity: phase === "open" ? 0 : 1,
           pointerEvents: phase === "open" ? "none" : "auto",
-          background: "hsl(230 25% 3%)",
+          background: "hsl(24 12% 3%)",
         }}
         onMouseMove={handleMouseMove}
       >
-        {/* Reactive gradient following mouse */}
+        {/* Reactive warm gradient following mouse */}
         <div
           className="absolute inset-0 transition-opacity duration-1000"
           style={{
-            background: `radial-gradient(800px circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, hsl(265 85% 65% / ${hovered ? 0.08 : 0.03}), transparent 50%)`,
+            background: `radial-gradient(800px circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, hsl(12 76% 56% / ${hovered ? 0.06 : 0.02}), hsl(158 32% 45% / ${hovered ? 0.03 : 0.01}), transparent 50%)`,
           }}
         />
 
-        {/* Floating orbs */}
+        {/* Floating warm orbs */}
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
@@ -71,9 +70,13 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
               height: `${60 + i * 40}px`,
               left: `${20 + i * 15}%`,
               top: `${15 + ((i * 17) % 60)}%`,
-              background: i % 2 === 0
-                ? `radial-gradient(circle, hsl(265 85% 65% / 0.06), transparent 70%)`
-                : `radial-gradient(circle, hsl(38 95% 60% / 0.04), transparent 70%)`,
+              background: [
+                `radial-gradient(circle, hsl(12 76% 56% / 0.05), transparent 70%)`,
+                `radial-gradient(circle, hsl(42 72% 52% / 0.04), transparent 70%)`,
+                `radial-gradient(circle, hsl(158 32% 45% / 0.04), transparent 70%)`,
+                `radial-gradient(circle, hsl(320 22% 48% / 0.03), transparent 70%)`,
+                `radial-gradient(circle, hsl(32 65% 48% / 0.04), transparent 70%)`,
+              ][i],
               animation: `orbFloat ${6 + i * 2}s ease-in-out infinite`,
               animationDelay: `${i * -1.5}s`,
               filter: "blur(30px)",
@@ -83,11 +86,12 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
 
         {/* Central portal */}
         <div className="relative flex items-center justify-center">
-          {/* Concentric rings */}
+          {/* Concentric rings — warm tones */}
           {Array.from({ length: ringCount }).map((_, i) => {
             const size = 180 + i * 55;
             const rotation = time * (12 - i * 2) * (i % 2 === 0 ? 1 : -1);
             const opacity = hovered ? 0.4 - i * 0.05 : 0.15 - i * 0.02;
+            const ringColor = i % 2 === 0 ? "12 76% 56%" : "158 32% 45%";
             return (
               <div
                 key={i}
@@ -95,7 +99,7 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
                 style={{
                   width: `${size}px`,
                   height: `${size}px`,
-                  border: `1px solid hsl(265 85% 65% / ${Math.max(opacity, 0.03)})`,
+                  border: `1px solid hsl(${ringColor} / ${Math.max(opacity, 0.03)})`,
                   transform: `rotate(${rotation}deg) ${phase === "opening" ? `scale(${1.5 + i * 0.3})` : "scale(1)"}`,
                   opacity: phase === "opening" ? 0 : 1,
                   transition: `all ${0.8 + i * 0.15}s cubic-bezier(0.77, 0, 0.175, 1)`,
@@ -104,7 +108,7 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
             );
           })}
 
-          {/* Hexagonal portal shape */}
+          {/* Hexagonal portal shape — warm palette */}
           <button
             onClick={handleEnter}
             onMouseEnter={() => setHovered(true)}
@@ -117,19 +121,19 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
               style={{
                 transform: hovered ? "scale(1.08)" : "scale(1)",
                 filter: hovered
-                  ? "drop-shadow(0 0 40px hsl(265 85% 65% / 0.5))"
-                  : "drop-shadow(0 0 15px hsl(265 85% 65% / 0.15))",
+                  ? "drop-shadow(0 0 40px hsl(12 76% 56% / 0.4))"
+                  : "drop-shadow(0 0 15px hsl(12 76% 56% / 0.1))",
               }}
             >
               <defs>
                 <linearGradient id="portal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(265, 85%, 65%)" stopOpacity="0.7" />
-                  <stop offset="50%" stopColor="hsl(285, 80%, 55%)" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="hsl(38, 95%, 60%)" stopOpacity="0.7" />
+                  <stop offset="0%" stopColor="hsl(12, 76%, 56%)" stopOpacity="0.7" />
+                  <stop offset="50%" stopColor="hsl(42, 72%, 52%)" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="hsl(158, 32%, 45%)" stopOpacity="0.7" />
                 </linearGradient>
                 <radialGradient id="portal-center" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="hsl(265, 85%, 75%)" stopOpacity="0.2" />
-                  <stop offset="60%" stopColor="hsl(265, 85%, 45%)" stopOpacity="0.05" />
+                  <stop offset="0%" stopColor="hsl(12, 76%, 65%)" stopOpacity="0.15" />
+                  <stop offset="60%" stopColor="hsl(32, 65%, 48%)" stopOpacity="0.05" />
                   <stop offset="100%" stopColor="transparent" stopOpacity="0" />
                 </radialGradient>
                 <filter id="glow">
@@ -158,23 +162,18 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
               <polygon
                 points="100,40 155,70 155,130 100,160 45,130 45,70"
                 fill="none"
-                stroke="hsl(265, 85%, 65%)"
+                stroke="hsl(158, 32%, 45%)"
                 strokeWidth="0.5"
                 opacity={hovered ? 0.5 : 0.15}
                 style={{ transition: "opacity 0.4s ease" }}
               />
 
               {/* Rotating inner triangle */}
-              <g
-                style={{
-                  transformOrigin: "100px 100px",
-                  transform: `rotate(${time * 20}deg)`,
-                }}
-              >
+              <g style={{ transformOrigin: "100px 100px", transform: `rotate(${time * 20}deg)` }}>
                 <polygon
                   points="100,60 135,120 65,120"
                   fill="none"
-                  stroke="hsl(38, 95%, 60%)"
+                  stroke="hsl(42, 72%, 52%)"
                   strokeWidth="0.8"
                   opacity={hovered ? 0.6 : 0.2}
                 />
@@ -183,12 +182,10 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
               {/* Center play arrow */}
               <polygon
                 points="90,80 90,120 120,100"
-                fill={hovered ? "hsl(265, 85%, 75%)" : "hsl(220, 20%, 70%)"}
+                fill={hovered ? "hsl(38, 25%, 86%)" : "hsl(30, 12%, 55%)"}
                 style={{
                   transition: "fill 0.3s ease",
-                  filter: hovered
-                    ? "drop-shadow(0 0 12px hsl(265 85% 65% / 0.8))"
-                    : "none",
+                  filter: hovered ? "drop-shadow(0 0 12px hsl(12 76% 56% / 0.6))" : "none",
                 }}
               />
 
@@ -202,7 +199,7 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
                   cx={cx}
                   cy={cy}
                   r={hovered ? 3 : 2}
-                  fill="hsl(265, 85%, 65%)"
+                  fill={i % 2 === 0 ? "hsl(12, 76%, 56%)" : "hsl(158, 32%, 45%)"}
                   opacity={hovered ? 0.8 : 0.3}
                   style={{ transition: "all 0.4s ease" }}
                 />
@@ -213,7 +210,7 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
             <div
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
-                border: "1px solid hsl(265 85% 65% / 0.2)",
+                border: "1px solid hsl(12 76% 56% / 0.15)",
                 animation: "pulseRing 3s ease-out infinite",
               }}
             />
@@ -231,11 +228,9 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
         </div>
 
         {/* Bottom data strip */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[9px] text-muted-foreground/30 font-mono"
-        >
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[9px] text-muted-foreground/30 font-mono">
           <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             SYSTEM READY
           </span>
           <span>v3.0</span>

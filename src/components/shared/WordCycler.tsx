@@ -6,18 +6,19 @@ interface WordCyclerProps {
   interval?: number;
 }
 
+/* Warm earthy gradients — terracotta, ochre, sage, mauve */
 const WORD_COLORS = [
-  "from-[hsl(265,85%,65%)] to-[hsl(285,80%,55%)]",
-  "from-[hsl(38,95%,60%)] to-[hsl(20,90%,55%)]",
-  "from-[hsl(155,65%,48%)] to-[hsl(195,90%,55%)]",
-  "from-[hsl(345,70%,58%)] to-[hsl(265,85%,65%)]",
+  "from-[hsl(12,76%,56%)] to-[hsl(32,65%,48%)]",
+  "from-[hsl(42,72%,52%)] to-[hsl(16,55%,42%)]",
+  "from-[hsl(158,32%,45%)] to-[hsl(185,40%,48%)]",
+  "from-[hsl(320,22%,48%)] to-[hsl(345,45%,52%)]",
 ];
 
 const WORD_GLOWS = [
-  "0 0 30px hsla(265,85%,65%,0.5)",
-  "0 0 30px hsla(38,95%,60%,0.5)",
-  "0 0 30px hsla(155,65%,48%,0.5)",
-  "0 0 30px hsla(345,70%,58%,0.5)",
+  "0 0 25px hsla(12,76%,56%,0.4)",
+  "0 0 25px hsla(42,72%,52%,0.4)",
+  "0 0 25px hsla(158,32%,45%,0.35)",
+  "0 0 25px hsla(320,22%,48%,0.35)",
 ];
 
 const WordCycler = ({ words, className = "", interval = 2800 }: WordCyclerProps) => {
@@ -29,27 +30,19 @@ const WordCycler = ({ words, className = "", interval = 2800 }: WordCyclerProps)
     const timer = setInterval(() => {
       setIsAnimating(true);
       setNextIndex((currentIndex + 1) % words.length);
-
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % words.length);
         setIsAnimating(false);
       }, 600);
     }, interval);
-
     return () => clearInterval(timer);
   }, [words, interval, currentIndex]);
 
   return (
     <span
       className={`inline-block relative overflow-hidden ${className}`}
-      style={{
-        perspective: "800px",
-        minWidth: "3ch",
-        height: "1.15em",
-        verticalAlign: "bottom",
-      }}
+      style={{ perspective: "800px", minWidth: "3ch", height: "1.15em", verticalAlign: "bottom" }}
     >
-      {/* Current word */}
       <span
         className="absolute inset-0 flex items-center justify-start will-change-transform"
         style={{
@@ -63,8 +56,6 @@ const WordCycler = ({ words, className = "", interval = 2800 }: WordCyclerProps)
           {words[currentIndex]}
         </span>
       </span>
-
-      {/* Next word */}
       <span
         className="absolute inset-0 flex items-center justify-start will-change-transform"
         style={{
@@ -78,8 +69,6 @@ const WordCycler = ({ words, className = "", interval = 2800 }: WordCyclerProps)
           {words[nextIndex]}
         </span>
       </span>
-
-      {/* Invisible sizer */}
       <span className="invisible whitespace-nowrap">
         {words.reduce((a, b) => (a.length >= b.length ? a : b))}
       </span>

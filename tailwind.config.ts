@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Space Grotesk", "system-ui", "sans-serif"],
-        sans: ["Outfit", "system-ui", "sans-serif"],
+        display: ["Syne", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -68,6 +68,10 @@ export default {
         olive: "hsl(var(--olive))",
         neon: "hsl(var(--neon))",
         cyan: "hsl(var(--cyan))",
+        mauve: "hsl(var(--mauve))",
+        ochre: "hsl(var(--ochre))",
+        clay: "hsl(var(--clay))",
+        sage: "hsl(var(--sage))",
       },
       borderRadius: {
         lg: "var(--radius)",

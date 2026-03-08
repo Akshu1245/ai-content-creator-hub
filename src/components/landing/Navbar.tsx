@@ -6,7 +6,7 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full z-50 border-b border-border/20 bg-background/50 backdrop-blur-2xl">
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg neon-glow">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-clay flex items-center justify-center shadow-lg neon-glow">
             <span className="text-primary-foreground font-display text-xs font-bold">FF</span>
           </div>
           <span className="text-sm font-display text-foreground tracking-tight">FacelessForge</span>
