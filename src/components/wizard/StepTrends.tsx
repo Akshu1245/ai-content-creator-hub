@@ -88,7 +88,7 @@ const StepTrends = ({ data, updateData }: Props) => {
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-[10px] font-label text-destructive block mb-2">ERROR</span>
+          <span className="text-[10px] font-label text-destructive block mb-2">RESEARCH ERROR</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Research Failed</h2>
           <p className="text-xs text-muted-foreground">{error}</p>
         </div>
