@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2 } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import EmptyState from "@/components/shared/EmptyState";
