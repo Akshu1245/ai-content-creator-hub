@@ -17,7 +17,7 @@ const CTASection = () => {
             <p className="text-muted-foreground mb-10 text-sm max-w-sm mx-auto">
               Start with 2 free videos. No credit card required. Join 3,200+ creators.
             </p>
-            <Link to="/new-project">
+            <Link to="/auth">
               <button className="btn-primary text-sm px-12 py-4 flex items-center gap-2 mx-auto group">
                 <span>Start Creating Free</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

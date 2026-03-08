@@ -49,13 +49,13 @@ const HeroSection = () => {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-10">
-              <Link to="/new-project">
+              <Link to="/auth">
                 <button className="btn-primary text-sm px-10 py-4 flex items-center gap-2 group">
                   <span>Start Creating</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
-              <Link to="/dashboard">
+              <Link to="/auth">
                 <button className="btn-ghost py-4 px-8 text-sm">View Demo</button>
               </Link>
             </div>
