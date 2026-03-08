@@ -8,11 +8,11 @@ interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void
 
 const voices = [
   { id: "roger", name: "Marcus", desc: "Deep, authoritative narrator", gender: "Male", sarvamVoice: "shubh", sample: "Welcome to the world of faceless content creation. Today, we'll explore how compound interest can transform your financial future." },
-  { id: "sarah", name: "Sophia", desc: "Warm, engaging voice", gender: "Female", sarvamVoice: "anushka", sample: "Have you ever wondered what makes a video truly captivating? Let me walk you through something fascinating." },
+  { id: "sarah", name: "Sophia", desc: "Warm, engaging voice", gender: "Female", sarvamVoice: "priya", sample: "Have you ever wondered what makes a video truly captivating? Let me walk you through something fascinating." },
   { id: "george", name: "Atlas", desc: "Classic documentary style", gender: "Male", sarvamVoice: "ratan", sample: "In the depths of the ocean, a world exists that few have ever seen. This is the story of discovery." },
-  { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female", sarvamVoice: "meera", sample: "Okay so here's the thing, nobody talks about this, and honestly it's kind of wild." },
+  { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female", sarvamVoice: "simran", sample: "Okay so here's the thing, nobody talks about this, and honestly it's kind of wild." },
   { id: "brian", name: "Leo", desc: "Calm, educational tone", gender: "Male", sarvamVoice: "amit", sample: "Let's take a step back and understand the fundamentals. When we look at the data, a clear pattern emerges." },
-  { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female", sarvamVoice: "advika", sample: "The numbers don't lie. In today's analysis, we're examining three key trends that will shape the industry." },
+  { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female", sarvamVoice: "shreya", sample: "The numbers don't lie. In today's analysis, we're examining three key trends that will shape the industry." },
 ];
 
 const styles = [
