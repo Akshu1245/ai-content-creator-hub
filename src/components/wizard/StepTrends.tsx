@@ -67,7 +67,7 @@ const StepTrends = ({ data, updateData }: Props) => {
     return (
       <div className="space-y-6">
         <div>
-          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 6</span>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 2 OF 8</span>
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Researching Market</h2>
           <p className="text-xs text-muted-foreground">
             Searching the internet for: <span className="text-primary font-semibold">{data.topic}</span>
