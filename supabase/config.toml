@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.market-research]
 verify_jwt = false
+
+[functions.stock-media]
+verify_jwt = false
+
+[functions.generate-captions]
+verify_jwt = false

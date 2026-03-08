@@ -18,6 +18,8 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 | Market Research | Google Gemini 2.5 Flash + Google Search Grounding |
 | Voice Generation | Sarvam AI (Bulbul v3 TTS) |
 | Video Generation | Kling AI (text-to-video) |
+| Stock Media | Pexels API (free photos & videos) |
+| Auto Captions | Google Gemini + Search (platform-specific SEO) |
 
 ---
 
@@ -25,11 +27,12 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 
 | Secret Name | Service | Purpose |
 |-------------|---------|---------|
-| `GEMINI_API_KEY` | Google AI | Script generation + market research with Search grounding |
+| `GEMINI_API_KEY` | Google AI | Script generation + market research + captions |
 | `SARVAM_API_KEY` | Sarvam AI | Text-to-speech with 6 unique voices |
 | `KLING_ACCESS_KEY` | Kling AI | Video generation (JWT auth) |
 | `KLING_SECRET_KEY` | Kling AI | Video generation (JWT signing) |
-| `LOVABLE_API_KEY` | Lovable Cloud | Auto-provisioned, used for AI gateway |
+| `PEXELS_API_KEY` | Pexels | Free stock photos & videos |
+| `LOVABLE_API_KEY` | Lovable Cloud | Auto-provisioned |
 
 ---
 
@@ -67,6 +70,16 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 ### `compliance-check` / `compliance-fix` / `copyright-scan`
 - YouTube policy compliance checking and auto-fixing
 
+### `stock-media`
+- **API**: Pexels (free)
+- **Input**: `{ query, type: 'photos'|'videos', per_page, orientation }`
+- **Output**: `{ type, results, total }` — normalized photos/videos with download URLs
+
+### `generate-captions`
+- **API**: Google Gemini 2.5 Flash + Google Search
+- **Input**: `{ script, topic, niche, platforms }`
+- **Output**: `{ captions }` — platform-specific titles, descriptions, hashtags, tags for YouTube, Instagram, TikTok, Shorts
+
 ---
 
 ## 📄 Pages
@@ -75,35 +88,41 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 |-------|-----------|-------------|
 | `/` | `Index.tsx` | Landing page with hero, features, pricing |
 | `/dashboard` | `Dashboard.tsx` | Project overview dashboard |
-| `/new-project` | `NewProject.tsx` | 6-step video creation wizard |
+| `/new-project` | `NewProject.tsx` | 8-step video creation wizard |
 | `/analytics` | `Analytics.tsx` | Channel analytics |
 | `/settings` | `Settings.tsx` | Account, API connections, billing |
 | `/project/:id` | `ProjectDetail.tsx` | Individual project details |
 
 ---
 
-## 🧙 Video Creation Wizard (6 Steps)
+## 🧙 Video Creation Wizard (8 Steps)
 
 ### Step 1: Niche Selection (`StepNiche.tsx`)
 - 10 preset niches · Suggested trending topics · Revenue estimator · Custom topic input
 
 ### Step 2: Trend Intelligence (`StepTrends.tsx`) — **LIVE**
-- Calls Gemini with Google Search grounding for real-time market research
-- Trend score, search volume, competition, ideal length, best post time
-- Competitor video analysis · Trending angles · Content gaps · Audience insights
-- Key search terms · Cited web sources
+- Gemini + Google Search grounding for real-time market research
+- Trend score, search volume, competition, competitors, content gaps, audience insights
 
 ### Step 3: Script Generation (`StepScript.tsx`) — **LIVE**
 - AI-generated via Gemini 2.5 Flash · Structured sections · Editable
 
 ### Step 4: Voice & Style (`StepVoice.tsx`) — **LIVE**
-- 6 unique AI voices via Sarvam AI · Real audio preview
-- Fallback to Web Speech API · 4 visual styles · Speed control
+- 6 unique AI voices via Sarvam AI · Real audio preview · 4 visual styles
 
-### Step 5: Compliance Review (`StepCompliance.tsx`)
+### Step 5: Stock Media (`StepMedia.tsx`) — **LIVE**
+- Pexels API search for B-roll photos & videos
+- Grid selection UI · Quick topic-based suggestions
+
+### Step 6: Compliance Review (`StepCompliance.tsx`)
 - YouTube policy check · Copyright scan · Auto-fix
 
-### Step 6: Publish (`StepPublish.tsx`)
+### Step 7: Auto Captions (`StepCaptions.tsx`) — **LIVE**
+- Gemini generates platform-specific captions, titles, descriptions, hashtags
+- Copy-to-clipboard for YouTube, Instagram, TikTok, Shorts
+- SEO optimized with trending formats
+
+### Step 8: Publish (`StepPublish.tsx`)
 - Platform selection · Scheduling
 
 ---
@@ -119,7 +138,7 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 
 ## 🚀 Video Generation Pipeline
 
-1. User completes 6-step wizard → clicks "Launch Video"
+1. User completes 8-step wizard → clicks "Launch Video"
 2. **Phase 1**: Sarvam AI generates voiceover from script
 3. **Phase 2**: Kling AI generates video from topic + style prompt
 4. Polls Kling every 5s until ready (max 5 min timeout)
@@ -127,21 +146,42 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 
 ---
 
+## ✅ Pipeline Status
+
+| Step | Feature | Status | API |
+|------|---------|--------|-----|
+| 1 | Niche Selection | ✅ Working | — (local) |
+| 2 | Market Research | ✅ LIVE | Gemini + Google Search |
+| 3 | Script Generation | ✅ LIVE | Gemini 2.5 Flash |
+| 4 | Voice Preview | ✅ LIVE | Sarvam AI (6 voices) |
+| 5 | Stock Media | ✅ LIVE | Pexels API |
+| 6 | Compliance Check | ✅ LIVE | Gemini |
+| 7 | Auto Captions | ✅ LIVE | Gemini + Search |
+| 8 | Publish Config | ✅ Working | — (local) |
+| — | Video Generation | ✅ LIVE | Kling AI |
+| — | Voiceover Generation | ✅ LIVE | Sarvam AI |
+| — | Video Download | ✅ Working | Direct URL |
+| — | Audio Download | ✅ Working | Base64 WAV |
+| — | Built-in Video Editor | 🔲 Planned | Browser-based |
+| — | Direct YouTube Upload | 🔲 Planned | YouTube Data API v3 |
+
+---
+
 ## 📋 Changelog
 
-### 2026-03-08
+### 2026-03-08 (Latest)
+- ✅ Added Pexels stock media search (photos + videos) with grid selection UI
+- ✅ Added auto-caption generation (YouTube, Instagram, TikTok, Shorts) with copy-to-clipboard
+- ✅ Expanded wizard from 6 to 8 steps (added Media + Captions)
 - ✅ Integrated Sarvam AI TTS with 6 unique speaker voices
 - ✅ Integrated Kling AI for real video generation with JWT auth
-- ✅ Added market research with Gemini + Google Search grounding (real internet data)
-- ✅ StepTrends now shows live research: competitors, trends, gaps, sources
-- ✅ Switched script generation to direct Gemini API (user's own key)
-- ✅ Added video download + audio-only download
-- ✅ Error handling, retry flows, loading states
-- ✅ Created comprehensive README documentation
+- ✅ Added market research with Gemini + Google Search grounding
+- ✅ Switched script generation to direct Gemini API
+- ✅ Added video + audio downloads
+- ✅ Comprehensive README with pipeline status tracking
 
 ### Previous
 - Landing page with editorial warm earth-tone design
-- 6-step video creation wizard (UI)
 - Dashboard, Analytics, Settings pages
 - Compliance check & copyright scan edge functions
 - Revenue estimator & differentiator components
