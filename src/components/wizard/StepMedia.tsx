@@ -45,10 +45,20 @@ const StepMedia = ({ data, updateData }: Props) => {
     }
   };
 
-  const toggleSelect = (id: string) => {
-    setSelectedMedia(prev =>
-      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
-    );
+  const toggleSelect = (id: string, url: string) => {
+    const newSelected = selectedMedia.includes(id) ? selectedMedia.filter(m => m !== id) : [...selectedMedia, id];
+    setSelectedMedia(newSelected);
+    // Collect actual URLs for selected media
+    const selectedUrls = newSelected.map(selId => {
+      if (selId.startsWith("photo-")) {
+        const photo = photos.find(p => `photo-${p.id}` === selId);
+        return photo?.src?.landscape || photo?.src?.medium || "";
+      } else {
+        const video = videos.find(v => `video-${v.id}` === selId);
+        return video?.videoFiles?.[0]?.link || video?.image || "";
+      }
+    }).filter(Boolean);
+    updateData({ selectedMedia: selectedUrls } as any);
   };
 
   const searchBoth = async () => {
@@ -132,7 +142,7 @@ const StepMedia = ({ data, updateData }: Props) => {
                 const id = `photo-${p.id}`;
                 const isSelected = selectedMedia.includes(id);
                 return (
-                  <div key={p.id} onClick={() => toggleSelect(id)}
+                  <div key={p.id} onClick={() => toggleSelect(id, p.src?.landscape || p.src?.medium || "")}
                     className={`relative rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? "border-primary shadow-lg shadow-primary/10" : "border-transparent hover:border-primary/20"}`}>
                     <img src={p.src?.medium || p.src?.small || ""} alt={p.alt || ""} className="w-full aspect-video object-cover" loading="lazy" />
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
@@ -156,7 +166,7 @@ const StepMedia = ({ data, updateData }: Props) => {
                 const id = `video-${v.id}`;
                 const isSelected = selectedMedia.includes(id);
                 return (
-                  <div key={v.id} onClick={() => toggleSelect(id)}
+                  <div key={v.id} onClick={() => toggleSelect(id, v.videoFiles?.[0]?.link || v.image || "")}
                     className={`relative rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? "border-primary shadow-lg shadow-primary/10" : "border-transparent hover:border-primary/20"}`}>
                     <img src={v.image || ""} alt="" className="w-full aspect-video object-cover" loading="lazy" />
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 flex justify-between items-end">

@@ -8,7 +8,7 @@ import {
 const faqs = [
   {
     q: "How does FacelessForge generate videos?",
-    a: "We combine Gemini AI for scripts, Sarvam AI for natural voiceovers, Kling AI for video generation, and Pexels for stock footage — all orchestrated through our 8-step wizard pipeline.",
+    a: "We combine Gemini AI for scripts, Sarvam AI for natural voiceovers, JSON2Video for video rendering, and Pexels for stock footage — all orchestrated through our 8-step wizard pipeline.",
   },
   {
     q: "What is the Compliance Scorer?",

@@ -41,6 +41,7 @@ export interface WizardData {
   complianceScore: number | null;
   platforms: string[];
   scheduledAt: string;
+  selectedMedia: string[];
 }
 
 const NewProject = () => {
@@ -66,7 +67,7 @@ const NewProject = () => {
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
-    platforms: ["youtube"], scheduledAt: "",
+    platforms: ["youtube"], scheduledAt: "", selectedMedia: [],
   });
 
   const updateData = (updates: Partial<WizardData>) => setData((prev) => ({ ...prev, ...updates }));
@@ -155,7 +156,7 @@ const NewProject = () => {
       const videoPrompt = `${data.style} style video about: ${data.topic}. ${data.niche} niche. High quality, professional faceless content.`;
 
       const { data: createData, error: createError } = await supabase.functions.invoke('generate-video', {
-        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9' },
+        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9', media_urls: data.selectedMedia },
       });
 
       if (createError) throw new Error(`Video creation failed: ${createError.message}`);
@@ -250,7 +251,7 @@ const NewProject = () => {
     setShowEditor(false);
     setShowYouTube(false);
     setShowTimeline(false);
-    setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "" });
+    setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "", selectedMedia: [] });
   };
 
   if (launched) {
@@ -263,7 +264,7 @@ const NewProject = () => {
                 <span className="text-[10px] font-label text-primary block mb-2">GENERATING</span>
                 <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Creating Your Video</h1>
                 <p className="text-xs text-muted-foreground">
-                  {generationPhase === 'voiceover' ? 'Sarvam AI is synthesizing your voiceover...' : 'Kling AI is rendering your video — this may take a few minutes.'}
+                  {generationPhase === 'voiceover' ? 'Sarvam AI is synthesizing your voiceover...' : 'Rendering your video — this may take a few minutes.'}
                 </p>
               </div>
               <PipelineProgress activeStep={pipelineStep} progress={progress} />
@@ -360,7 +361,7 @@ const NewProject = () => {
                   <div>
                     <span className="text-[10px] font-label text-accent block mb-2">COMPLETE</span>
                     <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
-                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + Kling AI video.</p>
+                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + JSON2Video rendering.</p>
                   </div>
                   <div className="surface-raised overflow-hidden rounded-xl">
                     {videoUrl ? (

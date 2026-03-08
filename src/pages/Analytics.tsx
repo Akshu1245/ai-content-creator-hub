@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info } from "lucide-react";
+import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info, AlertTriangle } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -116,6 +116,17 @@ const Analytics = () => {
                 {r === "all" ? "All" : r.toUpperCase()}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Demo Data Banner */}
+        <div className="mb-6 p-4 rounded-xl bg-gold/8 border border-gold/20 flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs text-foreground font-medium">Sample Analytics Data</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              This dashboard displays simulated data to preview the analytics experience. Connect the YouTube Data API in Settings to see real channel metrics.
+            </p>
           </div>
         </div>
 
