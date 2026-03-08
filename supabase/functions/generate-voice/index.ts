@@ -24,12 +24,12 @@ serve(async (req) => {
 
     // Map our voice IDs to Sarvam speaker names
     const speakerMap: Record<string, string> = {
-      roger: "shubh",     // Deep, authoritative
-      sarah: "anushka",   // Warm, engaging
-      george: "ratan",    // Classic documentary
-      lily: "meera",      // Young, energetic
-      brian: "amit",      // Calm, educational
-      jessica: "advika",  // Professional, clear
+      roger: "shubh",      // Deep, authoritative
+      sarah: "priya",      // Warm, engaging
+      george: "ratan",     // Classic documentary
+      lily: "simran",      // Young, energetic
+      brian: "amit",       // Calm, educational
+      jessica: "shreya",   // Professional, clear
     };
 
     const sarvamSpeaker = speakerMap[speaker] || "shubh";
