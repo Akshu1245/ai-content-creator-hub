@@ -16,7 +16,7 @@ const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      {/* Geometric art */}
+      {/* Geometric art — warm palette */}
       <div className="relative w-40 h-40 mb-8">
         {[80, 60, 40, 24].map((size, i) => (
           <div
@@ -28,7 +28,7 @@ const EmptyState = ({
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              border: `1.5px solid rgba(14,165,233,${0.08 + i * 0.06})`,
+              border: `1.5px solid hsl(12, 76%, 56%, ${0.08 + i * 0.06})`,
               animation: `spin ${12 - i * 2}s linear infinite ${i % 2 === 0 ? "" : "reverse"}`,
             }}
           />
@@ -39,14 +39,14 @@ const EmptyState = ({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            background: "linear-gradient(135deg, #0EA5E9, #06D6A0)",
-            boxShadow: "0 0 20px rgba(14,165,233,0.3)",
+            background: "linear-gradient(135deg, hsl(12, 76%, 56%), hsl(158, 32%, 45%))",
+            boxShadow: "0 0 20px hsl(12, 76%, 56%, 0.3)",
           }}
         />
       </div>
 
       <h3 className="font-display font-bold text-xl text-foreground mb-2">{title}</h3>
-      <p className="text-sm max-w-sm mb-6" style={{ color: "hsl(205 40% 55%)" }}>{description}</p>
+      <p className="text-sm max-w-sm mb-6 text-muted-foreground">{description}</p>
       <Link to={ctaTo}>
         <button className="btn-primary flex items-center gap-2">
           <Plus className="w-4 h-4" /> {ctaLabel}
