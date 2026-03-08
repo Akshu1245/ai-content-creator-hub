@@ -295,6 +295,7 @@ const Index = () => {
         </div>
       </footer>
     </div>
+    </VideoPlayerGate>
   );
 };
 
