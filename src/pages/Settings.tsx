@@ -1,7 +1,46 @@
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { User, Key, CreditCard, Bell, Shield, ExternalLink } from "lucide-react";
+import { User, Key, CreditCard, Bell, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Settings = () => {
+  const { user } = useAuth();
+  const [displayName, setDisplayName] = useState("");
+  const [bio, setBio] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.user_metadata?.full_name || "");
+      // Load profile
+      supabase.from("profiles").select("*").eq("id", user.id).maybeSingle().then(({ data }) => {
+        if (data) {
+          setDisplayName((data as any).display_name || "");
+          setBio((data as any).bio || "");
+        }
+      });
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: displayName, bio } as any)
+        .eq("id", user.id);
+      if (error) throw error;
+      toast.success("Profile updated!");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-2xl mx-auto">
@@ -25,13 +64,36 @@ const Settings = () => {
             <div className="space-y-4">
               <div>
                 <label className="text-[10px] font-label text-muted-foreground block mb-2">EMAIL ADDRESS</label>
-                <input type="email" defaultValue="user@example.com" className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all" />
+                <input
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="w-full px-4 py-3 rounded-xl text-xs text-muted-foreground bg-secondary/30 border border-border cursor-not-allowed"
+                />
               </div>
               <div>
                 <label className="text-[10px] font-label text-muted-foreground block mb-2">DISPLAY NAME</label>
-                <input type="text" defaultValue="Creator" className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all" />
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                />
               </div>
-              <button className="btn-primary text-xs mt-2">Save Changes</button>
+              <div>
+                <label className="text-[10px] font-label text-muted-foreground block mb-2">BIO</label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all resize-none"
+                  placeholder="Tell us about yourself..."
+                />
+              </div>
+              <button onClick={handleSave} disabled={saving} className="btn-primary text-xs mt-2 flex items-center gap-2">
+                {saving && <Loader2 className="w-3 h-3 animate-spin" />}
+                Save Changes
+              </button>
             </div>
           </section>
 
@@ -47,23 +109,20 @@ const Settings = () => {
               </div>
             </div>
             {[
-              { name: "YouTube OAuth", connected: false, desc: "Upload and manage videos" },
-              { name: "ElevenLabs", connected: false, desc: "AI voice synthesis" },
-              { name: "Pexels API", connected: false, desc: "Stock footage library" },
+              { name: "Gemini AI", connected: true, desc: "Script, captions, research" },
+              { name: "Sarvam AI", connected: true, desc: "Voice synthesis (6 voices)" },
+              { name: "Kling AI", connected: true, desc: "Video generation" },
+              { name: "Pexels", connected: true, desc: "Stock photos & videos" },
+              { name: "YouTube OAuth", connected: false, desc: "Direct upload (coming soon)" },
             ].map((key) => (
               <div key={key.name} className="flex items-center justify-between py-4 border-b border-border/50 last:border-b-0">
                 <div>
                   <span className="text-xs font-medium text-foreground">{key.name}</span>
                   <span className="text-[10px] text-muted-foreground block mt-0.5">{key.desc}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-[10px] font-label ${key.connected ? "text-emerald" : "text-muted-foreground"}`}>
-                    {key.connected ? "CONNECTED" : "NOT SET"}
-                  </span>
-                  <button className="btn-ghost text-[10px] px-4 py-2">
-                    {key.connected ? "Manage" : "Connect"}
-                  </button>
-                </div>
+                <span className={`text-[10px] font-label ${key.connected ? "text-emerald" : "text-muted-foreground"}`}>
+                  {key.connected ? "✓ CONNECTED" : "PENDING"}
+                </span>
               </div>
             ))}
           </section>
@@ -107,9 +166,7 @@ const Settings = () => {
             ].map((n) => (
               <label key={n.label} className="flex items-center justify-between py-3.5 cursor-pointer border-b border-border/50 last:border-b-0">
                 <span className="text-xs text-foreground">{n.label}</span>
-                <div className="relative">
-                  <input type="checkbox" defaultChecked={n.checked} className="w-4 h-4 rounded accent-primary" />
-                </div>
+                <input type="checkbox" defaultChecked={n.checked} className="w-4 h-4 rounded accent-primary" />
               </label>
             ))}
           </section>

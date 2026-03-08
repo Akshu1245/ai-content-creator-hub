@@ -14,7 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          preferences: Json | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          preferences?: Json | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          audio_base64: string | null
+          captions: Json | null
+          compliance_score: number | null
+          created_at: string
+          id: string
+          niche: string | null
+          overlays_data: Json | null
+          platforms: string[] | null
+          script: string | null
+          selected_media: Json | null
+          status: string
+          style: string | null
+          thumbnail_url: string | null
+          title: string
+          topic: string | null
+          trend_data: Json | null
+          trim_data: Json | null
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          voice: string | null
+        }
+        Insert: {
+          audio_base64?: string | null
+          captions?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          id?: string
+          niche?: string | null
+          overlays_data?: Json | null
+          platforms?: string[] | null
+          script?: string | null
+          selected_media?: Json | null
+          status?: string
+          style?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          topic?: string | null
+          trend_data?: Json | null
+          trim_data?: Json | null
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          voice?: string | null
+        }
+        Update: {
+          audio_base64?: string | null
+          captions?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          id?: string
+          niche?: string | null
+          overlays_data?: Json | null
+          platforms?: string[] | null
+          script?: string | null
+          selected_media?: Json | null
+          status?: string
+          style?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          topic?: string | null
+          trend_data?: Json | null
+          trim_data?: Json | null
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          voice?: string | null
+        }
+        Relationships: []
+      }
+      scheduled_posts: {
+        Row: {
+          caption_data: Json | null
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          posted_at: string | null
+          project_id: string
+          scheduled_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          caption_data?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          posted_at?: string | null
+          project_id: string
+          scheduled_at: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          caption_data?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          posted_at?: string | null
+          project_id?: string
+          scheduled_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_posts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

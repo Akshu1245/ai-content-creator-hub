@@ -162,29 +162,41 @@ AI-powered faceless video creation platform with built-in YouTube monetization c
 | — | Voiceover Generation | ✅ LIVE | Sarvam AI |
 | — | Video Download | ✅ Working | Direct URL |
 | — | Audio Download | ✅ Working | Base64 WAV |
-| — | Built-in Video Editor | 🔲 Planned | Browser-based |
+| — | Built-in Video Editor | ✅ LIVE | AI Auto-Edit (Gemini) |
+| — | Real Video Export | ✅ LIVE | Canvas MediaRecorder |
+| — | Audio-Video Merge | ✅ LIVE | Web Audio API |
+| — | Multi-Clip Timeline | ✅ LIVE | Canvas + MediaRecorder |
+| — | User Auth & Profiles | ✅ LIVE | Supabase Auth |
+| — | Project Persistence | ✅ LIVE | PostgreSQL |
+| — | Scheduling System | ✅ LIVE | PostgreSQL |
+| — | Mobile Responsive | ✅ Working | CSS + Bottom Nav |
 | — | Direct YouTube Upload | 🔲 Planned | YouTube Data API v3 |
+| — | YouTube Analytics | 🔲 Planned | YouTube Analytics API |
 
 ---
 
 ## 📋 Changelog
 
 ### 2026-03-08 (Latest)
-- ✅ Added Pexels stock media search (photos + videos) with grid selection UI
-- ✅ Added auto-caption generation (YouTube, Instagram, TikTok, Shorts) with copy-to-clipboard
-- ✅ Expanded wizard from 6 to 8 steps (added Media + Captions)
-- ✅ Integrated Sarvam AI TTS with 6 unique speaker voices
-- ✅ Integrated Kling AI for real video generation with JWT auth
-- ✅ Added market research with Gemini + Google Search grounding
-- ✅ Switched script generation to direct Gemini API
-- ✅ Added video + audio downloads
-- ✅ Comprehensive README with pipeline status tracking
+- ✅ Added user authentication (email signup/login) with auto-confirm
+- ✅ Added user profiles (display name, bio, avatar) with RLS
+- ✅ Added project persistence — projects saved to database
+- ✅ Dashboard now shows real DB-backed projects with delete
+- ✅ ProjectDetail page loads real project data with scheduled posts
+- ✅ Real video export with Canvas MediaRecorder (burns text overlays)
+- ✅ Audio-video merge (combines Sarvam voiceover + Kling video)
+- ✅ Multi-clip timeline (arrange stock clips + generated video)
+- ✅ Scheduling system (save scheduled posts per platform)
+- ✅ Mobile responsive — bottom nav, hamburger menu, touch-friendly
+- ✅ AI auto-edit for video editor (Gemini generates overlays + trim)
+- ✅ Settings page with real profile editing
+- ✅ Protected routes for all dashboard pages
 
 ### Previous
-- Landing page with editorial warm earth-tone design
-- Dashboard, Analytics, Settings pages
+- Added Pexels stock media, auto-captions, 8-step wizard
+- Integrated Sarvam AI TTS, Kling AI video, Gemini research
+- Landing page, Dashboard, Analytics, Settings
 - Compliance check & copyright scan edge functions
-- Revenue estimator & differentiator components
 
 ---
 

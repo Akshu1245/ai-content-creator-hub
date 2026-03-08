@@ -1,127 +1,170 @@
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ChevronRight, Brain, Sparkles, Download, Play } from "lucide-react";
-import { Link } from "react-router-dom";
-import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
-
-const videos = [
-  { id: "v1", title: "How Compound Interest Actually Works", status: "Published", compliance: 94, views: "12.4K", retention: "68%", ctr: "8.2%", date: "Mar 5" },
-  { id: "v2", title: "The Backrooms — Level 9999", status: "Published", compliance: 87, views: "28.1K", retention: "72%", ctr: "11.4%", date: "Mar 3" },
-  { id: "v3", title: "Why GPUs Cost So Much in 2026", status: "Scheduled", compliance: 92, views: "—", retention: "—", ctr: "—", date: "Mar 10" },
-];
-
-const channelDna = {
-  persona: "Calm, educational narrator",
-  vocabulary: "Intermediate",
-  recurringPhrases: ["here's what most people miss", "let's break this down"],
-  bannedWords: ["amazing", "incredible", "mind-blowing"],
-  avgCompliance: 91,
-};
+import { ChevronRight, Sparkles, Download, Play, Loader2, Pencil, Calendar, Trash2, Merge } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { fetchProject, deleteProject, fetchScheduledPosts, type Project } from "@/lib/projects";
+import { toast } from "sonner";
 
 const ProjectDetail = () => {
-  const handleDownload = (videoTitle: string) => {
-    alert(`Download starting for: "${videoTitle}.mp4"\n\nIn production, this would download the video file from storage.`);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [scheduledPosts, setScheduledPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    Promise.all([
+      fetchProject(id),
+      fetchScheduledPosts(id),
+    ]).then(([p, posts]) => {
+      setProject(p);
+      setScheduledPosts(posts || []);
+    }).catch((e) => {
+      toast.error("Failed to load project");
+      console.error(e);
+    }).finally(() => setLoading(false));
+  }, [id]);
+
+  const handleDelete = async () => {
+    if (!id) return;
+    if (!confirm("Delete this project?")) return;
+    await deleteProject(id);
+    toast.success("Project deleted");
+    navigate("/dashboard");
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!project) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto text-center py-20">
+          <h1 className="text-xl font-display text-foreground font-bold mb-2">Project not found</h1>
+          <p className="text-sm text-muted-foreground mb-4">This project may have been deleted.</p>
+          <Link to="/dashboard"><button className="btn-primary text-xs">Back to Dashboard</button></Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "complete": return "text-emerald bg-emerald/10 border-emerald/20";
+      case "generating": return "text-primary bg-primary/10 border-primary/20";
+      case "failed": return "text-destructive bg-destructive/10 border-destructive/20";
+      default: return "text-accent bg-accent/10 border-accent/20";
+    }
   };
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
+        {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs mb-6 text-muted-foreground">
           <Link to="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-foreground font-medium">AI Finance Tips</span>
+          <span className="text-foreground font-medium">{project.title}</span>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">AI Finance Tips</h1>
-            <p className="text-xs text-muted-foreground mt-1">Finance · 8 videos · Channel since Jan 2026</p>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">{project.title}</h1>
+              <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold border ${getStatusStyle(project.status)}`}>
+                {project.status.toUpperCase()}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {project.niche} · {project.style} · Created {new Date(project.created_at).toLocaleDateString()}
+            </p>
           </div>
-          <Link to="/new-project">
-            <button className="btn-primary flex items-center gap-2 text-xs">
-              <Sparkles className="w-3.5 h-3.5" /> New Video
+          <div className="flex items-center gap-2">
+            <Link to="/new-project">
+              <button className="btn-primary flex items-center gap-2 text-xs">
+                <Sparkles className="w-3.5 h-3.5" /> New Video
+              </button>
+            </Link>
+            <button onClick={handleDelete} className="btn-ghost text-xs text-destructive flex items-center gap-1.5">
+              <Trash2 className="w-3.5 h-3.5" /> Delete
             </button>
-          </Link>
+          </div>
         </div>
 
-        {/* Channel DNA */}
-        <div className="surface-raised p-6 mb-8">
-          <h2 className="text-sm font-display text-foreground font-bold mb-6 flex items-center gap-2">
-            <Brain className="w-4 h-4 text-primary" /> Channel DNA
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <span className="text-[10px] font-label text-muted-foreground block mb-2">PERSONA</span>
-              <span className="text-xs text-foreground">{channelDna.persona}</span>
-            </div>
-            <div>
-              <span className="text-[10px] font-label text-muted-foreground block mb-2">VOCABULARY</span>
-              <span className="text-xs text-foreground">{channelDna.vocabulary}</span>
-            </div>
-            <div>
-              <span className="text-[10px] font-label text-muted-foreground block mb-2">RECURRING PHRASES</span>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {channelDna.recurringPhrases.map((p) => (
-                  <span key={p} className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-primary/8 text-primary border border-primary/15">"{p}"</span>
-                ))}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* Video preview */}
+          <div className="surface-raised overflow-hidden rounded-xl">
+            {project.video_url ? (
+              <video controls className="w-full aspect-video bg-secondary" src={project.video_url} />
+            ) : (
+              <div className="aspect-video bg-secondary flex items-center justify-center">
+                <p className="text-xs text-muted-foreground">No video generated yet</p>
+              </div>
+            )}
+            {project.video_url && (
+              <div className="p-4 flex flex-wrap gap-2">
+                <button onClick={() => window.open(project.video_url!, '_blank')} className="btn-primary text-[10px] flex items-center gap-1.5">
+                  <Download className="w-3 h-3" /> Download
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="space-y-4">
+            <div className="surface-raised p-5 rounded-xl">
+              <h3 className="text-[10px] font-label text-muted-foreground mb-3">PROJECT DETAILS</h3>
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between"><span className="text-muted-foreground">Niche</span><span className="text-foreground">{project.niche || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Topic</span><span className="text-foreground">{project.topic || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Voice</span><span className="text-foreground">{project.voice || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Style</span><span className="text-foreground">{project.style || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Compliance</span><span className="text-foreground">{project.compliance_score ?? "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Platforms</span><span className="text-foreground">{project.platforms?.join(", ") || "—"}</span></div>
               </div>
             </div>
-            <div className="flex flex-col items-center">
-              <ComplianceGauge score={channelDna.avgCompliance} size={90} label="AVG SCORE" />
-            </div>
-          </div>
-          <div className="mt-6 pt-4 border-t border-border/50">
-            <span className="text-[10px] font-label text-muted-foreground block mb-2">BANNED WORDS</span>
-            <div className="flex flex-wrap gap-1.5">
-              {channelDna.bannedWords.map((w) => (
-                <span key={w} className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-destructive/10 text-destructive border border-destructive/15">{w}</span>
-              ))}
-            </div>
+
+            {/* Scheduled posts */}
+            {scheduledPosts.length > 0 && (
+              <div className="surface-raised p-5 rounded-xl">
+                <h3 className="text-[10px] font-label text-muted-foreground mb-3">SCHEDULED POSTS</h3>
+                <div className="space-y-2">
+                  {scheduledPosts.map((sp: any) => (
+                    <div key={sp.id} className="flex items-center justify-between text-xs py-2 border-b border-border/30 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-3 h-3 text-accent" />
+                        <span className="text-foreground capitalize">{sp.platform}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">{new Date(sp.scheduled_at).toLocaleString()}</span>
+                        <span className={`text-[9px] font-label px-2 py-0.5 rounded-full ${
+                          sp.status === "posted" ? "bg-emerald/10 text-emerald" : "bg-accent/10 text-accent"
+                        }`}>{sp.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <h2 className="text-sm font-display text-foreground font-bold mb-4">Videos</h2>
-        <div className="surface-raised overflow-hidden">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-border">
-                {["Title", "Status", "Score", "Views", "Retention", "CTR", "Date", ""].map((h) => (
-                  <th key={h} className={`px-5 py-4 text-[10px] font-label text-muted-foreground ${h === "Title" ? "text-left" : "text-center"}`}>{h.toUpperCase()}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {videos.map((v) => (
-                <tr key={v.id} className="border-b border-border/50 last:border-b-0 hover:bg-secondary/30 transition-colors">
-                  <td className="px-5 py-4 font-medium text-foreground">{v.title}</td>
-                  <td className="px-5 py-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold ${
-                      v.status === "Published" ? "bg-emerald/10 text-emerald border border-emerald/20" : "bg-primary/10 text-primary border border-primary/20"
-                    }`}>{v.status.toUpperCase()}</span>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <span className={`font-mono font-bold ${v.compliance >= 80 ? "text-emerald" : "text-primary"}`}>{v.compliance}</span>
-                  </td>
-                  <td className="px-5 py-4 text-center font-mono text-muted-foreground">{v.views}</td>
-                  <td className="px-5 py-4 text-center font-mono text-muted-foreground">{v.retention}</td>
-                  <td className="px-5 py-4 text-center font-mono text-muted-foreground">{v.ctr}</td>
-                  <td className="px-5 py-4 text-center text-[10px] font-label text-muted-foreground">{v.date.toUpperCase()}</td>
-                  <td className="px-5 py-4 text-center">
-                    {v.status === "Published" && (
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button onClick={() => handleDownload(v.title)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" title="Download">
-                          <Download className="w-3.5 h-3.5" />
-                        </button>
-                        <button onClick={() => alert(`Playing: "${v.title}"`)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" title="Preview">
-                          <Play className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* Script */}
+        {project.script && (
+          <div className="surface-raised p-5 rounded-xl mb-6">
+            <h3 className="text-[10px] font-label text-muted-foreground mb-3">SCRIPT</h3>
+            <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">{project.script}</p>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
