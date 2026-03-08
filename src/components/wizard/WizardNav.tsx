@@ -144,7 +144,6 @@ const WizardNav = ({ steps, currentStep, onStepClick }: WizardNavProps) => {
                 fontSize="10"
                 fontFamily="'Syne Mono', monospace"
                 letterSpacing="1"
-                textTransform="uppercase"
               >
                 {step.label.toUpperCase()}
               </text>
