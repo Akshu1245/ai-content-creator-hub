@@ -45,10 +45,20 @@ const StepMedia = ({ data, updateData }: Props) => {
     }
   };
 
-  const toggleSelect = (id: string) => {
-    setSelectedMedia(prev =>
-      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
-    );
+  const toggleSelect = (id: string, url: string) => {
+    const newSelected = selectedMedia.includes(id) ? selectedMedia.filter(m => m !== id) : [...selectedMedia, id];
+    setSelectedMedia(newSelected);
+    // Collect actual URLs for selected media
+    const selectedUrls = newSelected.map(selId => {
+      if (selId.startsWith("photo-")) {
+        const photo = photos.find(p => `photo-${p.id}` === selId);
+        return photo?.src?.landscape || photo?.src?.medium || "";
+      } else {
+        const video = videos.find(v => `video-${v.id}` === selId);
+        return video?.videoFiles?.[0]?.link || video?.image || "";
+      }
+    }).filter(Boolean);
+    updateData({ selectedMedia: selectedUrls } as any);
   };
 
   const searchBoth = async () => {
