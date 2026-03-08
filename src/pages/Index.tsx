@@ -17,16 +17,16 @@ const Index = () => {
         {/* Ambient glow orbs */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div
-            className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full blur-[150px]"
-            style={{ background: "radial-gradient(circle, hsl(200 80% 62% / 0.06), transparent 70%)" }}
+            className="absolute top-[-15%] left-[-5%] w-[700px] h-[700px] rounded-full blur-[180px]"
+            style={{ background: "radial-gradient(circle, hsl(265 85% 65% / 0.07), transparent 70%)" }}
           />
           <div
-            className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[150px]"
-            style={{ background: "radial-gradient(circle, hsl(270 70% 60% / 0.06), transparent 70%)" }}
+            className="absolute bottom-[-15%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[160px]"
+            style={{ background: "radial-gradient(circle, hsl(38 95% 60% / 0.05), transparent 70%)" }}
           />
           <div
-            className="absolute top-[40%] right-[10%] w-[400px] h-[400px] rounded-full blur-[130px]"
-            style={{ background: "radial-gradient(circle, hsl(42 78% 58% / 0.03), transparent 70%)" }}
+            className="absolute top-[50%] left-[50%] w-[500px] h-[500px] rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"
+            style={{ background: "radial-gradient(circle, hsl(195 90% 55% / 0.03), transparent 70%)" }}
           />
         </div>
 

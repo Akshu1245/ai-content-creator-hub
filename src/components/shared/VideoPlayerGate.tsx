@@ -1,298 +1,268 @@
-import { useState, useCallback, useEffect } from "react";
-import { Pause } from "lucide-react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { X } from "lucide-react";
 
 interface VideoPlayerGateProps {
   children: React.ReactNode;
 }
 
 const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [irisOpen, setIrisOpen] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "opening" | "open">("idle");
   const [hovered, setHovered] = useState(false);
-  const [pulseRing, setPulseRing] = useState(0);
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const [tick, setTick] = useState(0);
+  const gateRef = useRef<HTMLDivElement>(null);
 
-  // Cycle through pulse rings
+  // Slow tick for ambient animations
   useEffect(() => {
-    const interval = setInterval(() => setPulseRing((p) => (p + 1) % 3), 2000);
+    const interval = setInterval(() => setTick((t) => t + 1), 60);
     return () => clearInterval(interval);
   }, []);
 
-  const handlePlay = useCallback(() => {
-    setIrisOpen(true);
-    setTimeout(() => {
-      setIsPlaying(true);
-      setShowContent(true);
-    }, 1200);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!gateRef.current) return;
+    const rect = gateRef.current.getBoundingClientRect();
+    setMousePos({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
   }, []);
 
-  const handlePause = useCallback(() => {
-    setShowContent(false);
-    setIrisOpen(false);
-    setTimeout(() => setIsPlaying(false), 800);
+  const handleEnter = useCallback(() => {
+    setPhase("opening");
+    setTimeout(() => setPhase("open"), 1400);
   }, []);
 
-  // 6 iris blades for camera aperture
-  const bladeCount = 6;
-  const blades = Array.from({ length: bladeCount });
+  const handleExit = useCallback(() => {
+    setPhase("opening");
+    setTimeout(() => setPhase("idle"), 800);
+  }, []);
+
+  const ringCount = 5;
+  const time = tick * 0.06;
 
   return (
     <div className="relative w-full min-h-screen bg-background overflow-hidden">
-      {/* Camera Aperture / Iris Gate */}
+      {/* === PORTAL GATE === */}
       <div
+        ref={gateRef}
         className="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-700"
         style={{
-          opacity: isPlaying ? 0 : 1,
-          pointerEvents: isPlaying ? "none" : "auto",
-          background: "hsl(225 20% 4%)",
+          opacity: phase === "open" ? 0 : 1,
+          pointerEvents: phase === "open" ? "none" : "auto",
+          background: "hsl(230 25% 3%)",
         }}
+        onMouseMove={handleMouseMove}
       >
-        {/* Subtle animated grain */}
+        {/* Reactive gradient following mouse */}
         <div
-          className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
+          className="absolute inset-0 transition-opacity duration-1000"
           style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")",
+            background: `radial-gradient(800px circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, hsl(265 85% 65% / ${hovered ? 0.08 : 0.03}), transparent 50%)`,
           }}
         />
 
-        {/* Radial ambient light */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: hovered
-              ? "radial-gradient(circle at center, hsl(200 80% 62% / 0.08) 0%, transparent 60%)"
-              : "radial-gradient(circle at center, hsl(42 78% 58% / 0.04) 0%, transparent 60%)",
-            transition: "background 0.8s ease",
-          }}
-        />
+        {/* Floating orbs */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: `${60 + i * 40}px`,
+              height: `${60 + i * 40}px`,
+              left: `${20 + i * 15}%`,
+              top: `${15 + ((i * 17) % 60)}%`,
+              background: i % 2 === 0
+                ? `radial-gradient(circle, hsl(265 85% 65% / 0.06), transparent 70%)`
+                : `radial-gradient(circle, hsl(38 95% 60% / 0.04), transparent 70%)`,
+              animation: `orbFloat ${6 + i * 2}s ease-in-out infinite`,
+              animationDelay: `${i * -1.5}s`,
+              filter: "blur(30px)",
+            }}
+          />
+        ))}
 
-        {/* Camera aperture SVG */}
-        <div className="relative">
-          {/* Outer pulsing rings */}
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="absolute rounded-full border"
-              style={{
-                width: `${280 + i * 60}px`,
-                height: `${280 + i * 60}px`,
-                top: `${-(140 + i * 30 - 120)}px`,
-                left: `${-(140 + i * 30 - 120)}px`,
-                borderColor:
-                  pulseRing === i
-                    ? "hsl(200 80% 62% / 0.3)"
-                    : "hsl(220 15% 20% / 0.15)",
-                transform: pulseRing === i ? "scale(1.05)" : "scale(1)",
-                opacity: pulseRing === i ? 1 : 0.3,
-                transition: "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
-              }}
-            />
-          ))}
+        {/* Central portal */}
+        <div className="relative flex items-center justify-center">
+          {/* Concentric rings */}
+          {Array.from({ length: ringCount }).map((_, i) => {
+            const size = 180 + i * 55;
+            const rotation = time * (12 - i * 2) * (i % 2 === 0 ? 1 : -1);
+            const opacity = hovered ? 0.4 - i * 0.05 : 0.15 - i * 0.02;
+            return (
+              <div
+                key={i}
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  border: `1px solid hsl(265 85% 65% / ${Math.max(opacity, 0.03)})`,
+                  transform: `rotate(${rotation}deg) ${phase === "opening" ? `scale(${1.5 + i * 0.3})` : "scale(1)"}`,
+                  opacity: phase === "opening" ? 0 : 1,
+                  transition: `all ${0.8 + i * 0.15}s cubic-bezier(0.77, 0, 0.175, 1)`,
+                }}
+              />
+            );
+          })}
 
-          {/* The iris itself */}
+          {/* Hexagonal portal shape */}
           <button
-            onClick={handlePlay}
+            onClick={handleEnter}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="relative w-60 h-60 rounded-full cursor-pointer group focus:outline-none"
-            style={{ perspective: "600px" }}
+            className="relative w-48 h-48 cursor-pointer group focus:outline-none"
           >
-            {/* Iris SVG aperture */}
             <svg
-              viewBox="0 0 240 240"
-              className="w-full h-full absolute inset-0 transition-transform duration-700"
+              viewBox="0 0 200 200"
+              className="w-full h-full transition-transform duration-700"
               style={{
-                transform: hovered ? "scale(1.05)" : "scale(1)",
+                transform: hovered ? "scale(1.08)" : "scale(1)",
                 filter: hovered
-                  ? "drop-shadow(0 0 30px hsl(200 80% 62% / 0.4))"
-                  : "drop-shadow(0 0 15px hsl(42 78% 58% / 0.2))",
+                  ? "drop-shadow(0 0 40px hsl(265 85% 65% / 0.5))"
+                  : "drop-shadow(0 0 15px hsl(265 85% 65% / 0.15))",
               }}
             >
               <defs>
-                <radialGradient id="iris-glow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="hsl(200, 80%, 62%)" stopOpacity="0.15" />
+                <linearGradient id="portal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="hsl(265, 85%, 65%)" stopOpacity="0.7" />
+                  <stop offset="50%" stopColor="hsl(285, 80%, 55%)" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="hsl(38, 95%, 60%)" stopOpacity="0.7" />
+                </linearGradient>
+                <radialGradient id="portal-center" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="hsl(265, 85%, 75%)" stopOpacity="0.2" />
+                  <stop offset="60%" stopColor="hsl(265, 85%, 45%)" stopOpacity="0.05" />
                   <stop offset="100%" stopColor="transparent" stopOpacity="0" />
                 </radialGradient>
-                <linearGradient id="blade-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(225, 14%, 18%)" />
-                  <stop offset="100%" stopColor="hsl(225, 14%, 12%)" />
-                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
 
-              {/* Background glow circle */}
-              <circle cx="120" cy="120" r="115" fill="url(#iris-glow)" />
+              {/* Inner glow */}
+              <circle cx="100" cy="100" r="85" fill="url(#portal-center)" />
 
-              {/* Outer ring */}
-              <circle
-                cx="120"
-                cy="120"
-                r="110"
+              {/* Hexagon outline */}
+              <polygon
+                points="100,15 175,57.5 175,142.5 100,185 25,142.5 25,57.5"
                 fill="none"
-                stroke="hsl(220, 12%, 20%)"
-                strokeWidth="1.5"
+                stroke="url(#portal-grad)"
+                strokeWidth={hovered ? 2.5 : 1.5}
+                filter="url(#glow)"
+                style={{ transition: "stroke-width 0.4s ease" }}
               />
 
-              {/* Iris blades */}
-              {blades.map((_, i) => {
-                const angle = (360 / bladeCount) * i;
-                const openAngle = irisOpen ? angle + 90 : angle;
-                const openTranslate = irisOpen ? 80 : 0;
-                return (
-                  <g
-                    key={i}
-                    style={{
-                      transformOrigin: "120px 120px",
-                      transform: `rotate(${openAngle}deg) translateY(${openTranslate}px)`,
-                      transition: `all 1.2s cubic-bezier(0.77, 0, 0.175, 1) ${i * 0.05}s`,
-                      opacity: irisOpen ? 0 : 1,
-                    }}
-                  >
-                    <path
-                      d={`M120,120 L${120 + 95 * Math.cos(((angle - 30) * Math.PI) / 180)},${120 + 95 * Math.sin(((angle - 30) * Math.PI) / 180)} A95,95 0 0,1 ${120 + 95 * Math.cos(((angle + 30) * Math.PI) / 180)},${120 + 95 * Math.sin(((angle + 30) * Math.PI) / 180)} Z`}
-                      fill="url(#blade-grad)"
-                      stroke="hsl(220, 12%, 25%)"
-                      strokeWidth="0.5"
-                    />
-                  </g>
-                );
-              })}
+              {/* Inner hexagon */}
+              <polygon
+                points="100,40 155,70 155,130 100,160 45,130 45,70"
+                fill="none"
+                stroke="hsl(265, 85%, 65%)"
+                strokeWidth="0.5"
+                opacity={hovered ? 0.5 : 0.15}
+                style={{ transition: "opacity 0.4s ease" }}
+              />
 
-              {/* Inner circle — the "lens" */}
-              <circle
-                cx="120"
-                cy="120"
-                r={hovered ? 32 : 28}
-                fill="hsl(225, 20%, 7%)"
-                stroke="hsl(200, 80%, 62%)"
-                strokeWidth={hovered ? 2 : 1}
+              {/* Rotating inner triangle */}
+              <g
                 style={{
-                  transition: "all 0.5s ease",
+                  transformOrigin: "100px 100px",
+                  transform: `rotate(${time * 20}deg)`,
+                }}
+              >
+                <polygon
+                  points="100,60 135,120 65,120"
+                  fill="none"
+                  stroke="hsl(38, 95%, 60%)"
+                  strokeWidth="0.8"
+                  opacity={hovered ? 0.6 : 0.2}
+                />
+              </g>
+
+              {/* Center play arrow */}
+              <polygon
+                points="90,80 90,120 120,100"
+                fill={hovered ? "hsl(265, 85%, 75%)" : "hsl(220, 20%, 70%)"}
+                style={{
+                  transition: "fill 0.3s ease",
                   filter: hovered
-                    ? "drop-shadow(0 0 12px hsl(200 80% 62% / 0.6))"
+                    ? "drop-shadow(0 0 12px hsl(265 85% 65% / 0.8))"
                     : "none",
                 }}
               />
 
-              {/* Play triangle inside lens */}
-              <polygon
-                points="113,107 113,133 137,120"
-                fill={hovered ? "hsl(200, 80%, 62%)" : "hsl(42, 78%, 58%)"}
-                style={{
-                  transition: "fill 0.4s ease",
-                  filter: hovered
-                    ? "drop-shadow(0 0 8px hsl(200 80% 62% / 0.8))"
-                    : "drop-shadow(0 0 4px hsl(42 78% 58% / 0.5))",
-                }}
-              />
-
-              {/* Lens markings — like a real camera */}
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-                <line
-                  key={deg}
-                  x1={120 + 38 * Math.cos((deg * Math.PI) / 180)}
-                  y1={120 + 38 * Math.sin((deg * Math.PI) / 180)}
-                  x2={120 + 42 * Math.cos((deg * Math.PI) / 180)}
-                  y2={120 + 42 * Math.sin((deg * Math.PI) / 180)}
-                  stroke="hsl(220, 12%, 35%)"
-                  strokeWidth="1"
+              {/* Corner dots */}
+              {[
+                [100, 15], [175, 57.5], [175, 142.5],
+                [100, 185], [25, 142.5], [25, 57.5],
+              ].map(([cx, cy], i) => (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r={hovered ? 3 : 2}
+                  fill="hsl(265, 85%, 65%)"
+                  opacity={hovered ? 0.8 : 0.3}
+                  style={{ transition: "all 0.4s ease" }}
                 />
               ))}
-
-              {/* Focal length text */}
-              <text
-                x="120"
-                y="158"
-                textAnchor="middle"
-                fill="hsl(220, 10%, 35%)"
-                fontSize="6"
-                fontFamily="JetBrains Mono, monospace"
-                letterSpacing="2"
-              >
-                f/1.4
-              </text>
             </svg>
 
-            {/* Hover breathing glow */}
+            {/* Pulse ring */}
             <div
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-0 rounded-full pointer-events-none"
               style={{
-                background: hovered
-                  ? "radial-gradient(circle, hsl(200 80% 62% / 0.08) 30%, transparent 70%)"
-                  : "none",
-                transition: "background 0.5s ease",
+                border: "1px solid hsl(265 85% 65% / 0.2)",
+                animation: "pulseRing 3s ease-out infinite",
               }}
             />
           </button>
 
-          {/* Label below */}
-          <div className="text-center mt-8 space-y-2">
-            <p
-              className="text-xs tracking-[0.4em] uppercase text-muted-foreground"
-              style={{ fontFamily: "JetBrains Mono, monospace" }}
-            >
-              Open the lens
+          {/* Label */}
+          <div className="absolute -bottom-20 text-center space-y-2">
+            <p className="text-sm font-display tracking-widest text-foreground/70">
+              ENTER THE FORGE
             </p>
-            <p
-              className="text-[10px] tracking-[0.2em] text-muted-foreground/50"
-              style={{ fontFamily: "Outfit, sans-serif" }}
-            >
-              click the aperture to begin
+            <p className="text-[10px] text-muted-foreground tracking-wider">
+              click the portal to begin
             </p>
           </div>
         </div>
 
-        {/* Corner frame marks — cinematic framing */}
-        {["top-8 left-8", "top-8 right-8", "bottom-8 left-8", "bottom-8 right-8"].map(
-          (pos, i) => (
-            <div
-              key={i}
-              className={`absolute ${pos} w-8 h-8`}
-              style={{
-                borderTop: i < 2 ? "1px solid hsl(220 12% 20%)" : "none",
-                borderBottom: i >= 2 ? "1px solid hsl(220 12% 20%)" : "none",
-                borderLeft: i % 2 === 0 ? "1px solid hsl(220 12% 20%)" : "none",
-                borderRight: i % 2 === 1 ? "1px solid hsl(220 12% 20%)" : "none",
-              }}
-            />
-          )
-        )}
-
-        {/* Bottom info bar */}
+        {/* Bottom data strip */}
         <div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[9px] text-muted-foreground/40"
-          style={{ fontFamily: "JetBrains Mono, monospace" }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[9px] text-muted-foreground/30 font-mono"
         >
-          <span>REC ●</span>
-          <span>4K UHD</span>
-          <span>24fps</span>
-          <span>ISO 800</span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+            SYSTEM READY
+          </span>
+          <span>v3.0</span>
+          <span>NEURAL ENGINE</span>
         </div>
       </div>
 
-      {/* Pause FAB */}
+      {/* Exit button */}
       <button
-        onClick={handlePause}
-        className="fixed bottom-6 right-6 z-[99] w-14 h-14 rounded-full flex items-center justify-center border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:scale-110 hover:border-accent/50 active:scale-95 group"
+        onClick={handleExit}
+        className="fixed top-6 right-6 z-[99] w-12 h-12 rounded-2xl flex items-center justify-center border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:scale-110 hover:border-primary/40 hover:neon-glow active:scale-95 group"
         style={{
-          opacity: showContent ? 1 : 0,
-          pointerEvents: showContent ? "auto" : "none",
-          transform: showContent ? "translateY(0)" : "translateY(20px)",
+          opacity: phase === "open" ? 1 : 0,
+          pointerEvents: phase === "open" ? "auto" : "none",
+          transform: phase === "open" ? "translateY(0)" : "translateY(-20px)",
         }}
       >
-        <Pause className="w-4 h-4 text-accent group-hover:text-primary transition-colors" />
-        <span className="absolute -top-8 text-[9px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-          Close lens
-        </span>
+        <X className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
       </button>
 
       {/* Site content */}
       <div
         className="transition-all duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)]"
         style={{
-          opacity: showContent ? 1 : 0,
-          transform: showContent ? "scale(1)" : "scale(0.92)",
-          filter: showContent ? "blur(0px)" : "blur(12px)",
+          opacity: phase === "open" ? 1 : 0,
+          transform: phase === "open" ? "scale(1)" : "scale(0.94)",
+          filter: phase === "open" ? "blur(0px)" : "blur(16px)",
         }}
       >
         {children}

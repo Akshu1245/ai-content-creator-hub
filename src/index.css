@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,60 +6,62 @@
 
 @layer base {
   :root {
-    /* Luxury dark futuristic — obsidian + gold + arctic */
-    --background: 225 20% 7%;
-    --foreground: 220 15% 90%;
+    /* Midnight editorial — deep indigo + electric violet + warm amber */
+    --background: 230 25% 5%;
+    --foreground: 220 20% 92%;
 
-    --card: 225 18% 10%;
-    --card-foreground: 220 15% 90%;
+    --card: 230 22% 8%;
+    --card-foreground: 220 20% 92%;
 
-    --popover: 225 18% 10%;
-    --popover-foreground: 220 15% 90%;
+    --popover: 230 22% 8%;
+    --popover-foreground: 220 20% 92%;
 
-    /* Warm champagne gold primary */
-    --primary: 42 78% 58%;
-    --primary-foreground: 225 20% 7%;
+    /* Electric violet primary */
+    --primary: 265 85% 65%;
+    --primary-foreground: 230 25% 5%;
 
-    --secondary: 225 14% 14%;
-    --secondary-foreground: 220 12% 65%;
+    --secondary: 230 18% 12%;
+    --secondary-foreground: 220 15% 60%;
 
-    --muted: 225 12% 16%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 230 15% 14%;
+    --muted-foreground: 220 12% 45%;
 
-    /* Cool arctic blue accent */
-    --accent: 200 80% 62%;
-    --accent-foreground: 225 20% 7%;
+    /* Warm amber accent */
+    --accent: 38 95% 60%;
+    --accent-foreground: 230 25% 5%;
 
-    --destructive: 0 62% 55%;
-    --destructive-foreground: 220 15% 95%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 220 20% 95%;
 
-    --border: 225 12% 16%;
-    --input: 225 12% 16%;
-    --ring: 42 78% 58%;
+    --border: 230 15% 14%;
+    --input: 230 15% 14%;
+    --ring: 265 85% 65%;
 
     --radius: 0.75rem;
 
     /* Extended palette */
-    --gold: 42 78% 58%;
-    --arctic: 200 80% 62%;
-    --emerald: 160 55% 45%;
-    --rose: 350 60% 58%;
-    --golden: 42 78% 58%;
-    --olive: 160 55% 45%;
+    --gold: 38 95% 60%;
+    --arctic: 195 90% 55%;
+    --emerald: 155 65% 48%;
+    --rose: 345 70% 58%;
+    --golden: 38 95% 60%;
+    --olive: 155 65% 48%;
+    --neon: 265 85% 65%;
+    --cyan: 185 90% 55%;
 
-    --text-primary: 220 15% 90%;
-    --text-secondary: 220 12% 65%;
-    --text-muted: 220 10% 42%;
+    --text-primary: 220 20% 92%;
+    --text-secondary: 220 15% 60%;
+    --text-muted: 220 12% 38%;
 
     /* Sidebar */
-    --sidebar-background: 225 22% 8%;
-    --sidebar-foreground: 220 12% 58%;
-    --sidebar-primary: 42 78% 58%;
-    --sidebar-primary-foreground: 225 20% 7%;
-    --sidebar-accent: 225 14% 12%;
-    --sidebar-accent-foreground: 220 15% 90%;
-    --sidebar-border: 225 12% 14%;
-    --sidebar-ring: 42 78% 58%;
+    --sidebar-background: 230 25% 6%;
+    --sidebar-foreground: 220 15% 55%;
+    --sidebar-primary: 265 85% 65%;
+    --sidebar-primary-foreground: 230 25% 5%;
+    --sidebar-accent: 230 18% 10%;
+    --sidebar-accent-foreground: 220 20% 92%;
+    --sidebar-border: 230 15% 12%;
+    --sidebar-ring: 265 85% 65%;
   }
 }
 
@@ -69,142 +71,146 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-family: 'Syne', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
   .font-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
   }
   .font-display {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-weight: 600;
+    font-family: 'Syne', system-ui, sans-serif;
+    font-weight: 700;
   }
   .font-sans {
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
 @layer utilities {
-  /* Glass surfaces — luxury depth */
+  /* Glass surfaces */
   .surface {
-    background: hsl(225 18% 10% / 0.8);
-    border: 1px solid hsl(225 12% 18%);
+    background: hsl(230 22% 8% / 0.85);
+    border: 1px solid hsl(230 15% 16%);
     border-radius: 16px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
   }
 
   .surface-raised {
-    background: linear-gradient(145deg, hsl(225 18% 11%), hsl(225 20% 9%));
-    border: 1px solid hsl(225 12% 18%);
-    border-radius: 16px;
-    box-shadow: 0 4px 24px hsl(225 30% 4% / 0.5), 0 1px 2px hsl(225 30% 4% / 0.3);
+    background: linear-gradient(145deg, hsl(230 22% 10%), hsl(230 25% 7%));
+    border: 1px solid hsl(230 15% 15%);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px hsl(230 30% 3% / 0.5);
   }
 
   .surface-overlay {
-    background: linear-gradient(145deg, hsl(225 18% 12%), hsl(225 20% 8%));
-    border: 1px solid hsl(42 30% 30% / 0.15);
-    border-radius: 20px;
-    box-shadow: 0 12px 40px hsl(225 30% 3% / 0.6), 0 0 0 1px hsl(42 40% 50% / 0.05);
+    background: linear-gradient(145deg, hsl(230 22% 11%), hsl(230 25% 6%));
+    border: 1px solid hsl(265 40% 30% / 0.2);
+    border-radius: 24px;
+    box-shadow: 0 16px 48px hsl(230 30% 2% / 0.7), 0 0 0 1px hsl(265 50% 50% / 0.05);
   }
 
   .surface-hover {
-    @apply transition-all duration-300;
+    @apply transition-all duration-500;
   }
   .surface-hover:hover {
-    border-color: hsl(42 50% 50% / 0.25);
-    box-shadow: 0 8px 32px hsl(225 30% 3% / 0.6), 0 0 0 1px hsl(42 50% 50% / 0.1);
-    transform: translateY(-2px);
+    border-color: hsl(265 60% 55% / 0.3);
+    box-shadow: 0 12px 40px hsl(230 30% 2% / 0.6), 0 0 40px hsl(265 85% 65% / 0.06);
+    transform: translateY(-4px);
   }
 
-  /* Gold shimmer accent */
+  /* Glow accents */
   .gold-glow {
-    box-shadow: 0 0 20px hsl(42 78% 58% / 0.1), 0 0 60px hsl(42 78% 58% / 0.05);
+    box-shadow: 0 0 25px hsl(38 95% 60% / 0.12), 0 0 80px hsl(38 95% 60% / 0.06);
   }
 
-  /* Buttons — luxury feel */
+  .neon-glow {
+    box-shadow: 0 0 25px hsl(265 85% 65% / 0.15), 0 0 80px hsl(265 85% 65% / 0.08);
+  }
+
+  /* Buttons */
   .btn-primary {
-    background: linear-gradient(135deg, hsl(42 78% 52%), hsl(42 80% 62%));
+    background: linear-gradient(135deg, hsl(265 85% 60%), hsl(265 90% 72%));
     border: none;
-    border-radius: 12px;
-    color: hsl(225 25% 8%);
-    font-family: 'Space Grotesk', sans-serif;
+    border-radius: 14px;
+    color: hsl(0 0% 100%);
+    font-family: 'Syne', sans-serif;
     font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.02em;
-    padding: 12px 28px;
-    box-shadow: 0 2px 12px hsl(42 78% 50% / 0.3), inset 0 1px 0 hsl(42 80% 75% / 0.3);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    padding: 14px 32px;
+    box-shadow: 0 4px 20px hsl(265 85% 55% / 0.4), inset 0 1px 0 hsl(265 80% 80% / 0.2);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
   }
   .btn-primary:hover {
-    box-shadow: 0 4px 20px hsl(42 78% 50% / 0.45), inset 0 1px 0 hsl(42 80% 75% / 0.4);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 32px hsl(265 85% 55% / 0.55), inset 0 1px 0 hsl(265 80% 80% / 0.3);
+    transform: translateY(-3px);
   }
   .btn-primary:active {
     transform: translateY(0);
   }
 
   .btn-danger {
-    background: hsl(0 62% 55%);
+    background: hsl(0 72% 55%);
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     color: hsl(0 0% 100%);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-weight: 700;
-    font-size: 13px;
-    padding: 12px 28px;
+    font-size: 14px;
+    padding: 14px 32px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .btn-danger:hover {
-    background: hsl(0 62% 48%);
+    background: hsl(0 72% 48%);
   }
 
   .btn-ghost {
     background: transparent;
-    border: 1px solid hsl(225 12% 20%);
-    border-radius: 12px;
-    color: hsl(220 12% 65%);
-    font-family: 'Outfit', sans-serif;
+    border: 1px solid hsl(230 15% 18%);
+    border-radius: 14px;
+    color: hsl(220 15% 60%);
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 13px;
-    padding: 12px 28px;
+    font-size: 14px;
+    padding: 14px 32px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-ghost:hover {
-    border-color: hsl(42 50% 50% / 0.4);
-    color: hsl(42 78% 58%);
-    background: hsl(42 78% 58% / 0.05);
+    border-color: hsl(265 60% 55% / 0.5);
+    color: hsl(265 85% 75%);
+    background: hsl(265 85% 65% / 0.06);
   }
 
-  /* Subtle noise overlay */
+  /* Noise overlay */
   .bg-noise {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.03;
+    opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 256px 256px;
   }
 
-  /* Luxury gradient line */
+  /* Gradient line */
   .gradient-strip {
     height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(42 78% 58% / 0.4), transparent);
+    background: linear-gradient(90deg, transparent, hsl(265 85% 65% / 0.4), hsl(38 95% 60% / 0.3), transparent);
   }
 
   /* Status dot */
@@ -223,16 +229,19 @@
   }
   .animate-shimmer {
     background: linear-gradient(90deg,
-      hsl(225 14% 14%) 25%,
-      hsl(225 14% 18%) 50%,
-      hsl(225 14% 14%) 75%);
+      hsl(230 18% 12%) 25%,
+      hsl(230 18% 16%) 50%,
+      hsl(230 18% 12%) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
 
   /* Glow text */
   .text-glow {
-    text-shadow: 0 0 20px hsl(42 78% 58% / 0.3);
+    text-shadow: 0 0 20px hsl(265 85% 65% / 0.4);
+  }
+  .text-glow-amber {
+    text-shadow: 0 0 20px hsl(38 95% 60% / 0.3);
   }
 }
 
@@ -266,10 +275,25 @@
   100% { transform: translateX(200%); }
 }
 
-@keyframes pulseRing {
-  0% { transform: scale(1); opacity: 0.4; }
-  70% { transform: scale(1.6); opacity: 0; }
-  100% { transform: scale(1.6); opacity: 0; }
+@keyframes portalSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes portalPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(15px, -20px); }
+  66% { transform: translate(-10px, 10px); }
+}
+
+@keyframes textReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0% 0 0); }
 }
 
 @keyframes float {
@@ -277,8 +301,14 @@
   50% { transform: translateY(-6px); }
 }
 
-/* Scrollbar — luxury dark */
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 0.4; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: hsl(225 20% 7%); }
-::-webkit-scrollbar-thumb { background: hsl(225 12% 20%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(42 40% 40%); }
+::-webkit-scrollbar-track { background: hsl(230 25% 5%); }
+::-webkit-scrollbar-thumb { background: hsl(230 15% 18%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(265 50% 45%); }
