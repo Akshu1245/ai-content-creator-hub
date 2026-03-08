@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2, Pencil, Youtube } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2, Pencil, Youtube, Merge, Calendar } from "lucide-react";
 import VideoEditor from "@/components/editor/VideoEditor";
+import VideoExporter from "@/components/editor/VideoExporter";
+import AudioVideoMerger from "@/components/editor/AudioVideoMerger";
+import MultiClipTimeline from "@/components/editor/MultiClipTimeline";
 import YouTubeUploader from "@/components/editor/YouTubeUploader";
 import StepNiche from "@/components/wizard/StepNiche";
 import StepTrends from "@/components/wizard/StepTrends";
@@ -12,9 +15,10 @@ import StepCompliance from "@/components/wizard/StepCompliance";
 import StepCaptions from "@/components/wizard/StepCaptions";
 import StepPublish from "@/components/wizard/StepPublish";
 import PipelineProgress from "@/components/dashboard/PipelineProgress";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createProject, updateProject, createScheduledPost } from "@/lib/projects";
 
 const steps = [
   { label: "Niche" },
@@ -50,7 +54,14 @@ const NewProject = () => {
   const [error, setError] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showYouTube, setShowYouTube] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const navigate = useNavigate();
+
+  // Editor state for export
+  const [editorTrim, setEditorTrim] = useState({ start: 0, end: 0 });
+  const [editorOverlays, setEditorOverlays] = useState<any[]>([]);
 
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
@@ -66,9 +77,9 @@ const NewProject = () => {
       case 1: return true;
       case 2: return data.script.length > 50;
       case 3: return data.voice && data.style;
-      case 4: return true; // Media is optional
-      case 5: return true; // Compliance
-      case 6: return true; // Captions
+      case 4: return true;
+      case 5: return true;
+      case 6: return true;
       case 7: return data.platforms.length > 0;
       default: return true;
     }
@@ -78,12 +89,45 @@ const NewProject = () => {
     return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
   }, []);
 
+  // Save project to DB on launch
+  const saveProject = async (status: string, videoUrl?: string | null, audioBase64?: string | null) => {
+    try {
+      if (projectId) {
+        await updateProject(projectId, {
+          title: data.topic || "Untitled Project",
+          niche: data.niche, topic: data.topic, script: data.script,
+          voice: data.voice, style: data.style, status,
+          video_url: videoUrl || undefined, audio_base64: audioBase64 || undefined,
+          trend_data: data.trendData, compliance_score: data.complianceScore,
+          platforms: data.platforms,
+        } as any);
+      } else {
+        const project = await createProject({
+          title: data.topic || "Untitled Project",
+          niche: data.niche, topic: data.topic, script: data.script,
+          voice: data.voice, style: data.style, status,
+          video_url: videoUrl || undefined, audio_base64: audioBase64 || undefined,
+          trend_data: data.trendData, compliance_score: data.complianceScore,
+          platforms: data.platforms,
+        } as any);
+        setProjectId(project.id);
+        return project.id;
+      }
+      return projectId;
+    } catch (e: any) {
+      console.error("Save project error:", e);
+    }
+  };
+
   const handleLaunch = async () => {
     setLaunched(true);
     setGenerationPhase('voiceover');
     setPipelineStep(0);
     setProgress(10);
     setError(null);
+
+    // Save as generating
+    const pid = await saveProject('generating');
 
     try {
       toast.info('Generating voiceover with Sarvam AI...');
@@ -118,33 +162,30 @@ const NewProject = () => {
       if (!createData?.task_id) throw new Error('No task ID returned from video API');
 
       const taskId = createData.task_id;
-      setPipelineStep(3);
-      setProgress(60);
 
-      await new Promise<void>((resolve, reject) => {
+      const finalVideoUrl: string = await new Promise((resolve, reject) => {
         let attempts = 0;
         const maxAttempts = 60;
-
         pollingRef.current = setInterval(async () => {
           attempts++;
           if (attempts > maxAttempts) {
             if (pollingRef.current) clearInterval(pollingRef.current);
-            reject(new Error('Video generation timed out after 5 minutes'));
+            reject(new Error('Video generation timed out (5 min). Try again.'));
             return;
           }
+
+          setProgress(50 + Math.min(45, (attempts / maxAttempts) * 45));
 
           try {
             const { data: queryData, error: queryError } = await supabase.functions.invoke('generate-video', {
               body: { action: 'query', task_id: taskId },
             });
 
-            if (queryError) throw queryError;
-            setProgress(60 + Math.min(attempts * 0.5, 30));
+            if (queryError) return;
 
-            if (queryData?.status === 'succeed' && queryData?.video_url) {
+            if (queryData?.status === 'completed' && queryData?.video_url) {
               if (pollingRef.current) clearInterval(pollingRef.current);
-              setVideoUrl(queryData.video_url);
-              resolve();
+              resolve(queryData.video_url);
             } else if (queryData?.status === 'failed') {
               if (pollingRef.current) clearInterval(pollingRef.current);
               reject(new Error('Video generation failed on Kling AI side'));
@@ -155,15 +196,32 @@ const NewProject = () => {
         }, 5000);
       });
 
+      setVideoUrl(finalVideoUrl);
       setGenerationPhase('complete');
       setProgress(100);
       setPipelineStep(5);
       toast.success('Video is ready!');
+
+      // Save completed state
+      await saveProject('complete', finalVideoUrl, voiceData.audio_base64);
+
+      // Create scheduled posts if scheduled
+      if (data.scheduledAt && pid) {
+        for (const platform of data.platforms) {
+          await createScheduledPost({
+            project_id: pid,
+            platform,
+            scheduled_at: data.scheduledAt,
+          });
+        }
+        toast.success(`Scheduled for ${data.platforms.join(', ')}`);
+      }
     } catch (err) {
       console.error('Generation error:', err);
       const msg = err instanceof Error ? err.message : 'Unknown error';
       setError(msg);
       toast.error(msg);
+      await saveProject('failed');
     }
   };
 
@@ -186,13 +244,17 @@ const NewProject = () => {
     setAudioBase64(null);
     setError(null);
     setCurrentStep(0);
+    setProjectId(null);
+    setShowEditor(false);
+    setShowYouTube(false);
+    setShowTimeline(false);
     setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "" });
   };
 
   if (launched) {
     return (
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {generationPhase !== 'complete' && !error ? (
             <>
               <div className="mb-8">
@@ -246,10 +308,22 @@ const NewProject = () => {
                     script={data.script}
                     onBack={() => setShowEditor(false)}
                     onExport={(edits) => {
-                      toast.success(`Exported with ${edits.overlays.length} overlays, trimmed to ${(edits.trim.end - edits.trim.start).toFixed(1)}s`);
-                      setShowEditor(false);
+                      setEditorTrim(edits.trim);
+                      setEditorOverlays(edits.overlays);
+                      toast.success(`Settings saved — ${edits.overlays.length} overlays, trimmed to ${(edits.trim.end - edits.trim.start).toFixed(1)}s`);
                     }}
                   />
+                  {/* Real export button */}
+                  {editorOverlays.length > 0 && (
+                    <div className="flex gap-3">
+                      <VideoExporter
+                        videoUrl={videoUrl}
+                        audioBase64={audioBase64}
+                        trim={editorTrim}
+                        overlays={editorOverlays}
+                      />
+                    </div>
+                  )}
                 </>
               ) : showYouTube && videoUrl ? (
                 <>
@@ -266,6 +340,18 @@ const NewProject = () => {
                     description={`${data.topic} | ${data.niche}`}
                     tags={[data.niche, data.topic, data.style].filter(Boolean)}
                   />
+                </>
+              ) : showTimeline && videoUrl ? (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-label text-accent block mb-2">MULTI-CLIP</span>
+                      <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Multi-Clip Timeline</h1>
+                      <p className="text-xs text-muted-foreground">Arrange and combine clips into a sequence</p>
+                    </div>
+                    <button onClick={() => setShowTimeline(false)} className="btn-ghost text-[10px]">← Back</button>
+                  </div>
+                  <MultiClipTimeline generatedVideoUrl={videoUrl} />
                 </>
               ) : (
                 <>
@@ -297,10 +383,16 @@ const NewProject = () => {
                             <button onClick={() => setShowEditor(true)} className="btn-ghost flex items-center gap-2 text-xs">
                               <Pencil className="w-3.5 h-3.5" /> Edit Video
                             </button>
+                            <button onClick={() => setShowTimeline(true)} className="btn-ghost flex items-center gap-2 text-xs">
+                              <Calendar className="w-3.5 h-3.5" /> Multi-Clip
+                            </button>
                             <button onClick={() => setShowYouTube(true)} className="btn-ghost flex items-center gap-2 text-xs">
                               <Youtube className="w-3.5 h-3.5" /> Upload to YouTube
                             </button>
                           </>
+                        )}
+                        {videoUrl && audioBase64 && (
+                          <AudioVideoMerger videoUrl={videoUrl} audioBase64={audioBase64} />
                         )}
                         {audioBase64 && (
                           <button onClick={handleDownloadAudio} className="btn-ghost flex items-center gap-2 text-xs">
