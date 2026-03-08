@@ -1,5 +1,6 @@
 import { WizardData } from "@/pages/NewProject";
 import { Clock, Check } from "lucide-react";
+import AffiliatePanel from "@/components/differentiators/AffiliatePanel";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
@@ -21,7 +22,7 @@ const StepPublish = ({ data, updateData }: Props) => {
       <div>
         <span className="text-[10px] font-label text-primary block mb-2">STEP 6 OF 6</span>
         <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Schedule & Publish</h2>
-        <p className="text-xs text-muted-foreground">Choose platforms and set your upload time</p>
+        <p className="text-xs text-muted-foreground">Choose platforms, set upload time, and maximize revenue</p>
       </div>
 
       {/* Platforms */}
@@ -66,6 +67,18 @@ const StepPublish = ({ data, updateData }: Props) => {
         />
         <p className="text-[10px] text-muted-foreground mt-2">Leave empty to publish immediately after generation</p>
       </div>
+
+      {/* Affiliate Link Auto-Suggester */}
+      {data.niche && data.topic && (
+        <AffiliatePanel
+          niche={data.niche}
+          topic={data.topic}
+          script={data.script}
+          onDescriptionGenerated={(desc) => {
+            // Could store in wizard data
+          }}
+        />
+      )}
 
       {/* Summary */}
       <div className="surface-raised p-6">

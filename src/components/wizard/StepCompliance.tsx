@@ -4,6 +4,7 @@ import { Shield, Loader2, Sparkles, AlertTriangle, CheckCircle, ChevronDown, Che
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
+import CopyrightRiskCard from "@/components/differentiators/CopyrightRiskCard";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
@@ -78,8 +79,8 @@ const StepCompliance = ({ data, updateData }: Props) => {
       <div className="flex items-start justify-between gap-4">
         <div>
           <span className="text-[10px] font-label text-primary block mb-2">STEP 5 OF 6</span>
-          <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Compliance Review</h2>
-          <p className="text-xs text-muted-foreground">Monetization safety analysis</p>
+          <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Compliance & Safety Review</h2>
+          <p className="text-xs text-muted-foreground">Monetization safety + copyright risk analysis</p>
         </div>
         <button onClick={runCheck} disabled={loading || !data.script} className="btn-primary flex items-center gap-2 text-xs disabled:opacity-30 shrink-0">
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Shield className="w-3.5 h-3.5" />}
@@ -179,6 +180,18 @@ const StepCompliance = ({ data, updateData }: Props) => {
           )}
         </div>
       )}
+
+      {/* Copyright Risk Pre-Scanner — always visible */}
+      <div className="pt-2">
+        <CopyrightRiskCard
+          script={data.script}
+          topic={data.topic}
+          niche={data.niche}
+          onReport={(report) => {
+            updateData({ copyrightReport: report } as any);
+          }}
+        />
+      </div>
     </div>
   );
 };
