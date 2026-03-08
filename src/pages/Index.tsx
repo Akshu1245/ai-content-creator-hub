@@ -21,8 +21,8 @@ const pricingPlans = [
 
 const Index = () => {
   return (
+    <VideoPlayerGate>
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="bg-noise" />
 
       {/* Ambient glow orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
