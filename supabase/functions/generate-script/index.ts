@@ -10,21 +10,10 @@ serve(async (req) => {
 
   try {
     const { niche, topic } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert YouTube scriptwriter specializing in faceless content. Your scripts are optimized for:
+    const systemPrompt = `You are an expert YouTube scriptwriter specializing in faceless content. Your scripts are optimized for:
 - 70%+ audience retention (hook in first 3 seconds)
 - Pattern interrupts every 30 seconds
 - Clear value delivery (no filler)
@@ -38,25 +27,34 @@ Output a complete video script with these sections marked:
 [CTA - 80% Mark]
 [OUTRO]
 
-Each section should have clear narration text. Write 600-900 words total for a 4-6 minute video. Make it engaging, specific, and packed with value. No filler.`
+Each section should have clear narration text. Write 600-900 words total for a 4-6 minute video. Make it engaging, specific, and packed with value. No filler.`;
+
+    const userPrompt = `Write a faceless YouTube video script about "${topic}" in the ${niche} niche. Make it highly engaging with specific facts, data points, and a compelling narrative arc.`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            { role: "user", parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
+          ],
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 2048,
           },
-          {
-            role: "user",
-            content: `Write a faceless YouTube video script about "${topic}" in the ${niche} niche. Make it highly engaging with specific facts, data points, and a compelling narrative arc.`
-          }
-        ],
-      }),
-    });
+        }),
+      }
+    );
 
     if (!response.ok) {
-      const status = response.status;
-      if (status === 429) return new Response(JSON.stringify({ error: "Rate limited, try again shortly" }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (status === 402) return new Response(JSON.stringify({ error: "Credits exhausted" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      throw new Error(`AI gateway error: ${status}`);
+      const errorBody = await response.text();
+      throw new Error(`Gemini API error [${response.status}]: ${errorBody}`);
     }
 
     const data = await response.json();
-    const script = data.choices?.[0]?.message?.content || "";
+    const script = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     return new Response(JSON.stringify({ script }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
