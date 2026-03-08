@@ -101,8 +101,10 @@ const Dashboard = () => {
             </div>
 
             {isLoading ? (
-              <div className="surface-raised p-8 flex items-center justify-center">
-                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <SkeletonRow key={i} />
+                ))}
               </div>
             ) : projects.length === 0 ? (
               <div className="surface-raised p-8 text-center">
