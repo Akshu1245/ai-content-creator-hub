@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 const Settings = () => {
   const { user } = useAuth();
+  usePageTitle("Settings");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);

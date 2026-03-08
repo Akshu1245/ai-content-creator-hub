@@ -43,8 +43,10 @@ const Index = () => {
         <FeaturesSection />
         <TestimonialsSection />
         <PricingSection />
+        <FAQSection />
         <CTASection />
         <Footer />
+        <ScrollToTop />
       </div>
     </VideoPlayerGate>
   );

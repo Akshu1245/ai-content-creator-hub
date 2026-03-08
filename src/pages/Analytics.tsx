@@ -77,6 +77,7 @@ const chartConfig = {
 };
 
 const Analytics = () => {
+  usePageTitle("Analytics");
   const [range, setRange] = useState<TimeRange>("30d");
   const viewsData = useMemo(() => generateViewsData(range), [range]);
 

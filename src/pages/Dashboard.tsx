@@ -22,6 +22,7 @@ const getStatusStyle = (status: string) => {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  usePageTitle("Dashboard");
   const queryClient = useQueryClient();
 
   const { data: projects = [], isLoading } = useQuery({

@@ -8,6 +8,7 @@ import { Loader2, ArrowRight, Eye, EyeOff, ArrowLeft } from "lucide-react";
 type AuthMode = "login" | "signup" | "forgot";
 
 const Auth = () => {
+  usePageTitle("Sign In");
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
