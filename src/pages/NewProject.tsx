@@ -263,7 +263,7 @@ const NewProject = () => {
                 <span className="text-[10px] font-label text-primary block mb-2">GENERATING</span>
                 <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Creating Your Video</h1>
                 <p className="text-xs text-muted-foreground">
-                  {generationPhase === 'voiceover' ? 'Sarvam AI is synthesizing your voiceover...' : 'Kling AI is rendering your video — this may take a few minutes.'}
+                  {generationPhase === 'voiceover' ? 'Sarvam AI is synthesizing your voiceover...' : 'Rendering your video — this may take a few minutes.'}
                 </p>
               </div>
               <PipelineProgress activeStep={pipelineStep} progress={progress} />
