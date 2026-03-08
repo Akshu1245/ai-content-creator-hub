@@ -26,10 +26,20 @@ const getStatusStyle = (status: string) => {
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, checkSubscription } = useAuth();
   usePageTitle("Dashboard");
   const queryClient = useQueryClient();
   const welcomeShown = useRef(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle checkout success redirect
+  useEffect(() => {
+    if (searchParams.get("checkout") === "success") {
+      toast.success("Subscription activated! 🎉");
+      checkSubscription();
+      setSearchParams({});
+    }
+  }, [searchParams, checkSubscription, setSearchParams]);
 
   // Welcome toast on first visit
   useEffect(() => {
