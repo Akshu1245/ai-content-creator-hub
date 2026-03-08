@@ -166,7 +166,7 @@ const StepMedia = ({ data, updateData }: Props) => {
                 const id = `video-${v.id}`;
                 const isSelected = selectedMedia.includes(id);
                 return (
-                  <div key={v.id} onClick={() => toggleSelect(id)}
+                  <div key={v.id} onClick={() => toggleSelect(id, v.videoFiles?.[0]?.link || v.image || "")}
                     className={`relative rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${isSelected ? "border-primary shadow-lg shadow-primary/10" : "border-transparent hover:border-primary/20"}`}>
                     <img src={v.image || ""} alt="" className="w-full aspect-video object-cover" loading="lazy" />
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 flex justify-between items-end">
