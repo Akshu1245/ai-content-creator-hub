@@ -243,6 +243,7 @@ const NewProject = () => {
                   <VideoEditor
                     videoUrl={videoUrl}
                     audioBase64={audioBase64}
+                    script={data.script}
                     onBack={() => setShowEditor(false)}
                     onExport={(edits) => {
                       toast.success(`Exported with ${edits.overlays.length} overlays, trimmed to ${(edits.trim.end - edits.trim.start).toFixed(1)}s`);
