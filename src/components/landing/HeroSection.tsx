@@ -10,9 +10,9 @@ const HeroSection = () => {
 
   return (
     <section className="relative pt-36 pb-28 px-6 z-10 overflow-hidden">
-      {/* Abstract grid */}
+      {/* Abstract grid — warm */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{
-        backgroundImage: `linear-gradient(hsl(265 85% 65% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(265 85% 65% / 0.4) 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(hsl(12 76% 56% / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(12 76% 56% / 0.3) 1px, transparent 1px)`,
         backgroundSize: "80px 80px",
       }} />
 
@@ -64,8 +64,8 @@ const HeroSection = () => {
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
               {["No credit card", "2 free videos/mo", "Policy safe"].map((text) => (
                 <span key={text} className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-emerald/15 flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-emerald" />
+                  <div className="w-4 h-4 rounded-full bg-accent/15 flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-accent" />
                   </div>
                   {text}
                 </span>
@@ -82,13 +82,13 @@ const HeroSection = () => {
             <div className="relative">
               {/* Glow behind card */}
               <div className="absolute -inset-8 rounded-3xl blur-3xl opacity-40" style={{
-                background: "radial-gradient(ellipse at center, hsl(265 85% 65% / 0.15), hsl(38 95% 60% / 0.08), transparent 70%)",
+                background: "radial-gradient(ellipse at center, hsl(12 76% 56% / 0.12), hsl(158 32% 45% / 0.06), transparent 70%)",
               }} />
 
               {/* Status bar */}
               <div className="relative z-10 flex items-center justify-between px-5 py-2 rounded-t-2xl border border-b-0 border-border/60 bg-card">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                   <span className="text-[9px] font-mono text-muted-foreground tracking-widest">LIVE SCAN</span>
                 </div>
                 <span className="text-[9px] font-mono text-muted-foreground/40">COMPLIANCE v3.0</span>
@@ -101,9 +101,9 @@ const HeroSection = () => {
                   </div>
                   <div className="space-y-3">
                     {[
-                      { label: "Originality", score: 92, color: "from-primary to-primary/50" },
-                      { label: "Monetization", score: 96, color: "from-emerald to-emerald/50" },
-                      { label: "Value Score", score: 88, color: "from-accent to-accent/50" },
+                      { label: "Originality", score: 92, color: "from-primary to-clay" },
+                      { label: "Monetization", score: 96, color: "from-accent to-olive" },
+                      { label: "Value Score", score: 88, color: "from-gold to-ochre" },
                     ].map((s) => (
                       <div key={s.label}>
                         <div className="flex items-center justify-between mb-1.5">
@@ -119,7 +119,7 @@ const HeroSection = () => {
                       </div>
                     ))}
                     <div className="pt-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-label bg-emerald/10 text-emerald border border-emerald/20">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-label bg-accent/10 text-accent border border-accent/20">
                         <Check className="w-3 h-3" /> SAFE TO MONETIZE
                       </span>
                     </div>

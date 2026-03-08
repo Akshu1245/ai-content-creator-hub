@@ -1,10 +1,10 @@
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 
 const stats = [
-  { label: "Videos Created", value: 12400, suffix: "+", gradient: "from-primary to-primary/50" },
-  { label: "Avg Retention", value: 72, suffix: "%", gradient: "from-accent to-accent/50" },
-  { label: "Compliance Checks", value: 48000, suffix: "+", gradient: "from-emerald to-emerald/50" },
-  { label: "Active Creators", value: 3200, suffix: "+", gradient: "from-arctic to-arctic/50" },
+  { label: "Videos Created", value: 12400, suffix: "+", gradient: "from-primary to-clay" },
+  { label: "Avg Retention", value: 72, suffix: "%", gradient: "from-gold to-ochre" },
+  { label: "Compliance Checks", value: 48000, suffix: "+", gradient: "from-accent to-olive" },
+  { label: "Active Creators", value: 3200, suffix: "+", gradient: "from-arctic to-sage" },
 ];
 
 const StatsSection = () => {

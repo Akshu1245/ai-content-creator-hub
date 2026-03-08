@@ -7,7 +7,7 @@ const CTASection = () => {
       <div className="container mx-auto max-w-2xl text-center">
         <div className="relative">
           <div className="absolute -inset-12 rounded-3xl blur-3xl opacity-30 pointer-events-none" style={{
-            background: "radial-gradient(ellipse at center, hsl(265 85% 65% / 0.15), hsl(38 95% 60% / 0.08), transparent 70%)",
+            background: "radial-gradient(ellipse at center, hsl(12 76% 56% / 0.12), hsl(158 32% 45% / 0.06), transparent 70%)",
           }} />
 
           <div className="surface-overlay p-16 relative">
