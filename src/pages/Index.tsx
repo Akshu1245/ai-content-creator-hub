@@ -25,8 +25,9 @@ const Index = () => {
 
       {/* Ambient glow orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-primary/[0.03] blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-accent/[0.03] blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full blur-[120px]" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.06), transparent 70%)" }} />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[120px]" style={{ background: "radial-gradient(circle, rgba(123,47,247,0.06), transparent 70%)" }} />
+        <div className="absolute top-[30%] right-[20%] w-[400px] h-[400px] rounded-full blur-[100px]" style={{ background: "radial-gradient(circle, rgba(248,87,166,0.04), transparent 70%)" }} />
       </div>
 
       {/* Nav */}
@@ -58,18 +59,19 @@ const Index = () => {
       <section className="relative pt-32 pb-20 px-6 z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-label mb-8 animate-fade-in bg-primary/10 text-primary border border-primary/20">
-              <Sparkles className="w-3 h-3" />
-              POWERED BY AI · NOW IN BETA
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-label mb-8 animate-fade-in border border-accent/30"
+              style={{ background: "linear-gradient(135deg, hsl(200 80% 62% / 0.12), hsl(270 70% 60% / 0.08))" }}>
+              <Sparkles className="w-3 h-3 text-accent" />
+              <span className="bg-gradient-to-r from-accent to-[#7b2ff7] bg-clip-text text-transparent font-bold tracking-widest">
+                POWERED BY AI · NOW IN BETA
+              </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl leading-[1.05] font-display font-bold mb-6 animate-slide-up tracking-tight">
-              <span className="text-foreground">Faceless videos</span>
+              <span className="bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">Faceless videos</span>
               <br />
-              <span className="text-foreground">that actually get </span>
-              <span className="text-primary text-glow">
-                <WordCycler words={["monetized", "compliant", "views", "results"]} interval={2500} />
-              </span>
+              <span className="bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">that actually get </span>
+              <WordCycler words={["monetized", "compliant", "views", "results"]} interval={2500} />
             </h1>
 
             <p className="text-base md:text-lg max-w-xl mx-auto mb-10 text-muted-foreground leading-relaxed animate-slide-up" style={{ animationDelay: "0.1s" }}>
