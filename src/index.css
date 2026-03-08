@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,57 +6,59 @@
 
 @layer base {
   :root {
-    /* Warm charcoal background system */
-    --background: 40 4% 7%;
-    --foreground: 36 20% 90%;
+    /* Warm cream editorial palette */
+    --background: 45 20% 97%;
+    --foreground: 20 14% 12%;
 
-    --card: 40 4% 9%;
-    --card-foreground: 36 20% 90%;
+    --card: 40 25% 95%;
+    --card-foreground: 20 14% 12%;
 
-    --popover: 40 4% 9%;
-    --popover-foreground: 36 20% 90%;
+    --popover: 40 25% 95%;
+    --popover-foreground: 20 14% 12%;
 
-    --primary: 28 72% 55%;
-    --primary-foreground: 40 4% 7%;
+    /* Deep teal primary */
+    --primary: 174 72% 22%;
+    --primary-foreground: 45 20% 97%;
 
-    --secondary: 40 4% 13%;
-    --secondary-foreground: 36 10% 60%;
+    --secondary: 40 15% 91%;
+    --secondary-foreground: 20 10% 40%;
 
-    --muted: 40 3% 16%;
-    --muted-foreground: 36 6% 42%;
+    --muted: 40 12% 88%;
+    --muted-foreground: 20 8% 52%;
 
-    --accent: 100 22% 52%;
-    --accent-foreground: 40 4% 7%;
+    /* Terracotta accent */
+    --accent: 14 60% 52%;
+    --accent-foreground: 45 20% 97%;
 
-    --destructive: 0 40% 52%;
-    --destructive-foreground: 36 20% 90%;
+    --destructive: 0 65% 48%;
+    --destructive-foreground: 45 20% 97%;
 
-    --border: 40 5% 18%;
-    --input: 40 5% 18%;
-    --ring: 28 72% 55%;
+    --border: 30 12% 85%;
+    --input: 30 12% 85%;
+    --ring: 174 72% 22%;
 
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
     /* Extended palette */
-    --warm-orange: 28 72% 55%;
-    --sage: 100 22% 52%;
-    --dusty-rose: 0 40% 52%;
-    --golden: 42 55% 55%;
-    --slate: 36 6% 42%;
+    --teal: 174 72% 22%;
+    --terracotta: 14 60% 52%;
+    --olive: 120 18% 42%;
+    --golden: 40 70% 52%;
+    --ink: 20 14% 12%;
 
-    --text-primary: 36 20% 90%;
-    --text-secondary: 36 8% 58%;
-    --text-muted: 36 5% 38%;
+    --text-primary: 20 14% 12%;
+    --text-secondary: 20 8% 40%;
+    --text-muted: 20 6% 58%;
 
-    /* Sidebar */
-    --sidebar-background: 40 5% 6%;
-    --sidebar-foreground: 36 8% 58%;
-    --sidebar-primary: 28 72% 55%;
-    --sidebar-primary-foreground: 40 4% 7%;
-    --sidebar-accent: 40 4% 11%;
-    --sidebar-accent-foreground: 36 20% 90%;
-    --sidebar-border: 40 5% 14%;
-    --sidebar-ring: 28 72% 55%;
+    /* Sidebar — slightly darker cream */
+    --sidebar-background: 40 18% 94%;
+    --sidebar-foreground: 20 8% 40%;
+    --sidebar-primary: 174 72% 22%;
+    --sidebar-primary-foreground: 45 20% 97%;
+    --sidebar-accent: 40 15% 89%;
+    --sidebar-accent-foreground: 20 14% 12%;
+    --sidebar-border: 30 12% 85%;
+    --sidebar-ring: 174 72% 22%;
   }
 }
 
@@ -66,83 +68,85 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'DM Serif Display', Georgia, serif;
+    letter-spacing: -0.01em;
   }
   code, pre, .font-mono {
     font-family: 'IBM Plex Mono', monospace;
   }
   .font-label {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 11px;
-    letter-spacing: 0.04em;
+    font-weight: 600;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+  }
+  .font-display {
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+  .font-sans {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 }
 
 @layer utilities {
-  /* Card system — clean solid surfaces, not glass */
+  /* Card system — warm paper-like surfaces */
   .surface {
-    background: hsl(40 4% 9%);
-    border: 1px solid hsl(40 5% 16%);
-    border-radius: 12px;
+    background: hsl(40 25% 95%);
+    border: 1px solid hsl(30 12% 85%);
+    border-radius: 10px;
   }
 
   .surface-raised {
-    background: hsl(40 4% 11%);
-    border: 1px solid hsl(40 5% 18%);
-    border-radius: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    background: hsl(0 0% 100%);
+    border: 1px solid hsl(30 15% 88%);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px hsl(30 10% 70% / 0.12), 0 4px 12px hsl(30 10% 70% / 0.06);
   }
 
   .surface-overlay {
-    background: hsl(40 4% 10%);
-    border: 1px solid hsl(40 5% 20%);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    background: hsl(0 0% 100%);
+    border: 1px solid hsl(30 15% 85%);
+    border-radius: 14px;
+    box-shadow: 0 8px 30px hsl(30 10% 50% / 0.12);
   }
 
   .surface-hover {
     @apply transition-all duration-200;
   }
   .surface-hover:hover {
-    border-color: hsl(40 5% 24%);
-    background: hsl(40 4% 11%);
+    border-color: hsl(174 40% 60%);
+    box-shadow: 0 2px 8px hsl(174 40% 40% / 0.08);
   }
-
-  /* Keep glass for backwards compat but map to surface */
-  .glass { @apply surface; }
-  .glass-elevated { @apply surface-raised; }
-  .glass-modal { @apply surface-overlay; }
-  .glass-hover { @apply surface-hover; }
 
   /* Accent text */
-  .text-accent-orange {
-    color: hsl(28 72% 55%);
+  .text-accent-teal {
+    color: hsl(174 72% 22%);
   }
-  .text-accent-sage {
-    color: hsl(100 22% 52%);
+  .text-accent-terracotta {
+    color: hsl(14 60% 52%);
   }
 
-  /* Buttons */
+  /* Buttons — editorial feel */
   .btn-primary {
-    background: hsl(28 72% 55%);
+    background: hsl(174 72% 22%);
     border: none;
     border-radius: 8px;
-    color: hsl(40 4% 7%);
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
+    color: hsl(45 20% 97%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
     font-size: 14px;
-    padding: 10px 22px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    transition: all 0.15s ease;
+    padding: 10px 24px;
+    box-shadow: 0 1px 3px hsl(174 40% 20% / 0.2);
+    transition: all 0.2s ease;
     cursor: pointer;
   }
   .btn-primary:hover {
-    background: hsl(28 72% 60%);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    background: hsl(174 72% 28%);
+    box-shadow: 0 3px 12px hsl(174 40% 20% / 0.25);
     transform: translateY(-1px);
   }
   .btn-primary:active {
@@ -150,55 +154,56 @@
   }
 
   .btn-danger {
-    background: hsl(0 40% 52%);
+    background: hsl(0 65% 48%);
     border: none;
     border-radius: 8px;
-    color: hsl(36 20% 90%);
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
+    color: hsl(45 20% 97%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
     font-size: 14px;
-    padding: 10px 22px;
+    padding: 10px 24px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
   }
   .btn-danger:hover {
-    background: hsl(0 40% 58%);
+    background: hsl(0 65% 42%);
   }
 
   .btn-ghost {
     background: transparent;
-    border: 1px solid hsl(40 5% 20%);
+    border: 1.5px solid hsl(30 12% 80%);
     border-radius: 8px;
-    color: hsl(36 8% 58%);
-    font-family: 'Space Grotesk', sans-serif;
+    color: hsl(20 8% 40%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 600;
     font-size: 14px;
-    padding: 10px 22px;
+    padding: 10px 24px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
   }
   .btn-ghost:hover {
-    border-color: hsl(40 5% 28%);
-    color: hsl(36 20% 90%);
+    border-color: hsl(174 40% 40%);
+    color: hsl(174 72% 22%);
+    background: hsl(174 40% 96%);
   }
 
-  /* Subtle background texture */
+  /* Warm grain texture */
   .bg-noise {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.03;
+    opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 256px 256px;
   }
 
-  /* Warm gradient strip */
+  /* Gradient strip — editorial accent line */
   .gradient-strip {
-    height: 2px;
-    background: linear-gradient(90deg, hsl(28 72% 55%), hsl(100 22% 52%), hsl(42 55% 55%));
-    border-radius: 1px;
+    height: 3px;
+    background: linear-gradient(90deg, hsl(174 72% 22%), hsl(14 60% 52%), hsl(40 70% 52%));
+    border-radius: 2px;
   }
 
   /* Animations */
@@ -211,24 +216,24 @@
 
   /* Status dot */
   .status-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
   }
 
   /* Shimmer loading */
   .animate-shimmer {
     background: linear-gradient(90deg,
-      hsl(40 4% 12%) 25%,
-      hsl(40 4% 16%) 50%,
-      hsl(40 4% 12%) 75%);
+      hsl(40 15% 91%) 25%,
+      hsl(40 20% 95%) 50%,
+      hsl(40 15% 91%) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(16px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -253,8 +258,8 @@
   100% { transform: scale(1.5); opacity: 0; }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: hsl(40 4% 7%); }
-::-webkit-scrollbar-thumb { background: hsl(40 5% 22%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(40 5% 30%); }
+/* Custom scrollbar — subtle */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: hsl(40 15% 94%); }
+::-webkit-scrollbar-thumb { background: hsl(30 10% 78%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(30 10% 65%); }

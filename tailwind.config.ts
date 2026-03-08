@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Space Grotesk", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["DM Serif Display", "Georgia", "serif"],
+        sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
         mono: ["IBM Plex Mono", "monospace"],
       },
       colors: {
@@ -60,11 +60,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        orange: "hsl(var(--warm-orange))",
-        sage: "hsl(var(--sage))",
-        rose: "hsl(var(--dusty-rose))",
+        teal: "hsl(var(--teal))",
+        terracotta: "hsl(var(--terracotta))",
+        olive: "hsl(var(--olive))",
         golden: "hsl(var(--golden))",
-        slate: "hsl(var(--slate))",
+        ink: "hsl(var(--ink))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -81,7 +81,7 @@ export default {
           to: { height: "0" },
         },
         "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "scale-in": {
