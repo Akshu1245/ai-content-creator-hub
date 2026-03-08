@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2 } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import EmptyState from "@/components/shared/EmptyState";
@@ -9,6 +9,7 @@ import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCen
 import OnboardingTips from "@/components/dashboard/OnboardingTips";
 import WhatsNewModal from "@/components/dashboard/WhatsNewModal";
 import { useAuth } from "@/contexts/AuthContext";
+
 import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,10 +26,20 @@ const getStatusStyle = (status: string) => {
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, checkSubscription } = useAuth();
   usePageTitle("Dashboard");
   const queryClient = useQueryClient();
   const welcomeShown = useRef(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle checkout success redirect
+  useEffect(() => {
+    if (searchParams.get("checkout") === "success") {
+      toast.success("Subscription activated! 🎉");
+      checkSubscription();
+      setSearchParams({});
+    }
+  }, [searchParams, checkSubscription, setSearchParams]);
 
   // Welcome toast on first visit
   useEffect(() => {

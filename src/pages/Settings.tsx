@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink, Check, Crown } from "lucide-react";
+import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
 import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -13,17 +13,32 @@ interface NotificationPrefs {
 }
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, subscription, checkSubscription } = useAuth();
   usePageTitle("Settings");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
   const [notifPrefs, setNotifPrefs] = useState<NotificationPrefs>({
     videoComplete: true,
     complianceWarnings: true,
     weeklySummary: false,
   });
   const [savingNotifs, setSavingNotifs] = useState(false);
+
+  // Check for checkout result in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "success") {
+      toast.success("Subscription activated! 🎉");
+      checkSubscription();
+      window.history.replaceState({}, "", "/settings");
+    } else if (params.get("checkout") === "cancelled") {
+      toast.info("Checkout cancelled");
+      window.history.replaceState({}, "", "/settings");
+    }
+  }, [checkSubscription]);
 
   useEffect(() => {
     if (user) {
@@ -32,7 +47,6 @@ const Settings = () => {
         if (data) {
           setDisplayName((data as any).display_name || "");
           setBio((data as any).bio || "");
-          // Load notification preferences
           const prefs = (data as any).preferences;
           if (prefs?.notifications) {
             setNotifPrefs({
@@ -69,23 +83,19 @@ const Settings = () => {
     setNotifPrefs(updated);
     setSavingNotifs(true);
     try {
-      // Get current preferences
       const { data: profile } = await supabase
         .from("profiles")
         .select("preferences")
         .eq("id", user.id)
         .maybeSingle();
-      
       const currentPrefs = (profile as any)?.preferences || {};
       const newPrefs = { ...currentPrefs, notifications: updated };
-      
       const { error } = await supabase
         .from("profiles")
         .update({ preferences: newPrefs } as any)
         .eq("id", user.id);
       if (error) throw error;
-    } catch (e: any) {
-      // Revert on error
+    } catch {
       setNotifPrefs(notifPrefs);
       toast.error("Failed to save preference");
     } finally {
@@ -105,6 +115,63 @@ const Settings = () => {
       toast.error(e.message || "Failed to send reset email");
     }
   };
+
+  const handleCheckout = async (priceId: string) => {
+    setCheckoutLoading(priceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Failed to create checkout");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "No active subscription to manage");
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
+  const plans = [
+    {
+      key: "free",
+      name: "Starter",
+      price: "Free",
+      features: ["2 videos/mo", "Basic compliance", "YouTube only", "2 voices"],
+      priceId: null,
+    },
+    {
+      key: "pro",
+      name: "Pro",
+      price: "₹999/mo",
+      features: ["20 videos/mo", "All platforms", "Auto-fix", "All 6 voices", "AI insights"],
+      priceId: SUBSCRIPTION_TIERS.pro.price_id,
+      popular: true,
+    },
+    {
+      key: "agency",
+      name: "Agency",
+      price: "₹2,999/mo",
+      features: ["Unlimited videos", "Everything in Pro", "API access", "Priority queue"],
+      priceId: SUBSCRIPTION_TIERS.agency.price_id,
+    },
+  ];
 
   return (
     <DashboardLayout>
@@ -129,36 +196,23 @@ const Settings = () => {
             <div className="space-y-4">
               <div>
                 <label className="text-[10px] font-label text-muted-foreground block mb-2">EMAIL ADDRESS</label>
-                <input
-                  type="email"
-                  value={user?.email || ""}
-                  disabled
-                  className="w-full px-4 py-3 rounded-xl text-xs text-muted-foreground bg-secondary/30 border border-border cursor-not-allowed"
-                />
+                <input type="email" value={user?.email || ""} disabled
+                  className="w-full px-4 py-3 rounded-xl text-xs text-muted-foreground bg-secondary/30 border border-border cursor-not-allowed" />
               </div>
               <div>
                 <label className="text-[10px] font-label text-muted-foreground block mb-2">DISPLAY NAME</label>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                />
+                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" />
               </div>
               <div>
                 <label className="text-[10px] font-label text-muted-foreground block mb-2">BIO</label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  rows={3}
+                <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3}
                   className="w-full px-4 py-3 rounded-xl text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all resize-none"
-                  placeholder="Tell us about yourself..."
-                />
+                  placeholder="Tell us about yourself..." />
               </div>
               <div className="flex items-center gap-3">
                 <button onClick={handleSave} disabled={saving} className="btn-primary text-xs flex items-center gap-2">
-                  {saving && <Loader2 className="w-3 h-3 animate-spin" />}
-                  Save Changes
+                  {saving && <Loader2 className="w-3 h-3 animate-spin" />} Save Changes
                 </button>
                 <button onClick={handlePasswordReset} className="btn-ghost text-xs flex items-center gap-2">
                   <Shield className="w-3 h-3" /> Reset Password
@@ -179,25 +233,21 @@ const Settings = () => {
               </div>
             </div>
             {[
-              { name: "Gemini AI", connected: true, desc: "Script, captions, research", status: "Active" },
-              { name: "Sarvam AI", connected: true, desc: "Voice synthesis (6 voices)", status: "Active" },
-              { name: "JSON2Video", connected: true, desc: "Video rendering engine", status: "Active" },
-              { name: "Pexels", connected: true, desc: "Stock photos & videos", status: "Active" },
-              { name: "YouTube Data API", connected: false, desc: "Analytics & direct upload", status: "Setup Required" },
+              { name: "Gemini AI", connected: true, desc: "Script, captions, research" },
+              { name: "Sarvam AI", connected: true, desc: "Voice synthesis (6 voices)" },
+              { name: "JSON2Video", connected: true, desc: "Video rendering engine" },
+              { name: "Pexels", connected: true, desc: "Stock photos & videos" },
+              { name: "Stripe", connected: true, desc: "Payment processing" },
+              { name: "YouTube Data API", connected: false, desc: "Analytics & direct upload" },
             ].map((key) => (
               <div key={key.name} className="flex items-center justify-between py-4 border-b border-border/50 last:border-b-0">
                 <div>
                   <span className="text-xs font-medium text-foreground">{key.name}</span>
                   <span className="text-[10px] text-muted-foreground block mt-0.5">{key.desc}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-label ${key.connected ? "text-emerald" : "text-muted-foreground"}`}>
-                    {key.connected ? "✓ CONNECTED" : key.status}
-                  </span>
-                  {!key.connected && (
-                    <button className="text-[10px] text-primary hover:underline">Configure</button>
-                  )}
-                </div>
+                <span className={`text-[10px] font-label ${key.connected ? "text-emerald" : "text-muted-foreground"}`}>
+                  {key.connected ? "✓ CONNECTED" : "COMING SOON"}
+                </span>
               </div>
             ))}
           </section>
@@ -209,39 +259,81 @@ const Settings = () => {
                 <CreditCard className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <h2 className="text-sm font-display text-foreground font-bold">Billing</h2>
-                <p className="text-[10px] text-muted-foreground">Subscription and usage</p>
+                <h2 className="text-sm font-display text-foreground font-bold">Billing & Subscription</h2>
+                <p className="text-[10px] text-muted-foreground">
+                  {subscription.loading ? "Checking subscription..." : 
+                   subscription.subscribed ? `${subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} plan active` : "Free plan"}
+                </p>
               </div>
             </div>
-            <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50 mb-4">
-              <div>
-                <span className="text-[10px] font-label text-muted-foreground block">CURRENT PLAN</span>
-                <span className="text-xl font-display text-primary font-bold mt-1 block">Free</span>
-                <span className="text-[10px] text-muted-foreground">2 videos/month · YouTube only</span>
-              </div>
-              <button className="btn-primary text-xs">Upgrade to Pro</button>
-            </div>
-            
-            {/* Plan comparison */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { name: "Starter", price: "Free", features: ["2 videos/mo", "Basic compliance"], current: true },
-                { name: "Pro", price: "₹999/mo", features: ["20 videos/mo", "All platforms", "Auto-fix"], current: false },
-                { name: "Agency", price: "₹2,999/mo", features: ["Unlimited", "API access", "Priority"], current: false },
-              ].map((plan) => (
-                <div key={plan.name} className={`p-3 rounded-xl border text-center ${plan.current ? "border-primary/30 bg-primary/5" : "border-border/50 bg-secondary/20"}`}>
-                  <span className="text-[10px] font-label text-muted-foreground">{plan.name.toUpperCase()}</span>
-                  <p className="text-sm font-display font-bold text-foreground mt-1">{plan.price}</p>
-                  <div className="mt-2 space-y-1">
-                    {plan.features.map((f) => (
-                      <p key={f} className="text-[9px] text-muted-foreground">{f}</p>
-                    ))}
+
+            {subscription.subscribed && subscription.subscriptionEnd && (
+              <div className="mb-4 p-3 rounded-xl bg-emerald/5 border border-emerald/20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-emerald" />
+                  <div>
+                    <span className="text-xs text-foreground font-medium">{subscription.tier === "agency" ? "Agency" : "Pro"} Plan Active</span>
+                    <span className="text-[9px] text-muted-foreground block">
+                      Renews {new Date(subscription.subscriptionEnd).toLocaleDateString()}
+                    </span>
                   </div>
-                  {plan.current && <span className="text-[8px] font-label text-primary mt-2 block">CURRENT</span>}
                 </div>
-              ))}
+                <button onClick={handleManageSubscription} disabled={portalLoading} className="btn-ghost text-[10px] flex items-center gap-1">
+                  {portalLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <ExternalLink className="w-3 h-3" />}
+                  Manage
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-3 gap-3">
+              {plans.map((plan) => {
+                const isCurrent = subscription.tier === plan.key;
+                const isUpgrade = !isCurrent && plan.priceId;
+                return (
+                  <div key={plan.key} className={`p-4 rounded-xl border text-center relative ${
+                    isCurrent ? "border-primary/30 bg-primary/5" : "border-border/50 bg-secondary/20"
+                  } ${plan.popular ? "ring-1 ring-primary/20" : ""}`}>
+                    {plan.popular && (
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-label bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                        POPULAR
+                      </span>
+                    )}
+                    <span className="text-[10px] font-label text-muted-foreground">{plan.name.toUpperCase()}</span>
+                    <p className="text-sm font-display font-bold text-foreground mt-1">{plan.price}</p>
+                    <div className="mt-3 space-y-1.5">
+                      {plan.features.map((f) => (
+                        <p key={f} className="text-[9px] text-muted-foreground flex items-center gap-1 justify-center">
+                          <Check className="w-2.5 h-2.5 text-emerald" /> {f}
+                        </p>
+                      ))}
+                    </div>
+                    {isCurrent ? (
+                      <span className="text-[8px] font-label text-primary mt-3 block">YOUR PLAN</span>
+                    ) : isUpgrade ? (
+                      <button
+                        onClick={() => handleCheckout(plan.priceId!)}
+                        disabled={!!checkoutLoading}
+                        className="btn-primary text-[10px] mt-3 w-full flex items-center justify-center gap-1"
+                      >
+                        {checkoutLoading === plan.priceId ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          "Upgrade"
+                        )}
+                      </button>
+                    ) : (
+                      <span className="text-[8px] font-label text-muted-foreground mt-3 block">FREE FOREVER</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <p className="text-[9px] text-muted-foreground mt-3 text-center">Payment integration coming soon. All plans include full AI generation pipeline.</p>
+
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <button onClick={() => checkSubscription()} className="text-[10px] text-muted-foreground hover:text-primary transition-colors">
+                Refresh subscription status
+              </button>
+            </div>
           </section>
 
           {/* Notifications */}
@@ -265,12 +357,8 @@ const Settings = () => {
                   <span className="text-xs text-foreground block">{n.label}</span>
                   <span className="text-[9px] text-muted-foreground">{n.desc}</span>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={notifPrefs[n.key]}
-                  onChange={() => handleNotifToggle(n.key)}
-                  className="w-4 h-4 rounded accent-primary"
-                />
+                <input type="checkbox" checked={notifPrefs[n.key]} onChange={() => handleNotifToggle(n.key)}
+                  className="w-4 h-4 rounded accent-primary" />
               </label>
             ))}
           </section>
@@ -278,7 +366,7 @@ const Settings = () => {
           {/* Danger Zone */}
           <section className="surface-raised p-6 border border-destructive/20">
             <h2 className="text-sm font-display text-destructive font-bold mb-3">Danger Zone</h2>
-            <p className="text-[10px] text-muted-foreground mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+            <p className="text-[10px] text-muted-foreground mb-4">Permanently delete your account and all associated data.</p>
             <button className="btn-ghost text-xs text-destructive border border-destructive/20 hover:bg-destructive/10">
               Delete Account
             </button>
