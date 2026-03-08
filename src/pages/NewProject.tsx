@@ -58,7 +58,8 @@ const NewProject = () => {
       <DashboardLayout>
         <div className="max-w-3xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-xl font-display font-bold text-foreground mb-1">Generating Your Video</h1>
+            <span className="font-label text-muted-foreground block mb-1">GENERATING</span>
+            <h1 className="text-xl font-display text-foreground mb-1">Your Video is Being Created</h1>
             <p className="text-sm text-muted-foreground">AI is assembling your faceless video</p>
           </div>
           <PipelineProgress activeStep={3} progress={40} />
@@ -71,37 +72,38 @@ const NewProject = () => {
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-xl font-display font-bold text-foreground mb-1">Create New Video</h1>
-          <p className="text-sm text-muted-foreground">Follow the pipeline to generate your video</p>
+          <span className="font-label text-muted-foreground block mb-1">NEW VIDEO</span>
+          <h1 className="text-xl font-display text-foreground">Create a Video</h1>
         </div>
 
-        {/* Step nav */}
-        <div className="flex items-center gap-1 mb-8 overflow-x-auto pb-1">
-          {steps.map((step, i) => (
-            <div key={step.label} className="flex items-center gap-1 shrink-0">
-              <button
-                onClick={() => i < currentStep && setCurrentStep(i)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  i === currentStep ? "bg-primary/10 text-primary border border-primary/20" :
-                  i < currentStep ? "text-accent cursor-pointer" :
-                  "text-muted-foreground"
-                }`}
-                style={{ cursor: i < currentStep ? "pointer" : i === currentStep ? "default" : "default" }}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono ${
-                  i < currentStep ? "bg-accent text-primary-foreground" :
-                  i === currentStep ? "bg-primary text-primary-foreground" :
-                  "bg-secondary text-muted-foreground"
-                }`}>
-                  {i < currentStep ? <Check className="w-3 h-3" /> : i + 1}
-                </div>
-                <span className="hidden md:inline">{step.label}</span>
-              </button>
-              {i < steps.length - 1 && (
-                <div className={`w-4 h-px ${i < currentStep ? "bg-accent" : "bg-border"}`} />
-              )}
-            </div>
-          ))}
+        {/* Step progress bar */}
+        <div className="mb-8">
+          <div className="flex items-center gap-1 overflow-x-auto pb-1">
+            {steps.map((step, i) => (
+              <div key={step.label} className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => i < currentStep && setCurrentStep(i)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                    i === currentStep ? "bg-primary text-primary-foreground font-semibold" :
+                    i < currentStep ? "text-primary cursor-pointer hover:bg-primary/5" :
+                    "text-muted-foreground"
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono ${
+                    i < currentStep ? "bg-primary text-primary-foreground" :
+                    i === currentStep ? "bg-primary-foreground text-primary" :
+                    "bg-secondary text-muted-foreground"
+                  }`}>
+                    {i < currentStep ? <Check className="w-3 h-3" /> : i + 1}
+                  </div>
+                  <span className="hidden md:inline">{step.label}</span>
+                </button>
+                {i < steps.length - 1 && (
+                  <div className={`w-6 h-px ${i < currentStep ? "bg-primary" : "bg-border"}`} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="animate-fade-in min-h-[400px]" key={currentStep}>
@@ -132,7 +134,7 @@ const NewProject = () => {
             </button>
           ) : (
             <button
-              className="btn-primary flex items-center gap-2 px-6 py-3"
+              className="btn-primary flex items-center gap-2 px-8 py-3"
               onClick={() => setLaunched(true)}
             >
               <Upload className="w-4 h-4" /> Launch Video
