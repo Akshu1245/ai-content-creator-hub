@@ -92,6 +92,7 @@ serve(async (req) => {
       }
 
       const data = await response.json();
+      console.log('JSON2Video query raw response:', JSON.stringify(data));
 
       // JSON2Video statuses: "rendering", "done", "error"
       let status = data.status;
