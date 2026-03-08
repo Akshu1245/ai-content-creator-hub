@@ -1,15 +1,19 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2, Loader2 } from "lucide-react";
+import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2 } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
+import EmptyState from "@/components/shared/EmptyState";
 import { SkeletonCard, SkeletonRow } from "@/components/shared/Skeletons";
 import YPPTrackerCard from "@/components/differentiators/YPPTrackerCard";
 import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCenter";
+import OnboardingTips from "@/components/dashboard/OnboardingTips";
+import WhatsNewModal from "@/components/dashboard/WhatsNewModal";
 import { useAuth } from "@/contexts/AuthContext";
 import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useEffect, useRef } from "react";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -24,6 +28,24 @@ const Dashboard = () => {
   const { user } = useAuth();
   usePageTitle("Dashboard");
   const queryClient = useQueryClient();
+  const welcomeShown = useRef(false);
+
+  // Welcome toast on first visit
+  useEffect(() => {
+    if (user && !welcomeShown.current) {
+      welcomeShown.current = true;
+      const name = user.user_metadata?.full_name;
+      const isNew = !localStorage.getItem("ff-returning-user");
+      if (isNew) {
+        localStorage.setItem("ff-returning-user", "1");
+        toast.success(`Welcome to FacelessForge${name ? `, ${name}` : ""}! 🔥`, {
+          description: "Create your first AI-powered video in minutes.",
+        });
+      } else {
+        toast(`Welcome back${name ? `, ${name}` : ""}! 👋`);
+      }
+    }
+  }, [user]);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
@@ -51,6 +73,9 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
+        {/* What's New Modal */}
+        <WhatsNewModal />
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
@@ -65,6 +90,9 @@ const Dashboard = () => {
             </button>
           </Link>
         </div>
+
+        {/* Onboarding Tips (first visit only) */}
+        <OnboardingTips />
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
@@ -108,12 +136,7 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : projects.length === 0 ? (
-              <div className="surface-raised p-8 text-center">
-                <p className="text-sm text-muted-foreground mb-3">No projects yet.</p>
-                <Link to="/new-project">
-                  <button className="btn-primary text-xs"><Plus className="w-3 h-3 inline mr-1" /> Create Your First Video</button>
-                </Link>
-              </div>
+              <EmptyState />
             ) : (
               projects.slice(0, 10).map((project) => (
                 <div key={project.id} className="surface-raised p-5 surface-hover group relative">
@@ -178,7 +201,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Recent projects timeline */}
+          {/* Recent Activity */}
           <div>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
             <div className="surface-raised p-5 space-y-4">
