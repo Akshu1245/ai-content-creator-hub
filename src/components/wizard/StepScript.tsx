@@ -36,7 +36,8 @@ const StepScript = ({ data, updateData }: Props) => {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-display font-semibold text-foreground mb-1">Video Script</h2>
+          <span className="font-label text-primary block mb-1">STEP 3</span>
+          <h2 className="text-xl font-display text-foreground mb-1">Video Script</h2>
           <p className="text-sm text-muted-foreground">AI-generated script optimized for retention</p>
         </div>
         <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-sm disabled:opacity-40">
@@ -49,7 +50,7 @@ const StepScript = ({ data, updateData }: Props) => {
         value={data.script}
         onChange={(e) => updateData({ script: e.target.value })}
         placeholder="Click 'Generate' to create an AI-powered script, or write your own..."
-        className="w-full h-72 px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none font-mono leading-relaxed bg-card border border-border"
+        className="w-full h-72 px-5 py-4 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none font-mono leading-relaxed bg-background border border-border transition-colors"
       />
 
       <div className="flex items-center gap-5 text-sm text-muted-foreground">

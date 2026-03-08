@@ -1,6 +1,6 @@
 import { WizardData } from "@/pages/NewProject";
 import { useState } from "react";
-import { Shield, Loader2, Sparkles, AlertTriangle, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, Loader2, Sparkles, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
@@ -68,7 +68,7 @@ const StepCompliance = ({ data, updateData }: Props) => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-accent";
+    if (score >= 80) return "text-primary";
     if (score >= 60) return "text-golden";
     return "text-destructive";
   };
@@ -77,7 +77,8 @@ const StepCompliance = ({ data, updateData }: Props) => {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-display font-semibold text-foreground mb-1">Compliance Review</h2>
+          <span className="font-label text-primary block mb-1">STEP 5</span>
+          <h2 className="text-xl font-display text-foreground mb-1">Compliance Review</h2>
           <p className="text-sm text-muted-foreground">Monetization safety analysis</p>
         </div>
         <button onClick={runCheck} disabled={loading || !data.script} className="btn-primary flex items-center gap-2 text-sm disabled:opacity-40">
@@ -89,7 +90,7 @@ const StepCompliance = ({ data, updateData }: Props) => {
       {!result && !loading && (
         <div className="surface-raised p-12 text-center">
           <Shield className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
-          <p className="font-display font-semibold text-foreground mb-1">Ready to analyze</p>
+          <p className="font-display text-foreground mb-1">Ready to analyze</p>
           <p className="text-sm text-muted-foreground">Click "Run Check" to score your script against YouTube policies</p>
         </div>
       )}
@@ -115,20 +116,20 @@ const StepCompliance = ({ data, updateData }: Props) => {
               { label: "Misinfo Safety", score: result.scores.misinformation },
               { label: "Monetization", score: result.scores.monetization },
             ].map((dim) => (
-              <div key={dim.label} className="surface p-3 text-center">
+              <div key={dim.label} className="surface-raised p-3 text-center">
                 <div className={`text-xl font-mono font-semibold ${getScoreColor(dim.score)}`}>{dim.score}</div>
-                <div className="text-xs font-label text-muted-foreground mt-1">{dim.label.toUpperCase()}</div>
-                <div className="h-1 rounded-full mt-2 bg-secondary overflow-hidden">
-                  <div className={`h-full rounded-full ${dim.score >= 80 ? "bg-accent" : dim.score >= 60 ? "bg-golden" : "bg-destructive"}`} style={{ width: `${dim.score}%` }} />
+                <div className="text-[10px] font-label text-muted-foreground mt-1">{dim.label.toUpperCase()}</div>
+                <div className="h-1.5 rounded-full mt-2 bg-secondary overflow-hidden">
+                  <div className={`h-full rounded-full ${dim.score >= 80 ? "bg-primary" : dim.score >= 60 ? "bg-golden" : "bg-destructive"}`} style={{ width: `${dim.score}%` }} />
                 </div>
               </div>
             ))}
           </div>
 
           {result.warnings.length > 0 && (
-            <div className="surface p-4">
+            <div className="surface-raised p-4">
               <button onClick={() => setExpanded(!expanded)} className="flex items-center justify-between w-full">
-                <h3 className="text-sm font-display font-semibold text-golden flex items-center gap-2">
+                <h3 className="text-sm font-display text-golden flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" /> {result.warnings.length} Warnings
                 </h3>
                 {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -146,8 +147,8 @@ const StepCompliance = ({ data, updateData }: Props) => {
           )}
 
           {result.recommendations.length > 0 && (
-            <div className="surface p-4">
-              <h3 className="text-sm font-display font-semibold text-primary flex items-center gap-2 mb-3">
+            <div className="surface-raised p-4">
+              <h3 className="text-sm font-display text-primary flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4" /> Recommendations
               </h3>
               <ul className="space-y-2">
@@ -161,7 +162,7 @@ const StepCompliance = ({ data, updateData }: Props) => {
           )}
 
           {result.disclosureNeeded && (
-            <div className="surface p-3 border-l-2 border-l-primary">
+            <div className="surface-raised p-3" style={{ borderLeftWidth: "3px", borderLeftColor: "hsl(174, 72%, 22%)" }}>
               <p className="text-sm text-muted-foreground">
                 <span className="text-primary font-semibold">AI Disclosure Required:</span> Include YouTube's AI-generated content tag.
               </p>

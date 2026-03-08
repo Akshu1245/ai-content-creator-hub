@@ -26,7 +26,8 @@ const StepNiche = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-lg font-display font-semibold text-foreground mb-1">Choose Your Niche</h2>
+        <span className="font-label text-primary block mb-1">STEP 1</span>
+        <h2 className="text-xl font-display text-foreground mb-1">Choose Your Niche</h2>
         <p className="text-sm text-muted-foreground">Select a content category to discover trending topics</p>
       </div>
 
@@ -37,8 +38,8 @@ const StepNiche = ({ data, updateData }: Props) => {
             onClick={() => updateData({ niche, topic: "" })}
             className={`px-3 py-3 rounded-lg text-sm font-medium transition-all text-center border ${
               data.niche === niche
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-secondary border-border text-muted-foreground hover:text-foreground hover:border-border"
+                ? "bg-primary/8 border-primary text-primary"
+                : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
             }`}
           >
             {niche}
@@ -48,7 +49,7 @@ const StepNiche = ({ data, updateData }: Props) => {
 
       {topics.length > 0 && (
         <div className="animate-fade-in space-y-4">
-          <h3 className="text-sm font-display font-semibold text-foreground">
+          <h3 className="text-sm font-display text-foreground">
             Trending in {data.niche}
           </h3>
           <div className="space-y-2">
@@ -58,8 +59,8 @@ const StepNiche = ({ data, updateData }: Props) => {
                 onClick={() => updateData({ topic })}
                 className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all border ${
                   data.topic === topic
-                    ? "bg-primary/10 border-primary text-foreground"
-                    : "bg-card border-border text-muted-foreground hover:text-foreground"
+                    ? "bg-primary/8 border-primary text-foreground"
+                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
                 }`}
               >
                 {topic}
@@ -71,7 +72,7 @@ const StepNiche = ({ data, updateData }: Props) => {
             placeholder="Or type your own topic..."
             value={!suggestedTopics[data.niche]?.includes(data.topic) ? data.topic : ""}
             onChange={(e) => updateData({ topic: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary bg-card border border-border"
+            className="w-full px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background border border-border transition-colors"
           />
         </div>
       )}

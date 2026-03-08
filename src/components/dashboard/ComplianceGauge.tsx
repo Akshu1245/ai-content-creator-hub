@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import AnimatedNumber from "@/components/shared/AnimatedNumber";
 
 interface ComplianceGaugeProps {
   score: number;
@@ -12,7 +11,7 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  const strokeWidth = 8;
+  const strokeWidth = size > 120 ? 10 : 7;
   const center = size / 2;
   const radius = (size - strokeWidth * 2) / 2;
 
@@ -35,9 +34,9 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   const dotY = center + radius * Math.sin(toRad(scoreAngle));
 
   const getColor = (s: number) => {
-    if (s >= 80) return { stroke: "hsl(100 22% 52%)", label: "SAFE TO MONETIZE" };
-    if (s >= 60) return { stroke: "hsl(42 55% 55%)", label: "REVIEW SUGGESTED" };
-    return { stroke: "hsl(0 40% 52%)", label: "HIGH RISK" };
+    if (s >= 80) return { stroke: "hsl(174, 72%, 22%)", label: "SAFE TO MONETIZE" };
+    if (s >= 60) return { stroke: "hsl(40, 70%, 52%)", label: "REVIEW SUGGESTED" };
+    return { stroke: "hsl(0, 65%, 48%)", label: "HIGH RISK" };
   };
 
   const color = getColor(score);
@@ -62,7 +61,7 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size * 0.72} viewBox={`0 0 ${size} ${size * 0.82}`}>
-        <path d={arcPath} fill="none" stroke="hsl(40 5% 18%)" strokeWidth={strokeWidth} strokeLinecap="round" />
+        <path d={arcPath} fill="none" stroke="hsl(30, 12%, 85%)" strokeWidth={strokeWidth} strokeLinecap="round" />
         <path
           d={arcPath}
           fill="none"
@@ -76,7 +75,7 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
         <text
           x={center} y={center - 2}
           textAnchor="middle" dominantBaseline="central"
-          fill="hsl(36 20% 90%)"
+          fill="hsl(20, 14%, 12%)"
           fontSize={size / 3.5}
           fontFamily="'IBM Plex Mono', monospace"
           fontWeight="600"
@@ -86,9 +85,10 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
         <text
           x={center} y={center + size * 0.15}
           textAnchor="middle"
-          fill="hsl(36 8% 50%)"
+          fill="hsl(20, 8%, 52%)"
           fontSize={9}
-          fontFamily="'IBM Plex Mono', monospace"
+          fontFamily="'Plus Jakarta Sans', sans-serif"
+          fontWeight="600"
           letterSpacing="1.5"
         >
           {label || color.label}
