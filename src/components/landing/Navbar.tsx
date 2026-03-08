@@ -57,7 +57,7 @@ const Navbar = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border/20 px-6 py-4 space-y-3">
-          {["How it works", "Features", "Pricing"].map((item) => (
+          {["How it works", "Features", "Pricing", "FAQ"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(/\s/g, "")}`}
