@@ -34,14 +34,14 @@ const StepScript = ({ data, updateData }: Props) => {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="font-label text-primary block mb-1">STEP 3</span>
-          <h2 className="text-xl font-display text-foreground mb-1">Video Script</h2>
-          <p className="text-sm text-muted-foreground">AI-generated script optimized for retention</p>
+          <span className="text-[10px] font-label text-primary block mb-2">STEP 3 OF 6</span>
+          <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Video Script</h2>
+          <p className="text-xs text-muted-foreground">AI-generated and optimized for retention</p>
         </div>
-        <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-sm disabled:opacity-40">
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+        <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-xs disabled:opacity-30 shrink-0">
+          {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           {data.script ? "Regenerate" : "Generate"}
         </button>
       </div>
@@ -49,19 +49,19 @@ const StepScript = ({ data, updateData }: Props) => {
       <textarea
         value={data.script}
         onChange={(e) => updateData({ script: e.target.value })}
-        placeholder="Click 'Generate' to create an AI-powered script, or write your own..."
-        className="w-full h-72 px-5 py-4 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none font-mono leading-relaxed bg-background border border-border transition-colors"
+        placeholder="Click 'Generate' to create an AI script, or write your own..."
+        className="w-full h-72 px-5 py-4 rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 resize-none font-mono leading-relaxed bg-secondary/30 border border-border transition-all"
       />
 
-      <div className="flex items-center gap-5 text-sm text-muted-foreground">
-        <span className="flex items-center gap-1.5 font-mono text-xs">
-          <FileText className="w-3.5 h-3.5" /> {wordCount} words
+      <div className="flex items-center gap-5 text-muted-foreground">
+        <span className="flex items-center gap-1.5 font-mono text-[10px]">
+          <FileText className="w-3 h-3" /> {wordCount} words
         </span>
-        <span className="flex items-center gap-1.5 font-mono text-xs">
-          <Clock className="w-3.5 h-3.5" /> ~{estimatedDuration} min
+        <span className="flex items-center gap-1.5 font-mono text-[10px]">
+          <Clock className="w-3 h-3" /> ~{estimatedDuration} min
         </span>
         {wordCount > 0 && wordCount < 150 && (
-          <span className="flex items-center gap-1.5 text-xs text-golden">
+          <span className="flex items-center gap-1.5 text-[10px] text-primary">
             <AlertTriangle className="w-3 h-3" /> Script may be too short
           </span>
         )}
