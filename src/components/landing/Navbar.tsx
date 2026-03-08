@@ -19,7 +19,7 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {["How it works", "Features", "Pricing"].map((item) => (
+          {["How it works", "Features", "Pricing", "FAQ"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(/\s/g, "")}`}
