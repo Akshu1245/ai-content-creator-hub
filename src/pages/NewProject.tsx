@@ -251,7 +251,7 @@ const NewProject = () => {
     setShowEditor(false);
     setShowYouTube(false);
     setShowTimeline(false);
-    setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "" });
+    setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "", selectedMedia: [] });
   };
 
   if (launched) {
