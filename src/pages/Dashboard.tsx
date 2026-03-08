@@ -2,6 +2,8 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link } from "react-router-dom";
 import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2, Loader2 } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
+import { SkeletonCard, SkeletonRow } from "@/components/shared/Skeletons";
+import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import YPPTrackerCard from "@/components/differentiators/YPPTrackerCard";
 import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCenter";
 import { useAuth } from "@/contexts/AuthContext";
