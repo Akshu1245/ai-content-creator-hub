@@ -96,6 +96,8 @@ serve(async (req) => {
       // JSON2Video statuses: "rendering", "done", "error"
       let status = data.status;
       if (status === 'rendering') status = 'processing';
+      if (status === 'done') status = 'completed';
+      if (status === 'error') status = 'failed';
 
       return new Response(JSON.stringify({
         task_id: data.project,
