@@ -40,7 +40,7 @@ serve(async (req) => {
       const [width, height] = resolutionMap[aspect_ratio || '16:9'] || [1920, 1080];
 
       const movieJson = {
-        resolution: `${width}x${height}`,
+        resolution: "full-hd",
         scenes: [
           {
             duration: duration ? Number(duration) : 5,
@@ -48,8 +48,7 @@ serve(async (req) => {
               {
                 type: "text",
                 text: prompt,
-                style: "style1",
-                position: "center",
+                style: "001",
                 duration: duration ? Number(duration) : 5,
               }
             ]

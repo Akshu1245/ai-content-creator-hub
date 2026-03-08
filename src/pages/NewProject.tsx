@@ -150,7 +150,7 @@ const NewProject = () => {
       setGenerationPhase('video');
       setPipelineStep(2);
       setProgress(50);
-      toast.info('Generating video with Kling AI...');
+      toast.info('Generating video...');
 
       const videoPrompt = `${data.style} style video about: ${data.topic}. ${data.niche} niche. High quality, professional faceless content.`;
 
