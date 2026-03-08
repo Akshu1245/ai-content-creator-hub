@@ -7,14 +7,16 @@ import StepScript from "@/components/wizard/StepScript";
 import StepVoice from "@/components/wizard/StepVoice";
 import StepCompliance from "@/components/wizard/StepCompliance";
 import StepPublish from "@/components/wizard/StepPublish";
+import WizardNav from "@/components/wizard/WizardNav";
+import PipelineProgress from "@/components/dashboard/PipelineProgress";
 
 const steps = [
-  { label: "Niche", icon: Sparkles },
-  { label: "Trends", icon: TrendingUp },
-  { label: "Script", icon: FileText },
-  { label: "Voice", icon: Mic },
-  { label: "Compliance", icon: Shield },
-  { label: "Publish", icon: Upload },
+  { label: "Niche" },
+  { label: "Trends" },
+  { label: "Script" },
+  { label: "Voice" },
+  { label: "Review" },
+  { label: "Publish" },
 ];
 
 export interface WizardData {
@@ -31,6 +33,7 @@ export interface WizardData {
 
 const NewProject = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [launched, setLaunched] = useState(false);
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
@@ -51,46 +54,33 @@ const NewProject = () => {
     }
   };
 
+  if (launched) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-2xl font-display font-bold mb-1">Generating Your Video</h1>
+            <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>
+              Sit back — AI is building your faceless video
+            </p>
+          </div>
+          <PipelineProgress activeStep={3} progress={40} />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-2xl font-display font-bold mb-1">Create New Video</h1>
+        <div className="mb-8">
+          <h1 className="text-2xl font-display font-bold mb-1" style={{ letterSpacing: "-0.8px" }}>Create New Video</h1>
           <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>Follow the pipeline to generate your faceless video</p>
         </div>
 
-        {/* Progress - orbital style */}
-        <div className="flex items-center gap-1 mb-10 overflow-x-auto pb-2">
-          {steps.map((step, i) => (
-            <div key={step.label} className="flex items-center gap-1 shrink-0">
-              <button
-                onClick={() => i < currentStep && setCurrentStep(i)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-display font-bold transition-all"
-                style={{
-                  background: i === currentStep ? "rgba(14,165,233,0.12)" : i < currentStep ? "transparent" : "transparent",
-                  border: i === currentStep ? "1px solid rgba(14,165,233,0.25)" : "1px solid transparent",
-                  color: i < currentStep ? "#06D6A0" : i === currentStep ? "#0EA5E9" : "hsl(210 25% 35%)",
-                  cursor: i < currentStep ? "pointer" : "default",
-                }}
-              >
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs" style={{
-                  background: i < currentStep
-                    ? "linear-gradient(135deg, #0EA5E9, #06D6A0)"
-                    : i === currentStep
-                    ? "rgba(14,165,233,0.2)"
-                    : "rgba(42,72,112,0.2)",
-                  color: i < currentStep ? "#020409" : undefined,
-                  border: i >= currentStep ? `1px solid ${i === currentStep ? "rgba(14,165,233,0.3)" : "rgba(42,72,112,0.3)"}` : "none",
-                }}>
-                  {i < currentStep ? <Check className="w-3.5 h-3.5" /> : i + 1}
-                </div>
-                <span className="hidden md:inline">{step.label}</span>
-              </button>
-              {i < steps.length - 1 && (
-                <div className="w-6 h-px mx-1" style={{ background: i < currentStep ? "rgba(6,214,160,0.4)" : "rgba(42,72,112,0.3)" }} />
-              )}
-            </div>
-          ))}
+        {/* Orbital wizard nav */}
+        <div className="mb-10">
+          <WizardNav steps={steps} currentStep={currentStep} onStepClick={setCurrentStep} />
         </div>
 
         {/* Step content */}
@@ -123,7 +113,11 @@ const NewProject = () => {
               Next <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
-            <button className="btn-primary flex items-center gap-2">
+            <button
+              className="btn-primary flex items-center gap-2 px-8 py-3"
+              style={{ height: 48 }}
+              onClick={() => setLaunched(true)}
+            >
               <Upload className="w-4 h-4" /> Launch Video
             </button>
           )}
