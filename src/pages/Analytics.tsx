@@ -119,6 +119,17 @@ const Analytics = () => {
           </div>
         </div>
 
+        {/* Demo Data Banner */}
+        <div className="mb-6 p-4 rounded-xl bg-gold/8 border border-gold/20 flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs text-foreground font-medium">Sample Analytics Data</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              This dashboard displays simulated data to preview the analytics experience. Connect the YouTube Data API in Settings to see real channel metrics.
+            </p>
+          </div>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statsForRange.map((stat, i) => (
