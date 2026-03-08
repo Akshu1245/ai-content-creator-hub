@@ -92,18 +92,22 @@ serve(async (req) => {
       }
 
       const data = await response.json();
+      console.log('JSON2Video query raw response:', JSON.stringify(data));
+
+      // Response is nested: { success, movie: { status, url, duration, ... } }
+      const movie = data.movie || data;
 
       // JSON2Video statuses: "rendering", "done", "error"
-      let status = data.status;
+      let status = movie.status;
       if (status === 'rendering') status = 'processing';
       if (status === 'done') status = 'completed';
       if (status === 'error') status = 'failed';
 
       return new Response(JSON.stringify({
-        task_id: data.project,
+        task_id: movie.project || task_id,
         status: status,
-        video_url: data.url || null,
-        duration: data.duration || null,
+        video_url: movie.url || null,
+        duration: movie.duration || null,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

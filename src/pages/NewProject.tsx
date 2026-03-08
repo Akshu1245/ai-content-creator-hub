@@ -165,12 +165,12 @@ const NewProject = () => {
 
       const finalVideoUrl: string = await new Promise((resolve, reject) => {
         let attempts = 0;
-        const maxAttempts = 60;
+        const maxAttempts = 40;
         pollingRef.current = setInterval(async () => {
           attempts++;
           if (attempts > maxAttempts) {
             if (pollingRef.current) clearInterval(pollingRef.current);
-            reject(new Error('Video generation timed out (5 min). Try again.'));
+            reject(new Error('Video generation timed out (2 min). Try again.'));
             return;
           }
 
@@ -183,17 +183,19 @@ const NewProject = () => {
 
             if (queryError) return;
 
+            console.log('Poll response:', queryData);
+
             if (queryData?.status === 'completed' && queryData?.video_url) {
               if (pollingRef.current) clearInterval(pollingRef.current);
               resolve(queryData.video_url);
             } else if (queryData?.status === 'failed') {
               if (pollingRef.current) clearInterval(pollingRef.current);
-              reject(new Error('Video generation failed on Kling AI side'));
+              reject(new Error(queryData?.error || 'Video generation failed on API side'));
             }
           } catch (e) {
             console.error('Polling error:', e);
           }
-        }, 5000);
+        }, 3000);
       });
 
       setVideoUrl(finalVideoUrl);
