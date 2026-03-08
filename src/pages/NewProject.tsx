@@ -67,7 +67,7 @@ const NewProject = () => {
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
-    platforms: ["youtube"], scheduledAt: "",
+    platforms: ["youtube"], scheduledAt: "", selectedMedia: [],
   });
 
   const updateData = (updates: Partial<WizardData>) => setData((prev) => ({ ...prev, ...updates }));
