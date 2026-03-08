@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2, Pencil, Youtube } from "lucide-react";
+import VideoEditor from "@/components/editor/VideoEditor";
+import YouTubeUploader from "@/components/editor/YouTubeUploader";
 import StepNiche from "@/components/wizard/StepNiche";
 import StepTrends from "@/components/wizard/StepTrends";
 import StepScript from "@/components/wizard/StepScript";
