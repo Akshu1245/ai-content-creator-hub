@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import CookieConsent from "@/components/shared/CookieConsent";
+import KeyboardShortcuts from "@/components/shared/KeyboardShortcuts";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
+            <KeyboardShortcuts />
           </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>

@@ -6,6 +6,7 @@ import { SkeletonCard, SkeletonRow } from "@/components/shared/Skeletons";
 import YPPTrackerCard from "@/components/differentiators/YPPTrackerCard";
 import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCenter";
 import { useAuth } from "@/contexts/AuthContext";
+import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ const getStatusStyle = (status: string) => {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  usePageTitle("Dashboard");
   const queryClient = useQueryClient();
 
   const { data: projects = [], isLoading } = useQuery({

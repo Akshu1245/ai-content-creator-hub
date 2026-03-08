@@ -6,13 +6,18 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import PricingSection from "@/components/landing/PricingSection";
+import FAQSection from "@/components/landing/FAQSection";
 import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
+import ScrollToTop from "@/components/shared/ScrollToTop";
+import usePageTitle from "@/hooks/usePageTitle";
 
 const Index = () => {
+  usePageTitle("");
+
   return (
     <VideoPlayerGate>
-      <div className="min-h-screen bg-background relative overflow-hidden">
+      <div className="min-h-screen bg-background relative overflow-hidden scroll-smooth">
         <div className="bg-noise" />
 
         {/* Ambient warm glow orbs */}
@@ -38,8 +43,10 @@ const Index = () => {
         <FeaturesSection />
         <TestimonialsSection />
         <PricingSection />
+        <FAQSection />
         <CTASection />
         <Footer />
+        <ScrollToTop />
       </div>
     </VideoPlayerGate>
   );

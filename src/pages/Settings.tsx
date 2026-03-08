@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { User, Key, CreditCard, Bell, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Settings = () => {
   const { user } = useAuth();
+  usePageTitle("Settings");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);

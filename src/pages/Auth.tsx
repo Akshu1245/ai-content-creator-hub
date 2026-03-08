@@ -1,4 +1,5 @@
 import { useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { Loader2, ArrowRight, Eye, EyeOff, ArrowLeft } from "lucide-react";
 type AuthMode = "login" | "signup" | "forgot";
 
 const Auth = () => {
+  usePageTitle("Sign In");
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

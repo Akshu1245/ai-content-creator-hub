@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
@@ -76,6 +77,7 @@ const chartConfig = {
 };
 
 const Analytics = () => {
+  usePageTitle("Analytics");
   const [range, setRange] = useState<TimeRange>("30d");
   const viewsData = useMemo(() => generateViewsData(range), [range]);
 

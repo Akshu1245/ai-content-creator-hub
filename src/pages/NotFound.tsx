@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Home } from "lucide-react";
+import usePageTitle from "@/hooks/usePageTitle";
 
 const NotFound = () => {
+  usePageTitle("Page Not Found");
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       <div className="bg-noise" />
