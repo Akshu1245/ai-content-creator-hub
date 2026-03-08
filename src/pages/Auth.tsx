@@ -84,7 +84,7 @@ const Auth = () => {
             AI-powered faceless video creation with built-in YouTube monetization compliance.
           </p>
           <div className="mt-8 flex flex-wrap gap-2">
-            {["Gemini AI", "Kling Video", "Sarvam TTS", "Pexels Stock"].map((t) => (
+            {["Gemini AI", "JSON2Video", "Sarvam TTS", "Pexels Stock"].map((t) => (
               <span key={t} className="text-[10px] font-label px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                 {t}
               </span>

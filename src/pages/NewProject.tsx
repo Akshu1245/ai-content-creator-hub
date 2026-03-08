@@ -360,7 +360,7 @@ const NewProject = () => {
                   <div>
                     <span className="text-[10px] font-label text-accent block mb-2">COMPLETE</span>
                     <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
-                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + Kling AI video.</p>
+                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + JSON2Video rendering.</p>
                   </div>
                   <div className="surface-raised overflow-hidden rounded-xl">
                     {videoUrl ? (

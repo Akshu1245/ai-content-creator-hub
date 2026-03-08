@@ -113,7 +113,7 @@ const Settings = () => {
             {[
               { name: "Gemini AI", connected: true, desc: "Script, captions, research" },
               { name: "Sarvam AI", connected: true, desc: "Voice synthesis (6 voices)" },
-              { name: "Kling AI", connected: true, desc: "Video generation" },
+              { name: "JSON2Video", connected: true, desc: "Video rendering engine" },
               { name: "Pexels", connected: true, desc: "Stock photos & videos" },
               { name: "YouTube OAuth", connected: false, desc: "Direct upload (coming soon)" },
             ].map((key) => (
