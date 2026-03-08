@@ -1,9 +1,14 @@
 import { WizardData } from "@/pages/NewProject";
 
 const niches = [
-  "Finance", "Technology", "Horror", "Motivation", "History", 
+  "Finance", "Technology", "Horror", "Motivation", "History",
   "Health", "Gaming", "Science", "True Crime", "Psychology"
 ];
+
+const nicheIcons: Record<string, string> = {
+  Finance: "💰", Technology: "⚡", Horror: "👻", Motivation: "🔥", History: "📜",
+  Health: "🧬", Gaming: "🎮", Science: "🔬", "True Crime": "🔍", Psychology: "🧠"
+};
 
 const suggestedTopics: Record<string, string[]> = {
   Finance: ["Why 99% of People Retire Broke", "Hidden Fees Banks Don't Tell You", "Compound Interest: The 8th Wonder"],
@@ -18,10 +23,7 @@ const suggestedTopics: Record<string, string[]> = {
   Psychology: ["Dark Psychology Tricks Used on You Daily", "Why We Procrastinate (It's Not Laziness)", "The Dunning-Kruger Effect Explained"],
 };
 
-interface Props {
-  data: WizardData;
-  updateData: (u: Partial<WizardData>) => void;
-}
+interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
 const StepNiche = ({ data, updateData }: Props) => {
   const topics = data.niche ? suggestedTopics[data.niche] || [] : [];
@@ -29,8 +31,8 @@ const StepNiche = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold mb-1">Choose Your Niche</h2>
-        <p className="text-sm text-muted-foreground">Select a content category to find trending topics</p>
+        <h2 className="text-xl font-display font-bold mb-1">Choose Your Niche</h2>
+        <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>Select a content category to discover trending topics</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -38,20 +40,23 @@ const StepNiche = ({ data, updateData }: Props) => {
           <button
             key={niche}
             onClick={() => updateData({ niche, topic: "" })}
-            className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              data.niche === niche
-                ? "bg-primary/15 text-primary border border-primary/30"
-                : "glass glass-hover"
-            }`}
+            className="px-4 py-4 rounded-xl text-sm font-display font-bold transition-all text-center"
+            style={{
+              background: data.niche === niche ? "rgba(14,165,233,0.12)" : "rgba(8,13,20,0.65)",
+              border: `1px solid ${data.niche === niche ? "rgba(14,165,233,0.4)" : "rgba(42,72,112,0.35)"}`,
+              color: data.niche === niche ? "#0EA5E9" : "hsl(205 40% 62%)",
+              backdropFilter: "blur(12px)",
+            }}
           >
+            <span className="text-xl block mb-1">{nicheIcons[niche]}</span>
             {niche}
           </button>
         ))}
       </div>
 
       {topics.length > 0 && (
-        <div>
-          <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+        <div className="animate-fade-in">
+          <h3 className="text-base font-display font-bold mb-3 flex items-center gap-2">
             🔥 Trending in {data.niche}
           </h3>
           <div className="space-y-2">
@@ -59,11 +64,13 @@ const StepNiche = ({ data, updateData }: Props) => {
               <button
                 key={topic}
                 onClick={() => updateData({ topic })}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all ${
-                  data.topic === topic
-                    ? "bg-primary/15 text-primary border border-primary/30"
-                    : "glass glass-hover text-foreground"
-                }`}
+                className="w-full text-left px-5 py-4 rounded-xl text-sm transition-all"
+                style={{
+                  background: data.topic === topic ? "rgba(14,165,233,0.12)" : "rgba(8,13,20,0.65)",
+                  border: `1px solid ${data.topic === topic ? "rgba(14,165,233,0.4)" : "rgba(42,72,112,0.35)"}`,
+                  color: data.topic === topic ? "#0EA5E9" : "hsl(200 60% 94%)",
+                  backdropFilter: "blur(12px)",
+                }}
               >
                 {topic}
               </button>
@@ -75,7 +82,12 @@ const StepNiche = ({ data, updateData }: Props) => {
               placeholder="Or type your own topic..."
               value={!suggestedTopics[data.niche]?.includes(data.topic) ? data.topic : ""}
               onChange={(e) => updateData({ topic: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="w-full px-5 py-4 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+              style={{
+                background: "rgba(8,13,20,0.65)",
+                border: "1px solid rgba(42,72,112,0.35)",
+                backdropFilter: "blur(12px)",
+              }}
             />
           </div>
         </div>
