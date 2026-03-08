@@ -233,58 +233,103 @@ const NewProject = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-label text-emerald block mb-2">COMPLETE</span>
-                <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
-                <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + Kling AI video.</p>
-              </div>
-              <div className="surface-raised overflow-hidden rounded-xl">
-                {videoUrl ? (
-                  <video controls className="w-full aspect-video bg-secondary" src={videoUrl} />
-                ) : (
-                  <div className="aspect-video bg-secondary flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-14 h-14 rounded-2xl bg-emerald/10 flex items-center justify-center mx-auto mb-3">
-                        <Check className="w-7 h-7 text-emerald" />
+              {showEditor && videoUrl ? (
+                <>
+                  <div>
+                    <span className="text-[10px] font-label text-primary block mb-2">VIDEO EDITOR</span>
+                    <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Edit Your Video</h1>
+                    <p className="text-xs text-muted-foreground">Trim, add text overlays, and fine-tune before publishing</p>
+                  </div>
+                  <VideoEditor
+                    videoUrl={videoUrl}
+                    audioBase64={audioBase64}
+                    onBack={() => setShowEditor(false)}
+                    onExport={(edits) => {
+                      toast.success(`Exported with ${edits.overlays.length} overlays, trimmed to ${(edits.trim.end - edits.trim.start).toFixed(1)}s`);
+                      setShowEditor(false);
+                    }}
+                  />
+                </>
+              ) : showYouTube && videoUrl ? (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-label text-destructive block mb-2">PUBLISH</span>
+                      <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Upload to YouTube</h1>
+                    </div>
+                    <button onClick={() => setShowYouTube(false)} className="btn-ghost text-[10px]">← Back</button>
+                  </div>
+                  <YouTubeUploader
+                    videoUrl={videoUrl}
+                    title={data.topic}
+                    description={`${data.topic} | ${data.niche}`}
+                    tags={[data.niche, data.topic, data.style].filter(Boolean)}
+                  />
+                </>
+              ) : (
+                <>
+                  <div>
+                    <span className="text-[10px] font-label text-accent block mb-2">COMPLETE</span>
+                    <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
+                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + Kling AI video.</p>
+                  </div>
+                  <div className="surface-raised overflow-hidden rounded-xl">
+                    {videoUrl ? (
+                      <video controls className="w-full aspect-video bg-secondary" src={videoUrl} />
+                    ) : (
+                      <div className="aspect-video bg-secondary flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-3">
+                            <Check className="w-7 h-7 text-accent" />
+                          </div>
+                          <p className="text-xs font-display text-foreground font-bold">{data.topic || "Your Video"}</p>
+                        </div>
                       </div>
-                      <p className="text-xs font-display text-foreground font-bold">{data.topic || "Your Video"}</p>
+                    )}
+                    <div className="p-6">
+                      <div className="flex flex-wrap gap-3 mb-6">
+                        {videoUrl && (
+                          <>
+                            <button onClick={handleDownloadVideo} className="btn-primary flex items-center gap-2 text-xs">
+                              <Download className="w-3.5 h-3.5" /> Download Video
+                            </button>
+                            <button onClick={() => setShowEditor(true)} className="btn-ghost flex items-center gap-2 text-xs">
+                              <Pencil className="w-3.5 h-3.5" /> Edit Video
+                            </button>
+                            <button onClick={() => setShowYouTube(true)} className="btn-ghost flex items-center gap-2 text-xs">
+                              <Youtube className="w-3.5 h-3.5" /> Upload to YouTube
+                            </button>
+                          </>
+                        )}
+                        {audioBase64 && (
+                          <button onClick={handleDownloadAudio} className="btn-ghost flex items-center gap-2 text-xs">
+                            <Download className="w-3.5 h-3.5" /> Audio Only
+                          </button>
+                        )}
+                        <button className="btn-ghost flex items-center gap-2 text-xs" onClick={() => { navigator.clipboard.writeText(videoUrl || ''); toast.success('Link copied!'); }}>
+                          <ExternalLink className="w-3.5 h-3.5" /> Share
+                        </button>
+                      </div>
+                      <div className="gradient-strip mb-6" />
+                      <div className="flex flex-wrap gap-3">
+                        <button onClick={resetWizard} className="btn-ghost flex items-center gap-2 text-xs">
+                          <RotateCcw className="w-3.5 h-3.5" /> Create Another
+                        </button>
+                        <Link to="/dashboard"><button className="btn-ghost text-xs">Back to Dashboard</button></Link>
+                      </div>
                     </div>
                   </div>
-                )}
-                <div className="p-6">
-                  <div className="flex flex-wrap gap-3 mb-6">
-                    {videoUrl && (
-                      <button onClick={handleDownloadVideo} className="btn-primary flex items-center gap-2 text-xs">
-                        <Download className="w-3.5 h-3.5" /> Download Video
-                      </button>
-                    )}
-                    {audioBase64 && (
-                      <button onClick={handleDownloadAudio} className="btn-ghost flex items-center gap-2 text-xs">
-                        <Download className="w-3.5 h-3.5" /> Audio Only
-                      </button>
-                    )}
-                    <button className="btn-ghost flex items-center gap-2 text-xs" onClick={() => { navigator.clipboard.writeText(videoUrl || ''); toast.success('Link copied!'); }}>
-                      <ExternalLink className="w-3.5 h-3.5" /> Share
-                    </button>
+                  <div className="surface-raised p-4 rounded-xl">
+                    <p className="text-[10px] font-label text-muted-foreground mb-2">GENERATION DETAILS</p>
+                    <div className="grid grid-cols-2 gap-3 text-[10px]">
+                      <div><span className="text-muted-foreground">Topic:</span> <span className="text-foreground">{data.topic}</span></div>
+                      <div><span className="text-muted-foreground">Niche:</span> <span className="text-foreground">{data.niche}</span></div>
+                      <div><span className="text-muted-foreground">Voice:</span> <span className="text-foreground">{data.voice}</span></div>
+                      <div><span className="text-muted-foreground">Style:</span> <span className="text-foreground">{data.style}</span></div>
+                    </div>
                   </div>
-                  <div className="gradient-strip mb-6" />
-                  <div className="flex flex-wrap gap-3">
-                    <button onClick={resetWizard} className="btn-ghost flex items-center gap-2 text-xs">
-                      <RotateCcw className="w-3.5 h-3.5" /> Create Another
-                    </button>
-                    <Link to="/dashboard"><button className="btn-ghost text-xs">Back to Dashboard</button></Link>
-                  </div>
-                </div>
-              </div>
-              <div className="surface-raised p-4 rounded-xl">
-                <p className="text-[10px] font-label text-muted-foreground mb-2">GENERATION DETAILS</p>
-                <div className="grid grid-cols-2 gap-3 text-[10px]">
-                  <div><span className="text-muted-foreground">Topic:</span> <span className="text-foreground">{data.topic}</span></div>
-                  <div><span className="text-muted-foreground">Niche:</span> <span className="text-foreground">{data.niche}</span></div>
-                  <div><span className="text-muted-foreground">Voice:</span> <span className="text-foreground">{data.voice}</span></div>
-                  <div><span className="text-muted-foreground">Style:</span> <span className="text-foreground">{data.style}</span></div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           )}
         </div>
