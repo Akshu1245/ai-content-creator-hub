@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { User, Key, CreditCard, Bell, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
