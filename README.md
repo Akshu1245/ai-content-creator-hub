@@ -1,8 +1,29 @@
-# Welcome to your Lovable project
+# FacelessForge AI
+
+**Create. Comply. Dominate.**
+
+AI-powered faceless video creation platform with built-in YouTube monetization compliance scoring.
+
+## Design System (v3 — Editorial Light Theme)
+
+- **Background**: Warm cream — feels like premium paper
+- **Primary**: Deep teal — sophisticated, not generic
+- **Accent**: Terracotta — warm contrast
+- **Typography**: DM Serif Display (headings) + Plus Jakarta Sans (body) + IBM Plex Mono (data)
+- **Cards**: White surfaces with subtle warm shadows — no glass morphism
+
+## What's Built
+
+### Pages
+- Landing, Dashboard, New Project Wizard (6 steps), Analytics, Project Detail, Settings
+
+### Key Components
+- ComplianceGauge, PipelineProgress, WordCycler, AnimatedNumber, TiltCard
+
+### Backend (Edge Functions)
+- generate-script, compliance-check, compliance-fix
 
 ## Project info
-
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
 ## How can I edit this code?
 
