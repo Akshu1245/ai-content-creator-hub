@@ -20,12 +20,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <aside className="hidden md:flex w-60 flex-col p-4 relative z-20 shrink-0 border-r border-border bg-sidebar">
         <Link to="/" className="flex items-center gap-2.5 px-2 mb-8">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-display font-bold text-sm">F</span>
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-display text-base">F</span>
           </div>
-          <span className="text-base font-display font-bold tracking-tight text-foreground">
-            FacelessForge
-          </span>
+          <span className="text-lg font-display text-foreground">FacelessForge</span>
         </Link>
 
         <Link to="/new-project">
@@ -34,7 +32,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </button>
         </Link>
 
-        <nav className="flex-1 space-y-1">
+        <nav className="flex-1 space-y-0.5">
           {navItems.map((item) => {
             const active = location.pathname === item.path;
             return (
@@ -43,8 +41,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    ? "bg-primary/8 text-primary border-l-2 border-l-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -60,11 +58,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <span className="font-label text-muted-foreground">Credits</span>
               <span className="font-mono font-semibold text-primary">18/20</span>
             </div>
-            <div className="h-1.5 rounded-full overflow-hidden bg-secondary">
-              <div className="h-full w-[90%] rounded-full bg-primary" />
+            <div className="h-2 rounded-full overflow-hidden bg-secondary">
+              <div className="h-full w-[90%] rounded-full bg-primary transition-all" />
             </div>
           </div>
-          <button className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full rounded-lg hover:bg-secondary/50">
+          <button className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full rounded-lg hover:bg-secondary">
             <LogOut className="w-4 h-4" /> Sign out
           </button>
         </div>
@@ -73,10 +71,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 w-full z-50 h-14 flex items-center justify-between px-4 bg-background border-b border-border">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-display font-bold text-xs">F</span>
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-display text-sm">F</span>
           </div>
-          <span className="font-display font-bold text-sm">FacelessForge</span>
+          <span className="font-display text-sm text-foreground">FacelessForge</span>
         </Link>
         <Link to="/new-project">
           <button className="btn-primary text-xs px-3 py-2">

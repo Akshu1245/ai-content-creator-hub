@@ -1,5 +1,5 @@
 import { WizardData } from "@/pages/NewProject";
-import { Volume2, Play } from "lucide-react";
+import { Volume2 } from "lucide-react";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
@@ -23,12 +23,13 @@ const StepVoice = ({ data, updateData }: Props) => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-lg font-display font-semibold text-foreground mb-1">Voice & Style</h2>
+        <span className="font-label text-primary block mb-1">STEP 4</span>
+        <h2 className="text-xl font-display text-foreground mb-1">Voice & Style</h2>
         <p className="text-sm text-muted-foreground">Choose narrator voice and visual style for your video</p>
       </div>
 
       <div>
-        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Narrator Voice</h3>
+        <h3 className="text-sm font-display text-foreground mb-3">Narrator Voice</h3>
         <div className="grid md:grid-cols-3 gap-2">
           {voices.map((voice) => (
             <button
@@ -36,12 +37,12 @@ const StepVoice = ({ data, updateData }: Props) => {
               onClick={() => updateData({ voice: voice.id })}
               className={`text-left px-4 py-4 rounded-lg transition-all border ${
                 data.voice === voice.id
-                  ? "bg-primary/10 border-primary"
-                  : "bg-card border-border hover:border-muted"
+                  ? "bg-primary/8 border-primary"
+                  : "bg-card border-border hover:border-primary/30"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-display font-semibold text-sm text-foreground">{voice.name}</span>
+                <span className="font-display text-sm text-foreground">{voice.name}</span>
                 <span className="text-xs text-muted-foreground">{voice.gender}</span>
               </div>
               <p className="text-xs text-muted-foreground">{voice.desc}</p>
@@ -51,16 +52,16 @@ const StepVoice = ({ data, updateData }: Props) => {
       </div>
 
       <div>
-        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Narration Speed</h3>
-        <div className="surface p-4 flex items-center gap-4">
+        <h3 className="text-sm font-display text-foreground mb-3">Narration Speed</h3>
+        <div className="surface-raised p-4 flex items-center gap-4">
           <span className="text-xs font-mono text-muted-foreground">0.8×</span>
-          <input type="range" min="0.8" max="1.2" step="0.1" defaultValue="1.0" className="flex-1" style={{ accentColor: "hsl(28 72% 55%)" }} />
+          <input type="range" min="0.8" max="1.2" step="0.1" defaultValue="1.0" className="flex-1 accent-primary" />
           <span className="text-xs font-mono text-muted-foreground">1.2×</span>
         </div>
       </div>
 
       <div>
-        <h3 className="text-sm font-display font-semibold text-foreground mb-3">Visual Style</h3>
+        <h3 className="text-sm font-display text-foreground mb-3">Visual Style</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {styles.map((style) => (
             <button
@@ -68,11 +69,11 @@ const StepVoice = ({ data, updateData }: Props) => {
               onClick={() => updateData({ style: style.id })}
               className={`text-center px-3 py-4 rounded-lg transition-all border ${
                 data.style === style.id
-                  ? "bg-primary/10 border-primary"
-                  : "bg-card border-border hover:border-muted"
+                  ? "bg-primary/8 border-primary"
+                  : "bg-card border-border hover:border-primary/30"
               }`}
             >
-              <div className="font-display font-semibold text-sm text-foreground">{style.name}</div>
+              <div className="font-display text-sm text-foreground">{style.name}</div>
               <p className="text-xs text-muted-foreground mt-1">{style.desc}</p>
             </button>
           ))}

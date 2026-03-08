@@ -29,67 +29,67 @@ const Analytics = () => {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-display font-bold text-foreground">Analytics</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Performance insights across all content</p>
+          <span className="font-label text-muted-foreground block mb-1">PERFORMANCE</span>
+          <h1 className="text-2xl font-display text-foreground">Analytics</h1>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {overallStats.map((stat) => (
-            <div key={stat.label} className="surface p-5 surface-hover">
+            <div key={stat.label} className="surface-raised p-5 surface-hover">
               <div className="flex items-center justify-between mb-3">
                 <stat.icon className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs font-mono font-semibold text-accent">{stat.change}</span>
+                <span className="text-xs font-mono font-semibold text-primary">{stat.change}</span>
               </div>
-              <div className="text-2xl font-display font-bold text-foreground">
+              <div className="text-3xl font-display text-foreground">
                 <AnimatedNumber value={stat.value} suffix={stat.suffix} prefix={stat.prefix} />
               </div>
-              <div className="text-xs font-label text-muted-foreground mt-0.5">{stat.label.toUpperCase()}</div>
+              <div className="text-[11px] font-label text-muted-foreground mt-1">{stat.label.toUpperCase()}</div>
             </div>
           ))}
         </div>
 
-        <div className="surface-raised p-5 mb-6">
-          <h2 className="text-sm font-display font-semibold text-foreground mb-4">Views Over Time</h2>
-          <div className="h-40 flex items-end gap-px">
+        <div className="surface-raised p-6 mb-6">
+          <h2 className="text-lg font-display text-foreground mb-5">Views Over Time</h2>
+          <div className="h-44 flex items-end gap-1">
             {Array.from({ length: 30 }, (_, i) => {
               const base = 30 + Math.sin(i / 4) * 20 + (i > 15 ? (i - 15) * 3 : 0);
               const height = Math.min(base + Math.random() * 15, 100);
               return (
-                <div key={i} className="flex-1 rounded-t transition-all hover:opacity-80" style={{
+                <div key={i} className="flex-1 rounded-t-sm transition-all hover:opacity-75" style={{
                   height: `${height}%`,
-                  background: i > 24 ? "hsl(28 72% 55%)" : "hsl(40 5% 20%)",
+                  background: i > 24 ? "hsl(174 72% 22%)" : "hsl(30 12% 82%)",
                 }} />
               );
             })}
           </div>
-          <div className="flex justify-between text-xs font-label text-muted-foreground mt-2">
+          <div className="flex justify-between text-[11px] font-label text-muted-foreground mt-3">
             <span>30 DAYS AGO</span>
             <span>TODAY</span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-4">
+        <div className="grid lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
-            <h2 className="text-sm font-display font-semibold text-foreground mb-3">Video Performance</h2>
+            <h2 className="text-lg font-display text-foreground mb-3">Video Performance</h2>
             <div className="surface-raised overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
                     {["Video", "Views", "Retention", "CTR", "Revenue"].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 font-label text-muted-foreground">{h.toUpperCase()}</th>
+                      <th key={h} className="text-left px-5 py-3.5 text-[11px] font-label text-muted-foreground">{h.toUpperCase()}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {videoPerformance.map((v, i) => (
-                    <tr key={i} className="border-b border-border last:border-b-0 hover:bg-secondary/30 transition-colors">
-                      <td className="px-4 py-3 text-foreground font-medium truncate max-w-[200px]">{v.title}</td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground">{v.views}</td>
-                      <td className="px-4 py-3">
-                        <span className={`font-mono font-semibold ${parseInt(v.retention) >= 65 ? "text-accent" : "text-golden"}`}>{v.retention}</span>
+                    <tr key={i} className="border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors">
+                      <td className="px-5 py-3.5 text-foreground font-medium truncate max-w-[200px]">{v.title}</td>
+                      <td className="px-5 py-3.5 font-mono text-muted-foreground">{v.views}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`font-mono font-semibold ${parseInt(v.retention) >= 65 ? "text-primary" : "text-accent"}`}>{v.retention}</span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground">{v.ctr}</td>
-                      <td className="px-4 py-3 font-mono text-accent">{v.revenue}</td>
+                      <td className="px-5 py-3.5 font-mono text-muted-foreground">{v.ctr}</td>
+                      <td className="px-5 py-3.5 font-mono text-primary">{v.revenue}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -98,12 +98,12 @@ const Analytics = () => {
           </div>
 
           <div>
-            <h2 className="text-sm font-display font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" /> AI Insights
+            <h2 className="text-lg font-display text-foreground mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-accent" /> AI Insights
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {aiInsights.map((insight, i) => (
-                <div key={i} className="surface p-3.5 surface-hover border-l-2 border-l-primary">
+                <div key={i} className="surface-raised p-4 border-l-3 border-l-primary" style={{ borderLeftWidth: "3px" }}>
                   <p className="text-sm text-muted-foreground leading-relaxed">{insight}</p>
                 </div>
               ))}
