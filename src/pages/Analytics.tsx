@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info } from "lucide-react";
+import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info, AlertTriangle } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
