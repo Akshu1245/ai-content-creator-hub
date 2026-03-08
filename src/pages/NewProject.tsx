@@ -41,6 +41,7 @@ export interface WizardData {
   complianceScore: number | null;
   platforms: string[];
   scheduledAt: string;
+  selectedMedia: string[];
 }
 
 const NewProject = () => {
