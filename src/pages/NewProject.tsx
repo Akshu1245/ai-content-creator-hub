@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2 } from "lucide-react";
 import StepNiche from "@/components/wizard/StepNiche";
 import StepTrends from "@/components/wizard/StepTrends";
 import StepScript from "@/components/wizard/StepScript";
 import StepVoice from "@/components/wizard/StepVoice";
+import StepMedia from "@/components/wizard/StepMedia";
 import StepCompliance from "@/components/wizard/StepCompliance";
+import StepCaptions from "@/components/wizard/StepCaptions";
 import StepPublish from "@/components/wizard/StepPublish";
 import PipelineProgress from "@/components/dashboard/PipelineProgress";
 import { Link } from "react-router-dom";
@@ -17,7 +19,9 @@ const steps = [
   { label: "Trends" },
   { label: "Script" },
   { label: "Voice" },
+  { label: "Media" },
   { label: "Review" },
+  { label: "Captions" },
   { label: "Publish" },
 ];
 
@@ -43,7 +47,7 @@ const NewProject = () => {
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
+
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
@@ -58,13 +62,14 @@ const NewProject = () => {
       case 1: return true;
       case 2: return data.script.length > 50;
       case 3: return data.voice && data.style;
-      case 4: return true;
-      case 5: return data.platforms.length > 0;
+      case 4: return true; // Media is optional
+      case 5: return true; // Compliance
+      case 6: return true; // Captions
+      case 7: return data.platforms.length > 0;
       default: return true;
     }
   };
 
-  // Cleanup polling on unmount
   useEffect(() => {
     return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
   }, []);
@@ -77,25 +82,23 @@ const NewProject = () => {
     setError(null);
 
     try {
-      // Phase 1: Generate voiceover with Sarvam AI
       toast.info('Generating voiceover with Sarvam AI...');
       setPipelineStep(1);
       setProgress(20);
 
       const scriptText = data.script.length > 500 ? data.script.substring(0, 500) : data.script;
-      
+
       const { data: voiceData, error: voiceError } = await supabase.functions.invoke('generate-voice', {
         body: { text: scriptText, speaker: data.voice, speed: 1.0 },
       });
 
       if (voiceError) throw new Error(`Voice generation failed: ${voiceError.message}`);
       if (!voiceData?.audio_base64) throw new Error('No audio was generated');
-      
+
       setAudioBase64(voiceData.audio_base64);
       setProgress(40);
       toast.success('Voiceover generated!');
 
-      // Phase 2: Generate video with Kling AI
       setGenerationPhase('video');
       setPipelineStep(2);
       setProgress(50);
@@ -114,10 +117,9 @@ const NewProject = () => {
       setPipelineStep(3);
       setProgress(60);
 
-      // Poll for video completion
       await new Promise<void>((resolve, reject) => {
         let attempts = 0;
-        const maxAttempts = 60; // 5 minutes max
+        const maxAttempts = 60;
 
         pollingRef.current = setInterval(async () => {
           attempts++;
@@ -133,15 +135,13 @@ const NewProject = () => {
             });
 
             if (queryError) throw queryError;
-
-            const status = queryData?.status;
             setProgress(60 + Math.min(attempts * 0.5, 30));
 
-            if (status === 'succeed' && queryData?.video_url) {
+            if (queryData?.status === 'succeed' && queryData?.video_url) {
               if (pollingRef.current) clearInterval(pollingRef.current);
               setVideoUrl(queryData.video_url);
               resolve();
-            } else if (status === 'failed') {
+            } else if (queryData?.status === 'failed') {
               if (pollingRef.current) clearInterval(pollingRef.current);
               reject(new Error('Video generation failed on Kling AI side'));
             }
@@ -155,7 +155,6 @@ const NewProject = () => {
       setProgress(100);
       setPipelineStep(5);
       toast.success('Video is ready!');
-
     } catch (err) {
       console.error('Generation error:', err);
       const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -164,12 +163,7 @@ const NewProject = () => {
     }
   };
 
-  const handleDownloadVideo = () => {
-    if (videoUrl) {
-      window.open(videoUrl, '_blank');
-    }
-  };
-
+  const handleDownloadVideo = () => { if (videoUrl) window.open(videoUrl, '_blank'); };
   const handleDownloadAudio = () => {
     if (audioBase64) {
       const link = document.createElement('a');
@@ -201,9 +195,7 @@ const NewProject = () => {
                 <span className="text-[10px] font-label text-primary block mb-2">GENERATING</span>
                 <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Creating Your Video</h1>
                 <p className="text-xs text-muted-foreground">
-                  {generationPhase === 'voiceover' 
-                    ? 'Sarvam AI is synthesizing your voiceover...' 
-                    : 'Kling AI is rendering your video — this may take a few minutes.'}
+                  {generationPhase === 'voiceover' ? 'Sarvam AI is synthesizing your voiceover...' : 'Kling AI is rendering your video — this may take a few minutes.'}
                 </p>
               </div>
               <PipelineProgress activeStep={pipelineStep} progress={progress} />
@@ -240,9 +232,8 @@ const NewProject = () => {
               <div>
                 <span className="text-[10px] font-label text-emerald block mb-2">COMPLETE</span>
                 <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
-                <p className="text-xs text-muted-foreground">Successfully generated with Sarvam AI voice + Kling AI video.</p>
+                <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + Kling AI video.</p>
               </div>
-
               <div className="surface-raised overflow-hidden rounded-xl">
                 {videoUrl ? (
                   <video controls className="w-full aspect-video bg-secondary" src={videoUrl} />
@@ -277,13 +268,10 @@ const NewProject = () => {
                     <button onClick={resetWizard} className="btn-ghost flex items-center gap-2 text-xs">
                       <RotateCcw className="w-3.5 h-3.5" /> Create Another
                     </button>
-                    <Link to="/dashboard">
-                      <button className="btn-ghost text-xs">Back to Dashboard</button>
-                    </Link>
+                    <Link to="/dashboard"><button className="btn-ghost text-xs">Back to Dashboard</button></Link>
                   </div>
                 </div>
               </div>
-
               <div className="surface-raised p-4 rounded-xl">
                 <p className="text-[10px] font-label text-muted-foreground mb-2">GENERATION DETAILS</p>
                 <div className="grid grid-cols-2 gap-3 text-[10px]">
@@ -308,14 +296,13 @@ const NewProject = () => {
           <p className="text-xs text-muted-foreground mt-1">Follow the steps to generate your faceless video.</p>
         </div>
 
-        {/* Step progress */}
         <div className="mb-10">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
+          <div className="flex items-center gap-1 overflow-x-auto pb-2">
             {steps.map((step, i) => (
-              <div key={step.label} className="flex items-center gap-1.5 shrink-0">
+              <div key={step.label} className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => i < currentStep && setCurrentStep(i)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] transition-all ${
                     i === currentStep
                       ? "bg-primary/15 text-primary font-bold border border-primary/20"
                       : i < currentStep
@@ -323,17 +310,17 @@ const NewProject = () => {
                       : "text-muted-foreground border border-transparent"
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold ${
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-mono font-bold ${
                     i < currentStep ? "bg-emerald/15 text-emerald" :
                     i === currentStep ? "bg-primary/20 text-primary" :
                     "bg-secondary text-muted-foreground"
                   }`}>
-                    {i < currentStep ? <Check className="w-3 h-3" /> : i + 1}
+                    {i < currentStep ? <Check className="w-2.5 h-2.5" /> : i + 1}
                   </div>
-                  <span className="hidden md:inline">{step.label}</span>
+                  <span className="hidden lg:inline">{step.label}</span>
                 </button>
                 {i < steps.length - 1 && (
-                  <div className={`w-4 h-px ${i < currentStep ? "bg-emerald/30" : "bg-border"}`} />
+                  <div className={`w-3 h-px ${i < currentStep ? "bg-emerald/30" : "bg-border"}`} />
                 )}
               </div>
             ))}
@@ -345,11 +332,12 @@ const NewProject = () => {
           {currentStep === 1 && <StepTrends data={data} updateData={updateData} />}
           {currentStep === 2 && <StepScript data={data} updateData={updateData} />}
           {currentStep === 3 && <StepVoice data={data} updateData={updateData} />}
-          {currentStep === 4 && <StepCompliance data={data} updateData={updateData} />}
-          {currentStep === 5 && <StepPublish data={data} updateData={updateData} />}
+          {currentStep === 4 && <StepMedia data={data} updateData={updateData} />}
+          {currentStep === 5 && <StepCompliance data={data} updateData={updateData} />}
+          {currentStep === 6 && <StepCaptions data={data} updateData={updateData} />}
+          {currentStep === 7 && <StepPublish data={data} updateData={updateData} />}
         </div>
 
-        {/* Navigation */}
         <div className="flex items-center justify-between mt-10 pt-6 border-t border-border/50">
           <button
             onClick={() => setCurrentStep((p) => Math.max(0, p - 1))}
