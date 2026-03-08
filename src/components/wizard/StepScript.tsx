@@ -20,7 +20,7 @@ const StepScript = ({ data, updateData }: Props) => {
       if (error) throw error;
       if (result?.script) {
         updateData({ script: result.script });
-        toast.success("Script generated!");
+        toast.success("Script generated");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed — using demo script");
@@ -33,39 +33,34 @@ const StepScript = ({ data, updateData }: Props) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-display font-bold mb-1">Video Script</h2>
-          <p className="text-sm" style={{ color: "hsl(205 40% 55%)" }}>AI-generated script optimized for retention</p>
+          <h2 className="text-lg font-display font-semibold text-foreground mb-1">Video Script</h2>
+          <p className="text-sm text-muted-foreground">AI-generated script optimized for retention</p>
         </div>
-        <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 disabled:opacity-40">
+        <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-sm disabled:opacity-40">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {data.script ? "Regenerate" : "Generate Script"}
+          {data.script ? "Regenerate" : "Generate"}
         </button>
       </div>
 
       <textarea
         value={data.script}
         onChange={(e) => updateData({ script: e.target.value })}
-        placeholder="Click 'Generate Script' to create an AI-powered video script, or write your own..."
-        className="w-full h-80 px-5 py-4 rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none font-mono leading-relaxed"
-        style={{
-          background: "rgba(8,13,20,0.65)",
-          border: "1px solid rgba(42,72,112,0.35)",
-          backdropFilter: "blur(20px)",
-        }}
+        placeholder="Click 'Generate' to create an AI-powered script, or write your own..."
+        className="w-full h-72 px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none font-mono leading-relaxed bg-card border border-border"
       />
 
-      <div className="flex items-center gap-6 text-sm">
-        <span className="flex items-center gap-2 font-mono" style={{ color: "hsl(205 40% 55%)" }}>
-          <FileText className="w-4 h-4" /> {wordCount} words
+      <div className="flex items-center gap-5 text-sm text-muted-foreground">
+        <span className="flex items-center gap-1.5 font-mono text-xs">
+          <FileText className="w-3.5 h-3.5" /> {wordCount} words
         </span>
-        <span className="flex items-center gap-2 font-mono" style={{ color: "hsl(205 40% 55%)" }}>
-          <Clock className="w-4 h-4" /> ~{estimatedDuration} min
+        <span className="flex items-center gap-1.5 font-mono text-xs">
+          <Clock className="w-3.5 h-3.5" /> ~{estimatedDuration} min
         </span>
         {wordCount > 0 && wordCount < 150 && (
-          <span className="flex items-center gap-2 text-xs" style={{ color: "#FFB703" }}>
+          <span className="flex items-center gap-1.5 text-xs text-golden">
             <AlertTriangle className="w-3 h-3" /> Script may be too short
           </span>
         )}
