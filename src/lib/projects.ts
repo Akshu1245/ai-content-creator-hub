@@ -80,7 +80,6 @@ export async function fetchScheduledPosts(projectId?: string) {
   return data;
 }
 
-<<<<<<< HEAD
 export async function createScheduledPost(fields: { project_id: string; platform: string; scheduled_at: string; caption_data?: unknown }) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
