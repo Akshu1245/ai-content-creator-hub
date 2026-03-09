@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { WizardData } from "@/pages/NewProject";
 import { Eye, Clock, TrendingUp, BarChart3, Loader2, Search, ExternalLink, Lightbulb, Target } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,7 +31,7 @@ const StepTrends = ({ data, updateData }: Props) => {
   const [sources, setSources] = useState<Source[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchResearch = async () => {
+  const fetchResearch = useCallback(async () => {
     if (!data.niche || !data.topic) return;
     setLoading(true);
     setError(null);
@@ -55,13 +55,13 @@ const StepTrends = ({ data, updateData }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [data.niche, data.topic, updateData]);
 
   useEffect(() => {
     if (data.niche && data.topic && !research && !loading) {
       fetchResearch();
     }
-  }, [data.niche, data.topic]);
+  }, [data.niche, data.topic, research, loading, fetchResearch]);
 
   if (loading) {
     return (

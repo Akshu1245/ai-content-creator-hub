@@ -188,7 +188,7 @@ const StepCompliance = ({ data, updateData }: Props) => {
           topic={data.topic}
           niche={data.niche}
           onReport={(report) => {
-            updateData({ copyrightReport: report } as any);
+            updateData({ copyrightReport: report });
           }}
         />
       </div>

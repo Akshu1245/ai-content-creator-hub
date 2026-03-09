@@ -31,9 +31,21 @@ interface Props {
   videoUrl: string;
   audioBase64?: string | null;
   script?: string;
-  captions?: any;
+  captions?: unknown;
   onExport?: (edits: { trim: TrimState; overlays: TextOverlay[] }) => void;
   onBack?: () => void;
+}
+
+interface AutoEditOverlay {
+  text?: string;
+  x?: number;
+  y?: number;
+  fontSize?: number;
+  color?: string;
+  fontWeight?: "normal" | "bold";
+  align?: "left" | "center" | "right";
+  startTime?: number;
+  endTime?: number;
 }
 
 const COLORS = [
@@ -118,7 +130,7 @@ const VideoEditor = ({ videoUrl, audioBase64, script, captions, onExport, onBack
 
   useEffect(() => {
     if (!playing) renderFrame();
-  }, [overlays, selectedOverlay]);
+  }, [overlays, selectedOverlay, playing, renderFrame]);
 
   const togglePlay = () => {
     const vid = videoRef.current;
@@ -236,8 +248,8 @@ const VideoEditor = ({ videoUrl, audioBase64, script, captions, onExport, onBack
 
       // Apply overlays
       if (editPlan.overlays?.length) {
-        const newOverlays: TextOverlay[] = editPlan.overlays.map(
-          (o: any, i: number) => ({
+        const newOverlays: TextOverlay[] = (editPlan.overlays as AutoEditOverlay[]).map(
+          (o, i: number) => ({
             id: `ai-${Date.now()}-${i}`,
             text: o.text || "Text",
             x: Math.max(0, Math.min(100, o.x ?? 50)),
@@ -262,9 +274,10 @@ const VideoEditor = ({ videoUrl, audioBase64, script, captions, onExport, onBack
       }
 
       toast.success("AI auto-edit applied! Review and adjust as needed.");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Auto-edit error:", e);
-      toast.error(e.message || "AI auto-edit failed");
+      const msg = e instanceof Error ? e.message : "AI auto-edit failed";
+      toast.error(msg);
     } finally {
       setAiLoading(false);
     }

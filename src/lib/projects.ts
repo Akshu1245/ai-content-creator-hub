@@ -12,13 +12,13 @@ export interface Project {
   status: string;
   video_url: string | null;
   audio_base64: string | null;
-  trend_data: any;
-  captions: any;
+  trend_data: unknown;
+  captions: unknown;
   compliance_score: number | null;
   platforms: string[] | null;
-  selected_media: any;
-  trim_data: any;
-  overlays_data: any;
+  selected_media: unknown;
+  trim_data: unknown;
+  overlays_data: unknown;
   thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
@@ -80,7 +80,8 @@ export async function fetchScheduledPosts(projectId?: string) {
   return data;
 }
 
-export async function createScheduledPost(fields: { project_id: string; platform: string; scheduled_at: string; caption_data?: any }) {
+<<<<<<< HEAD
+export async function createScheduledPost(fields: { project_id: string; platform: string; scheduled_at: string; caption_data?: unknown }) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 

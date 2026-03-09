@@ -22,8 +22,9 @@ const StepScript = ({ data, updateData }: Props) => {
         updateData({ script: result.script });
         toast.success("Script generated");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed — using demo script");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed - using demo script";
+      toast.error(msg);
       updateData({
         script: `[HOOK - First 3 seconds]\nDid you know that ${data.topic || "this simple concept"} could change everything you think you know?\n\n[SECTION 1 - The Setup]\nMost people never think about ${data.topic?.toLowerCase() || "this"}. But here's what makes it fascinating...\n\nThe truth is, understanding this concept gives you an unfair advantage that 99% of people will never have.\n\n[SECTION 2 - The Deep Dive]\nLet's break this down step by step. First, you need to understand the fundamentals.\n\nWhen we look at the data, the patterns become crystal clear. This isn't just theory — this is backed by real-world evidence.\n\n[SECTION 3 - The Revelation]\nHere's what most people miss — and this is the part that changes everything.\n\nOnce you understand this principle, you'll see it everywhere. It's like a cheat code for understanding how the world actually works.\n\n[CTA - 80% Mark]\nIf you're finding this valuable, hit that subscribe button. I break down complex topics like this every week.\n\n[OUTRO]\nNow you know something that gives you a real edge. The question is — what are you going to do with it?`,
       });

@@ -18,7 +18,21 @@ import PipelineProgress from "@/components/dashboard/PipelineProgress";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { createProject, updateProject, createScheduledPost } from "@/lib/projects";
+import { createProject, updateProject, createScheduledPost, type Project } from "@/lib/projects";
+
+interface OverlayDraft {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  color: string;
+  fontWeight: "normal" | "bold";
+  align: "left" | "center" | "right";
+  startTime: number;
+  endTime: number;
+  visible: boolean;
+}
 
 const steps = [
   { label: "Niche" },
@@ -34,7 +48,7 @@ const steps = [
 export interface WizardData {
   niche: string;
   topic: string;
-  trendData: any;
+  trendData: unknown;
   script: string;
   voice: string;
   style: string;
@@ -42,6 +56,7 @@ export interface WizardData {
   platforms: string[];
   scheduledAt: string;
   selectedMedia: string[];
+  copyrightReport?: unknown;
 }
 
 const NewProject = () => {
@@ -62,7 +77,7 @@ const NewProject = () => {
 
   // Editor state for export
   const [editorTrim, setEditorTrim] = useState({ start: 0, end: 0 });
-  const [editorOverlays, setEditorOverlays] = useState<any[]>([]);
+  const [editorOverlays, setEditorOverlays] = useState<OverlayDraft[]>([]);
 
   const [data, setData] = useState<WizardData>({
     niche: "", topic: "", trendData: null, script: "",
@@ -94,28 +109,30 @@ const NewProject = () => {
   const saveProject = async (status: string, videoUrl?: string | null, audioBase64?: string | null) => {
     try {
       if (projectId) {
-        await updateProject(projectId, {
+        const payload: Partial<Project> = {
           title: data.topic || "Untitled Project",
           niche: data.niche, topic: data.topic, script: data.script,
           voice: data.voice, style: data.style, status,
           video_url: videoUrl || undefined, audio_base64: audioBase64 || undefined,
           trend_data: data.trendData, compliance_score: data.complianceScore,
           platforms: data.platforms,
-        } as any);
+        };
+        await updateProject(projectId, payload);
       } else {
-        const project = await createProject({
+        const payload: Partial<Project> = {
           title: data.topic || "Untitled Project",
           niche: data.niche, topic: data.topic, script: data.script,
           voice: data.voice, style: data.style, status,
           video_url: videoUrl || undefined, audio_base64: audioBase64 || undefined,
           trend_data: data.trendData, compliance_score: data.complianceScore,
           platforms: data.platforms,
-        } as any);
+        };
+        const project = await createProject(payload);
         setProjectId(project.id);
         return project.id;
       }
       return projectId;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Save project error:", e);
     }
   };
