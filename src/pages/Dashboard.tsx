@@ -14,7 +14,7 @@ import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -31,8 +31,9 @@ const Dashboard = () => {
   const queryClient = useQueryClient();
   const welcomeShown = useRef(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [mounted, setMounted] = useState(false);
 
-  // Handle checkout success redirect
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Subscription activated! 🎉");
@@ -49,7 +50,7 @@ const Dashboard = () => {
       const isNew = !localStorage.getItem("ff-returning-user");
       if (isNew) {
         localStorage.setItem("ff-returning-user", "1");
-        toast.success(`Welcome to FacelessForge${name ? `, ${name}` : ""}! 🔥`, {
+        toast.success(`Welcome to VORAX${name ? `, ${name}` : ""}! 🔥`, {
           description: "Create your first AI-powered video in minutes.",
         });
       } else {
@@ -90,6 +91,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
+            <span className="font-label text-primary tracking-widest text-[10px]">CONTROL CENTER</span>
             <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">Dashboard</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}.
@@ -108,17 +110,21 @@ const Dashboard = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {stats.map((stat, i) => (
-            <div key={stat.label} className="surface-raised p-5 surface-hover" style={{ animationDelay: `${i * 0.05}s` }}>
+            <div key={stat.label} className="surface-raised p-5 surface-hover border border-border/45 group cursor-pointer hover:border-primary/40 transition-all duration-300" style={{
+              animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+              animationDelay: `${0.3 + (i * 0.08)}s`,
+              animationFillMode: "both",
+            }}>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
-                  <stat.icon className="w-4 h-4 text-muted-foreground" />
+                <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                  <stat.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <span className="text-[10px] font-label text-emerald">{stat.trend}</span>
               </div>
               <div className="text-2xl font-display text-foreground font-bold">
                 <AnimatedNumber value={stat.value} suffix={stat.suffix} />
               </div>
-              <div className="text-[10px] font-label text-muted-foreground mt-1">{stat.label.toUpperCase()}</div>
+              <div className="text-[10px] font-label text-muted-foreground mt-1 group-hover:text-muted-foreground/80 transition-colors">{stat.label.toUpperCase()}</div>
             </div>
           ))}
         </div>
@@ -149,13 +155,18 @@ const Dashboard = () => {
             ) : projects.length === 0 ? (
               <EmptyState />
             ) : (
-              projects.slice(0, 10).map((project) => (
-                <div key={project.id} className="surface-raised p-5 surface-hover group relative">
+              projects.slice(0, 10).map((project, index) => (
+                <div key={project.id} className="surface-raised p-5 surface-hover group relative border border-border/45 overflow-hidden hover:border-primary/40 hover:shadow-[0_0_20px_rgba(212,180,117,0.16)] transition-all duration-300" style={{
+                  animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                  animationDelay: `${0.5 + (index * 0.08)}s`,
+                  animationFillMode: "both",
+                }}>
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <Link to={`/project/${project.id}`} className="block">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
-                          <span className="text-xs font-display text-muted-foreground">{(project.niche || "??").slice(0, 2).toUpperCase()}</span>
+                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors duration-300">
+                          <span className="text-xs font-display text-muted-foreground group-hover:text-primary transition-colors">{(project.niche || "??").slice(0, 2).toUpperCase()}</span>
                         </div>
                         <div>
                           <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors">{project.title}</h3>
@@ -168,7 +179,7 @@ const Dashboard = () => {
                         <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold border ${getStatusStyle(project.status)}`}>
                           {project.status.toUpperCase()}
                         </span>
-                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                       </div>
                     </div>
                     <div className="pl-[52px]">
@@ -177,7 +188,7 @@ const Dashboard = () => {
                   </Link>
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(project.id); }}
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all hover:scale-110"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -189,23 +200,31 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <div>
+          <div style={{
+            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+            animationDelay: "1s",
+            animationFillMode: "both",
+          }}>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Quick Actions</h2>
             <div className="space-y-2">
               {[
                 { to: "/new-project", icon: Play, label: "Generate New Video", desc: "Create from scratch" },
                 { to: "/analytics", icon: TrendingUp, label: "View Analytics", desc: "Performance data" },
-              ].map((action) => (
+              ].map((action, i) => (
                 <Link key={action.to} to={action.to}>
-                  <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer border border-border/45 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(212,180,117,0.14)] transition-all duration-300" style={{
+                    animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+                    animationDelay: `${1.1 + (i * 0.08)}s`,
+                    animationFillMode: "both",
+                  }}>
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 hover:bg-primary/20 transition-colors duration-300">
                       <action.icon className="w-4 h-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-xs font-medium text-foreground block">{action.label}</span>
                       <span className="text-[10px] text-muted-foreground">{action.desc}</span>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </Link>
               ))}
@@ -213,9 +232,15 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity */}
-          <div>
+          <div style={{
+            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+            animationDelay: "1.1s",
+            animationFillMode: "both",
+          }}>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
-            <div className="surface-raised p-5 space-y-4">
+            <div className="surface-raised p-5 space-y-4 border border-border/45 hover:border-primary/40 transition-colors duration-300" style={{
+              animation: "glowPulse 4s ease-in-out infinite",
+            }}>
               {projects.slice(0, 4).map((p) => (
                 <div key={p.id} className="flex items-start gap-3">
                   <div className={`status-dot mt-1.5 shrink-0 ${p.status === "complete" ? "bg-emerald" : p.status === "generating" ? "bg-primary" : "bg-accent"}`} />

@@ -17,6 +17,14 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import WhyVORAX from "./pages/WhyVORAX";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Documentation from "./pages/Documentation";
+import ApiReference from "./pages/ApiReference";
+import HelpCenter from "./pages/HelpCenter";
+import Blog from "./pages/Blog";
+import Changelog from "./pages/Changelog";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +53,14 @@ const App = () => (
               <Route path="/project/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/why-vorax" element={<WhyVORAX />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/api-reference" element={<ApiReference />} />
+              <Route path="/help-center" element={<HelpCenter />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/changelog" element={<Changelog />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />

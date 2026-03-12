@@ -10,10 +10,14 @@ import StepNiche from "@/components/wizard/StepNiche";
 import StepTrends from "@/components/wizard/StepTrends";
 import StepScript from "@/components/wizard/StepScript";
 import StepVoice from "@/components/wizard/StepVoice";
+import StepMusic from "@/components/wizard/StepMusic";
 import StepMedia from "@/components/wizard/StepMedia";
 import StepCompliance from "@/components/wizard/StepCompliance";
 import StepCaptions from "@/components/wizard/StepCaptions";
 import StepPublish from "@/components/wizard/StepPublish";
+import StepVoiceCloning from "@/components/wizard/StepVoiceCloning";
+import StepRevenue from "@/components/wizard/StepRevenue";
+import StepAffiliate from "@/components/wizard/StepAffiliate";
 import PipelineProgress from "@/components/dashboard/PipelineProgress";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,7 +43,11 @@ const steps = [
   { label: "Trends" },
   { label: "Script" },
   { label: "Voice" },
+  { label: "Voice Clone" },
+  { label: "Music" },
   { label: "Media" },
+  { label: "Revenue" },
+  { label: "Affiliate" },
   { label: "Review" },
   { label: "Captions" },
   { label: "Publish" },
@@ -57,6 +65,12 @@ export interface WizardData {
   scheduledAt: string;
   selectedMedia: string[];
   copyrightReport?: unknown;
+  musicTrack?: string | null;
+  musicVolume?: number;
+  voiceCloneId?: string | null;
+  estimatedViews?: number;
+  estimatedRevenue?: number;
+  affiliateProducts?: string[];
 }
 
 const NewProject = () => {
@@ -83,6 +97,7 @@ const NewProject = () => {
     niche: "", topic: "", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
     platforms: ["youtube"], scheduledAt: "", selectedMedia: [],
+    musicTrack: null, musicVolume: 30,
   });
 
   const updateData = (updates: Partial<WizardData>) => setData((prev) => ({ ...prev, ...updates }));
@@ -93,10 +108,14 @@ const NewProject = () => {
       case 1: return true;
       case 2: return data.script.length > 50;
       case 3: return data.voice && data.style;
-      case 4: return true;
-      case 5: return true;
-      case 6: return true;
-      case 7: return data.platforms.length > 0;
+      case 4: return true; // Voice Clone - optional
+      case 5: return true; // Music - optional
+      case 6: return data.selectedMedia.length > 0; // Media
+      case 7: return true; // Revenue - optional
+      case 8: return true; // Affiliate - optional
+      case 9: return true; // Review - optional
+      case 10: return true; // Captions - optional
+      case 11: return data.platforms.length > 0; // Publish
       default: return true;
     }
   };
@@ -144,6 +163,15 @@ const NewProject = () => {
     setProgress(10);
     setError(null);
 
+    // Load BYOK engine config from localStorage (set in Settings → Video Generation Engine)
+    const engineConfig = (() => {
+      try {
+        return JSON.parse(localStorage.getItem('vorax_engine_config') || '{"engine":"pexels"}');
+      } catch {
+        return { engine: 'pexels' };
+      }
+    })();
+
     // Save as generating
     const pid = await saveProject('generating');
 
@@ -173,7 +201,7 @@ const NewProject = () => {
       const videoPrompt = `${data.style} style video about: ${data.topic}. ${data.niche} niche. High quality, professional faceless content.`;
 
       const { data: createData, error: createError } = await supabase.functions.invoke('generate-video', {
-        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9', media_urls: data.selectedMedia },
+        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9', media_urls: data.selectedMedia, engine_config: engineConfig },
       });
 
       if (createError) throw new Error(`Video creation failed: ${createError.message}`);
@@ -285,7 +313,7 @@ const NewProject = () => {
                 </p>
               </div>
               <PipelineProgress activeStep={pipelineStep} progress={progress} />
-              <div className="mt-6 surface-raised p-4 rounded-xl">
+              <div className="mt-6 surface-raised p-4 rounded-xl border border-border/45">
                 <div className="flex items-center gap-3">
                   <Loader2 className="w-4 h-4 text-primary animate-spin" />
                   <div>
@@ -380,7 +408,7 @@ const NewProject = () => {
                     <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
                     <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + JSON2Video rendering.</p>
                   </div>
-                  <div className="surface-raised overflow-hidden rounded-xl">
+                  <div className="surface-raised overflow-hidden rounded-xl border border-border/45">
                     {videoUrl ? (
                       <video controls className="w-full aspect-video bg-secondary" src={videoUrl} />
                     ) : (
@@ -432,7 +460,7 @@ const NewProject = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="surface-raised p-4 rounded-xl">
+                  <div className="surface-raised p-4 rounded-xl border border-border/45">
                     <p className="text-[10px] font-label text-muted-foreground mb-2">GENERATION DETAILS</p>
                     <div className="grid grid-cols-2 gap-3 text-[10px]">
                       <div><span className="text-muted-foreground">Topic:</span> <span className="text-foreground">{data.topic}</span></div>
@@ -454,6 +482,7 @@ const NewProject = () => {
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
+          <span className="font-label text-primary tracking-widest text-[10px]">VIDEO WIZARD</span>
           <h1 className="text-xl font-display text-foreground font-bold tracking-tight">Create a Video</h1>
           <p className="text-xs text-muted-foreground mt-1">Follow the steps to generate your faceless video.</p>
         </div>
@@ -494,10 +523,14 @@ const NewProject = () => {
           {currentStep === 1 && <StepTrends data={data} updateData={updateData} />}
           {currentStep === 2 && <StepScript data={data} updateData={updateData} />}
           {currentStep === 3 && <StepVoice data={data} updateData={updateData} />}
-          {currentStep === 4 && <StepMedia data={data} updateData={updateData} />}
-          {currentStep === 5 && <StepCompliance data={data} updateData={updateData} />}
-          {currentStep === 6 && <StepCaptions data={data} updateData={updateData} />}
-          {currentStep === 7 && <StepPublish data={data} updateData={updateData} />}
+          {currentStep === 4 && <StepVoiceCloning data={data} updateData={updateData} />}
+          {currentStep === 5 && <StepMusic data={data} updateData={updateData} />}
+          {currentStep === 6 && <StepMedia data={data} updateData={updateData} />}
+          {currentStep === 7 && <StepRevenue data={data} updateData={updateData} />}
+          {currentStep === 8 && <StepAffiliate data={data} updateData={updateData} />}
+          {currentStep === 9 && <StepCompliance data={data} updateData={updateData} />}
+          {currentStep === 10 && <StepCaptions data={data} updateData={updateData} />}
+          {currentStep === 11 && <StepPublish data={data} updateData={updateData} />}
         </div>
 
         <div className="flex items-center justify-between mt-10 pt-6 border-t border-border/50">

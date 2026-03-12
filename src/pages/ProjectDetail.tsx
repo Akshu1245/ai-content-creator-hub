@@ -78,6 +78,7 @@ const ProjectDetail = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
+            <span className="font-label text-primary tracking-widest text-[10px]">PROJECT INSPECTOR</span>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">{project.title}</h1>
               <span className={`px-3 py-1 rounded-full text-[10px] font-label font-semibold border ${getStatusStyle(project.status)}`}>
@@ -102,7 +103,7 @@ const ProjectDetail = () => {
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {/* Video preview */}
-          <div className="surface-raised overflow-hidden rounded-xl">
+          <div className="surface-raised overflow-hidden rounded-xl border border-border/45">
             {project.video_url ? (
               <video controls className="w-full aspect-video bg-secondary" src={project.video_url} />
             ) : (
@@ -121,7 +122,7 @@ const ProjectDetail = () => {
 
           {/* Details */}
           <div className="space-y-4">
-            <div className="surface-raised p-5 rounded-xl">
+            <div className="surface-raised p-5 rounded-xl border border-border/45">
               <h3 className="text-[10px] font-label text-muted-foreground mb-3">PROJECT DETAILS</h3>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between"><span className="text-muted-foreground">Niche</span><span className="text-foreground">{project.niche || "—"}</span></div>
@@ -135,7 +136,7 @@ const ProjectDetail = () => {
 
             {/* Scheduled posts */}
             {scheduledPosts.length > 0 && (
-              <div className="surface-raised p-5 rounded-xl">
+              <div className="surface-raised p-5 rounded-xl border border-border/45">
                 <h3 className="text-[10px] font-label text-muted-foreground mb-3">SCHEDULED POSTS</h3>
                 <div className="space-y-2">
                   {scheduledPosts.map((sp: any) => (
@@ -160,7 +161,7 @@ const ProjectDetail = () => {
 
         {/* Script */}
         {project.script && (
-          <div className="surface-raised p-5 rounded-xl mb-6">
+          <div className="surface-raised p-5 rounded-xl mb-6 border border-border/45">
             <h3 className="text-[10px] font-label text-muted-foreground mb-3">SCRIPT</h3>
             <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">{project.script}</p>
           </div>

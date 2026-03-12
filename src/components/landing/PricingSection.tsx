@@ -14,9 +14,9 @@ const PricingSection = () => {
         <div className="text-center mb-20">
           <span className="font-label text-primary tracking-widest">PRICING</span>
           <h2 className="text-3xl md:text-5xl font-display text-foreground font-bold tracking-tight mt-4 mb-3">
-            Simple, transparent pricing
+            Built to scale with your output
           </h2>
-          <p className="text-muted-foreground text-sm">Start free. Scale when you're ready.</p>
+          <p className="text-muted-foreground text-sm">Start free. Upgrade only when your content engine is ready.</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -27,13 +27,15 @@ const PricingSection = () => {
             >
               {plan.popular && (
                 <div className="absolute -inset-[1px] rounded-[25px] opacity-60" style={{
-                  background: "linear-gradient(135deg, hsl(12 76% 56% / 0.4), hsl(158 32% 45% / 0.4))",
+                  background: "linear-gradient(135deg, hsl(var(--primary) / 0.66), hsl(var(--accent) / 0.56))",
                 }} />
               )}
 
               <div className={`surface-raised p-8 relative h-full ${plan.popular ? "border-transparent" : ""}`}
-                style={plan.popular ? { background: "linear-gradient(145deg, hsl(22 10% 12%), hsl(24 12% 6%))" } : undefined}
+                style={plan.popular ? { background: "linear-gradient(145deg, hsl(218 18% 13%), hsl(216 18% 8%))" } : undefined}
               >
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
                 {plan.popular && (
                   <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-b-xl text-[9px] font-label bg-gradient-to-r from-primary to-accent text-background font-bold tracking-widest">
                     <Zap className="w-2.5 h-2.5 inline mr-1" /> MOST POPULAR
@@ -46,13 +48,17 @@ const PricingSection = () => {
                   {plan.period && <span className="text-xs text-muted-foreground">{plan.period}</span>}
                 </div>
 
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-6">
+                  {plan.popular ? "Best for consistent creators" : "Flexible start"}
+                </p>
+
                 <ul className="space-y-3 mb-10">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-3 text-xs text-muted-foreground">
                       <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
                         style={{
-                          background: plan.popular ? "hsl(12 76% 56% / 0.1)" : "hsl(158 32% 45% / 0.08)",
-                          border: `1px solid ${plan.popular ? "hsl(12 76% 56% / 0.2)" : "hsl(158 32% 45% / 0.12)"}`,
+                          background: plan.popular ? "hsl(var(--primary) / 0.14)" : "hsl(var(--accent) / 0.12)",
+                          border: `1px solid ${plan.popular ? "hsl(var(--primary) / 0.26)" : "hsl(var(--accent) / 0.2)"}`,
                         }}
                       >
                         <Check className={`w-2.5 h-2.5 ${plan.popular ? "text-primary" : "text-accent"}`} />
@@ -69,6 +75,10 @@ const PricingSection = () => {
                     <button className="btn-ghost w-full text-xs">{plan.cta}</button>
                   )}
                 </Link>
+
+                <p className="mt-4 text-[10px] text-center text-muted-foreground/70">
+                  Cancel anytime
+                </p>
               </div>
             </div>
           ))}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info, AlertTriangle } from "lucide-react";
@@ -35,11 +35,11 @@ const retentionData = [
 ];
 
 const trafficSources = [
-  { name: "Browse", value: 42, fill: "hsl(12, 76%, 56%)" },
-  { name: "Search", value: 28, fill: "hsl(158, 32%, 45%)" },
-  { name: "Suggested", value: 18, fill: "hsl(42, 72%, 52%)" },
-  { name: "External", value: 8, fill: "hsl(185, 40%, 48%)" },
-  { name: "Direct", value: 4, fill: "hsl(320, 22%, 48%)" },
+   { name: "Browse", value: 42, fill: "hsl(236, 50%, 60%)" },
+   { name: "Search", value: 28, fill: "hsl(152, 58%, 42%)" },
+   { name: "Suggested", value: 18, fill: "hsl(43, 85%, 55%)" },
+   { name: "External", value: 8, fill: "hsl(198, 55%, 48%)" },
+   { name: "Direct", value: 4, fill: "hsl(265, 42%, 56%)" },
 ];
 
 const topVideos = [
@@ -70,15 +70,18 @@ const aiInsights = [
 ];
 
 const chartConfig = {
-  views: { label: "Views", color: "hsl(12, 76%, 56%)" },
-  watchTime: { label: "Watch Time (hrs)", color: "hsl(158, 32%, 45%)" },
-  retention: { label: "Retention %", color: "hsl(42, 72%, 52%)" },
-  uploads: { label: "Uploads", color: "hsl(12, 76%, 56%)" },
+   views: { label: "Views", color: "hsl(236, 50%, 60%)" },
+   watchTime: { label: "Watch Time (hrs)", color: "hsl(152, 58%, 42%)" },
+   retention: { label: "Retention %", color: "hsl(43, 85%, 55%)" },
+   uploads: { label: "Uploads", color: "hsl(236, 50%, 60%)" },
 };
 
 const Analytics = () => {
   usePageTitle("Analytics");
   const [range, setRange] = useState<TimeRange>("30d");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  
   const viewsData = useMemo(() => generateViewsData(range), [range]);
 
   const statsForRange = useMemo(() => {
@@ -99,6 +102,7 @@ const Analytics = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
+            <span className="font-label text-primary tracking-widest text-[10px]">INTELLIGENCE LAYER</span>
             <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">Analytics</h1>
             <p className="text-sm text-muted-foreground mt-1">Performance across all channels.</p>
           </div>
@@ -135,15 +139,19 @@ const Analytics = () => {
           {statsForRange.map((stat, i) => (
             <div
               key={stat.label}
-              className="surface-raised p-5 surface-hover"
-              style={{ animation: `fade-in 0.5s ease-out ${i * 0.08}s both` }}
+              className="surface-raised p-5 surface-hover border border-border/45 group hover:border-primary/40 transition-all duration-300"
+              style={{
+                animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                animationDelay: `${0.2 + (i * 0.08)}s`,
+                animationFillMode: "both",
+              }}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
-                  <stat.icon className="w-4 h-4 text-muted-foreground" />
+                <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                  <stat.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
-                <span className={`flex items-center gap-1 text-[10px] font-label ${stat.up ? "text-emerald" : "text-destructive"}`}>
-                  {stat.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                <span className={`flex items-center gap-1 text-[10px] font-label font-semibold ${stat.up ? "text-emerald" : "text-destructive"}`}>
+                  {stat.up ? <ArrowUpRight className="w-3 h-3 animate-pulse" /> : <ArrowDownRight className="w-3 h-3" />}
                   {stat.change}
                 </span>
               </div>
@@ -158,7 +166,7 @@ const Analytics = () => {
         {/* Main Charts Row */}
         <div className="grid lg:grid-cols-12 gap-6 mb-6">
           {/* Views Over Time - Area Chart */}
-          <div className="lg:col-span-8 surface-raised p-6">
+          <div className="lg:col-span-8 surface-raised p-6 border border-border/45">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-display text-foreground font-bold">Views & Watch Time</h2>
               <span className="text-[10px] font-label text-muted-foreground">{rangeLabel}</span>
@@ -167,20 +175,20 @@ const Analytics = () => {
               <AreaChart data={viewsData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                 <defs>
                   <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(12, 76%, 56%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(12, 76%, 56%)" stopOpacity={0} />
+                    <stop offset="0%" stopColor="hsl(236, 50%, 60%)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(236, 50%, 60%)" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="watchGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(158, 32%, 45%)" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="hsl(158, 32%, 45%)" stopOpacity={0} />
+                    <stop offset="0%" stopColor="hsl(152, 58%, 42%)" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="hsl(152, 58%, 42%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(22, 8%, 14%)" />
                 <XAxis dataKey="day" tick={false} axisLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="views" stroke="hsl(12, 76%, 56%)" strokeWidth={2} fill="url(#viewsGrad)" />
-                <Area type="monotone" dataKey="watchTime" stroke="hsl(158, 32%, 45%)" strokeWidth={2} fill="url(#watchGrad)" />
+                <Area type="monotone" dataKey="views" stroke="hsl(236, 50%, 60%)" strokeWidth={2} fill="url(#viewsGrad)" />
+                <Area type="monotone" dataKey="watchTime" stroke="hsl(152, 58%, 42%)" strokeWidth={2} fill="url(#watchGrad)" />
               </AreaChart>
             </ChartContainer>
             <div className="flex items-center gap-6 mt-4">
@@ -196,7 +204,7 @@ const Analytics = () => {
           </div>
 
           {/* Traffic Sources - Pie */}
-          <div className="lg:col-span-4 surface-raised p-6">
+          <div className="lg:col-span-4 surface-raised p-6 border border-border/45">
             <h2 className="text-sm font-display text-foreground font-bold mb-6">Traffic Sources</h2>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -211,8 +219,8 @@ const Analytics = () => {
                     dataKey="value"
                     stroke="none"
                   >
-                    {trafficSources.map((entry, i) => (
-                      <Cell key={i} fill={entry.fill} />
+                    {trafficSources.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
                     ))}
                   </Pie>
                 </PieChart>
@@ -235,7 +243,7 @@ const Analytics = () => {
         {/* Retention + Upload Frequency */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Audience Retention Curve */}
-          <div className="surface-raised p-6">
+          <div className="surface-raised p-6 border border-border/45">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-display text-foreground font-bold">Avg. Audience Retention</h2>
               <span className="text-[10px] font-label text-muted-foreground">ACROSS ALL VIDEOS</span>
@@ -258,7 +266,7 @@ const Analytics = () => {
           </div>
 
           {/* Upload Frequency */}
-          <div className="surface-raised p-6">
+          <div className="surface-raised p-6 border border-border/45">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-display text-foreground font-bold">Upload Frequency</h2>
               <span className="text-[10px] font-label text-muted-foreground">THIS WEEK</span>
@@ -269,7 +277,7 @@ const Analytics = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="uploads" fill="hsl(12, 76%, 56%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="uploads" fill="hsl(236, 50%, 60%)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </div>
@@ -296,24 +304,30 @@ const Analytics = () => {
                   <tbody>
                     {topVideos.map((v, i) => (
                       <tr
-                        key={i}
-                        className="border-b border-border/30 last:border-b-0 hover:bg-secondary/20 transition-colors cursor-pointer"
+                        key={v.title}
+                        className="border-b border-border/30 last:border-b-0 hover:bg-secondary/20 hover:shadow-[0_0_16px_rgba(212,180,117,0.12)] transition-all cursor-pointer group"
+                        style={{
+                          animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                          animationDelay: `${0.8 + (i * 0.06)}s`,
+                          animationFillMode: "both",
+                        }}
                       >
-                        <td className="px-5 py-4 text-foreground font-medium max-w-[220px]">
+                        <td className="px-5 py-4 text-foreground font-medium max-w-[220px] group-hover:text-primary transition-colors">
                           <div className="flex items-center gap-2">
                             <span className="truncate">{v.title}</span>
-                            {v.trend === "up" && <ArrowUpRight className="w-3 h-3 text-emerald shrink-0" />}
+                            {v.trend === "up" && <ArrowUpRight className="w-3 h-3 text-emerald shrink-0 group-hover:animate-pulse" />}
                           </div>
                         </td>
-                        <td className="px-5 py-4 font-mono text-muted-foreground">{(v.views / 1000).toFixed(1)}K</td>
+                        <td className="px-5 py-4 font-mono text-muted-foreground group-hover:text-foreground transition-colors">{(v.views / 1000).toFixed(1)}K</td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-12 h-1.5 rounded-full bg-secondary overflow-hidden">
+                            <div className="w-12 h-1.5 rounded-full bg-secondary overflow-hidden hover:shadow-[0_0_10px_rgba(212,180,117,0.2)] transition-shadow">
                               <div
-                                className="h-full rounded-full transition-all"
+                                className="h-full rounded-full transition-all duration-500"
                                 style={{
                                   width: `${v.retention}%`,
-                                  background: v.retention >= 65 ? "hsl(158, 32%, 45%)" : "hsl(42, 72%, 52%)",
+                                  background: v.retention >= 65 ? "hsl(152, 58%, 42%)" : "hsl(43, 85%, 55%)",
+                                  animation: mounted ? "gradientFlow 3s ease-in-out infinite" : "none",
                                 }}
                               />
                             </div>
@@ -322,9 +336,9 @@ const Analytics = () => {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 font-mono text-muted-foreground">{v.ctr}%</td>
-                        <td className="px-5 py-4 font-mono text-primary font-semibold">₹{v.revenue.toLocaleString()}</td>
-                        <td className="px-5 py-4 font-mono text-muted-foreground">+{v.subs}</td>
+                        <td className="px-5 py-4 font-mono text-muted-foreground group-hover:text-foreground transition-colors">{v.ctr}%</td>
+                        <td className="px-5 py-4 font-mono text-primary font-semibold group-hover:text-gold transition-colors">₹{v.revenue.toLocaleString()}</td>
+                        <td className="px-5 py-4 font-mono text-muted-foreground group-hover:text-foreground transition-colors">+{v.subs}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -335,16 +349,20 @@ const Analytics = () => {
 
           {/* AI Insights */}
           <div className="lg:col-span-4">
-            <h2 className="text-sm font-display text-foreground font-bold mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" /> AI Insights
+            <h2 className="text-sm font-display text-foreground font-bold mb-4 flex items-center gap-2" style={{
+              animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.8s",
+              animationFillMode: "both",
+            }}>
+              <Sparkles className="w-4 h-4 text-primary animate-pulse" /> AI Insights
             </h2>
             <div className="space-y-3">
               {aiInsights.map((insight, i) => {
                 const borderColor = insight.priority === "high"
-                  ? "hsl(12, 76%, 56%, 0.4)"
+                  ? "hsl(236, 50%, 60%, 0.4)"
                   : insight.priority === "medium"
-                  ? "hsl(42, 72%, 52%, 0.3)"
-                  : "hsl(158, 32%, 45%, 0.2)";
+                  ? "hsl(43, 85%, 55%, 0.3)"
+                  : "hsl(152, 58%, 42%, 0.2)";
                 const dotColor = insight.priority === "high"
                   ? "bg-primary"
                   : insight.priority === "medium"
@@ -353,12 +371,19 @@ const Analytics = () => {
                 return (
                   <div
                     key={i}
-                    className="surface-raised p-4 surface-hover"
-                    style={{ borderLeft: `3px solid ${borderColor}` }}
+                    className="surface-raised p-4 surface-hover group hover:border-primary/30 transition-all duration-300"
+                    style={{ 
+                      borderLeft: `3px solid ${borderColor}`,
+                      animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                      animationDelay: `${0.9 + (i * 0.08)}s`,
+                      animationFillMode: "both",
+                    }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-1.5 h-1.5 rounded-full ${dotColor} mt-1.5 shrink-0`} />
-                      <p className="text-xs text-muted-foreground leading-relaxed">{insight.text}</p>
+                      <div className={`w-1.5 h-1.5 rounded-full ${dotColor} mt-1.5 shrink-0 group-hover:scale-125 transition-transform`} style={{
+                        animation: insight.priority === "high" ? "glowPulse 2s ease-in-out infinite" : "none",
+                      }} />
+                      <p className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">{insight.text}</p>
                     </div>
                   </div>
                 );
@@ -366,7 +391,11 @@ const Analytics = () => {
             </div>
 
             {/* Engagement Summary */}
-            <div className="surface-raised p-5 mt-4">
+            <div className="surface-raised p-5 mt-4 group hover:border-primary/30 transition-all duration-300" style={{
+              animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "1.3s",
+              animationFillMode: "both",
+            }}>
               <h3 className="text-[10px] font-label text-muted-foreground mb-4">ENGAGEMENT SUMMARY</h3>
               <div className="space-y-3">
                 {[

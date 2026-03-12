@@ -17,15 +17,19 @@ const HowItWorksSection = () => {
             Idea to published in{" "}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">minutes</span>
           </h2>
+          <p className="text-sm text-muted-foreground mt-4 max-w-xl mx-auto">
+            A focused four-step production system designed for speed, quality, and monetization safety.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-6">
           {steps.map((item, i) => (
             <div key={item.step} className="relative group">
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-10 right-0 w-full h-[1px] translate-x-1/2 bg-gradient-to-r from-border to-transparent z-0" />
+                <div className="hidden md:block absolute top-10 right-0 w-full h-[1px] translate-x-1/2 bg-gradient-to-r from-primary/30 to-transparent z-0" />
               )}
-              <div className="surface-raised p-7 surface-hover relative z-10 h-full">
+              <div className="surface-raised p-7 surface-hover relative z-10 h-full border border-border/50 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <span className="text-[64px] font-display font-bold leading-none text-muted/30 absolute -top-2 -right-1 select-none pointer-events-none">
                   {item.step}
                 </span>
@@ -36,10 +40,12 @@ const HowItWorksSection = () => {
                     border: `1px solid hsl(var(--${item.iconColor}) / 0.15)`,
                   }}
                 >
-                  <item.icon className={`w-5 h-5 text-${item.iconColor}`} />
+                  <item.icon className="w-5 h-5" style={{ color: `hsl(var(--${item.iconColor}))` }} />
                 </div>
-                <h3 className="text-base font-display text-foreground mb-2">{item.title}</h3>
+                <h3 className="text-base font-display text-foreground mb-2 tracking-tight">{item.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                <div className="mt-5 h-px bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
+                <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">Step {item.step}</p>
               </div>
             </div>
           ))}

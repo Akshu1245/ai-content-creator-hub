@@ -49,10 +49,8 @@ const ResetPassword = () => {
       <div className="bg-noise" />
       <div className="w-full max-w-sm relative z-10">
         <div className="flex items-center gap-2.5 mb-8 justify-center">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-clay flex items-center justify-center neon-glow">
-            <span className="text-primary-foreground font-display text-xs font-bold">FF</span>
-          </div>
-          <span className="font-display text-foreground text-sm">FacelessForge</span>
+          <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+          <span className="font-display text-foreground text-sm tracking-wide">VORAX</span>
         </div>
 
         {success ? (

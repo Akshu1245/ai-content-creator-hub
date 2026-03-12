@@ -14,24 +14,24 @@ const FloatingVideoCard = () => {
         <div
           className="w-full aspect-video rounded-xl flex items-center justify-center relative overflow-hidden mb-4"
           style={{
-            background: "linear-gradient(135deg, hsl(12 76% 56% / 0.12), hsl(158 32% 45% / 0.06), hsl(24 12% 6% / 0.9))",
-            border: "1px solid hsl(22 8% 20%)",
+            background: "linear-gradient(135deg, hsl(var(--primary) / 0.16), hsl(var(--accent) / 0.08), hsl(216 20% 7% / 0.9))",
+            border: "1px solid hsl(220 12% 20%)",
           }}
         >
           <div
             className="absolute inset-0 opacity-15"
             style={{
               backgroundImage:
-                "linear-gradient(hsl(12 76% 56% / 0.08) 1px, transparent 1px), linear-gradient(90deg, hsl(12 76% 56% / 0.08) 1px, transparent 1px)",
+                "linear-gradient(hsl(var(--primary) / 0.08) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.08) 1px, transparent 1px)",
               backgroundSize: "24px 24px",
             }}
           />
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center relative z-10"
             style={{
-              background: "hsl(12 76% 56% / 0.15)",
-              border: "2px solid hsl(12 76% 56% / 0.4)",
-              boxShadow: "0 0 30px hsl(12 76% 56% / 0.15)",
+              background: "hsl(var(--primary) / 0.15)",
+              border: "2px solid hsl(var(--primary) / 0.45)",
+              boxShadow: "0 0 30px hsl(var(--primary) / 0.28)",
             }}
           >
             <Play className="w-6 h-6 text-primary ml-0.5" />
@@ -73,7 +73,7 @@ const FloatingVideoCard = () => {
       <div
         className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[80%] h-8 rounded-full opacity-30"
         style={{
-          background: "radial-gradient(ellipse, hsl(12 76% 56% / 0.12), transparent)",
+          background: "radial-gradient(ellipse, hsl(var(--primary) / 0.18), transparent)",
           filter: "blur(8px)",
         }}
       />

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { WizardData } from "@/pages/NewProject";
 import { Eye, Clock, TrendingUp, BarChart3, Loader2, Search, ExternalLink, Lightbulb, Target } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { marketResearch } from "@/lib/api";
 import { toast } from "sonner";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
@@ -37,11 +37,8 @@ const StepTrends = ({ data, updateData }: Props) => {
     setError(null);
 
     try {
-      const { data: resData, error: resError } = await supabase.functions.invoke('market-research', {
-        body: { niche: data.niche, topic: data.topic },
-      });
+      const resData = await marketResearch(data.niche, data.topic);
 
-      if (resError) throw resError;
       if (resData?.error) throw new Error(resData.error);
 
       setResearch(resData.research);

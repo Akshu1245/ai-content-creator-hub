@@ -39,8 +39,8 @@ const EmptyState = ({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            background: "linear-gradient(135deg, hsl(12, 76%, 56%), hsl(158, 32%, 45%))",
-            boxShadow: "0 0 20px hsl(12, 76%, 56%, 0.3)",
+            background: "linear-gradient(135deg, hsl(236, 50%, 60%), hsl(174, 60%, 40%))",
+            boxShadow: "0 0 16px hsl(236, 50%, 60%, 0.22)",
           }}
         />
       </div>

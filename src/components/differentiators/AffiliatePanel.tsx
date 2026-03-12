@@ -43,7 +43,7 @@ const AffiliatePanel = ({ niche, topic, script, onDescriptionGenerated }: Props)
 
   // Generate description
   const generatedDescription = useMemo(() => {
-    const activePrograms = programs.filter(p => refCodes[p.id] || true).slice(0, 3);
+    const activePrograms = programs.slice(0, 3);
     const programLinks = activePrograms.map(p => {
       const link = refCodes[p.id] ? p.affiliateUrl.replace("{ref}", refCodes[p.id]) : `[${p.name.toUpperCase()}_LINK]`;
       return `🔗 ${p.name}: ${p.descriptionTemplate.replace("{link}", link)}`;

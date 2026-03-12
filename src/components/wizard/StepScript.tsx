@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { WizardData } from "@/pages/NewProject";
 import { Sparkles, Loader2, Clock, FileText, AlertTriangle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { generateScript } from "@/lib/api";
 import { toast } from "sonner";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
@@ -11,13 +11,10 @@ const StepScript = ({ data, updateData }: Props) => {
   const wordCount = data.script.trim().split(/\s+/).filter(Boolean).length;
   const estimatedDuration = Math.round(wordCount / 150);
 
-  const generateScript = async () => {
+  const handleGenerateScript = async () => {
     setLoading(true);
     try {
-      const { data: result, error } = await supabase.functions.invoke("generate-script", {
-        body: { niche: data.niche, topic: data.topic },
-      });
-      if (error) throw error;
+      const result = await generateScript(data.niche, data.topic);
       if (result?.script) {
         updateData({ script: result.script });
         toast.success("Script generated");
@@ -41,7 +38,7 @@ const StepScript = ({ data, updateData }: Props) => {
           <h2 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Video Script</h2>
           <p className="text-xs text-muted-foreground">AI-generated and optimized for retention</p>
         </div>
-        <button onClick={generateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-xs disabled:opacity-30 shrink-0">
+        <button onClick={handleGenerateScript} disabled={loading} className="btn-primary flex items-center gap-2 text-xs disabled:opacity-30 shrink-0">
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           {data.script ? "Regenerate" : "Generate"}
         </button>

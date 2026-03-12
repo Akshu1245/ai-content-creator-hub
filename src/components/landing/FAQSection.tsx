@@ -7,7 +7,7 @@ import {
 
 const faqs = [
   {
-    q: "How does FacelessForge generate videos?",
+    q: "How does VORAX generate videos?",
     a: "We combine Gemini AI for scripts, Sarvam AI for natural voiceovers, JSON2Video for video rendering, and Pexels for stock footage — all orchestrated through our 8-step wizard pipeline.",
   },
   {
@@ -15,7 +15,7 @@ const faqs = [
     a: "Our AI analyzes your script and video against YouTube's monetization guidelines (originality, reuse, value-add) and gives you a score with actionable fixes — before you publish.",
   },
   {
-    q: "Can I monetize videos made with FacelessForge?",
+    q: "Can I monetize videos made with VORAX?",
     a: "Yes. Our compliance engine is specifically designed to help you meet YouTube Partner Program requirements. Videos are scored for originality, educational value, and policy adherence.",
   },
   {
@@ -35,7 +35,7 @@ const faqs = [
     a: "Absolutely. Our built-in editor lets you trim, add text overlays, merge audio/video, arrange multi-clip timelines, and export — all without leaving the platform.",
   },
   {
-    q: "What makes FacelessForge different from other AI video tools?",
+    q: "What makes VORAX different from other AI video tools?",
     a: "We're the only platform with built-in YouTube monetization compliance scoring. Others generate videos — we generate monetizable content with trend intelligence and growth analytics.",
   },
 ];
@@ -59,10 +59,17 @@ const FAQSection = () => {
             <AccordionItem
               key={i}
               value={`faq-${i}`}
-              className="surface-raised px-6 border-none"
+              className="surface-raised px-6 border border-border/45 overflow-hidden"
             >
-              <AccordionTrigger className="text-sm font-display text-foreground hover:text-primary transition-colors py-5 hover:no-underline">
-                {faq.q}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+
+              <AccordionTrigger className="text-sm font-display text-foreground hover:text-primary transition-colors py-5 hover:no-underline text-left">
+                <span className="inline-flex items-center gap-3">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-label text-primary">
+                    {(i + 1).toString().padStart(2, "0")}
+                  </span>
+                  {faq.q}
+                </span>
               </AccordionTrigger>
               <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-5">
                 {faq.a}

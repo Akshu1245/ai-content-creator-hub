@@ -1,17 +1,22 @@
 {
-  "name": "FacelessForge",
-  "short_name": "FacelessForge",
-  "description": "AI-powered faceless video creation with compliance scoring",
+  "name": "VORAX",
+  "short_name": "VORAX",
+  "description": "AI Video Generation Platform",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f0d0b",
-  "theme_color": "#d4532a",
+  "theme_color": "#12100e",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64",
-      "type": "image/x-icon"
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }

@@ -20,19 +20,19 @@ const Index = () => {
       <div className="min-h-screen bg-background relative overflow-hidden scroll-smooth">
         <div className="bg-noise" />
 
-        {/* Ambient warm glow orbs */}
+        {/* Ambient cinematic glow orbs */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div
-            className="absolute top-[-15%] left-[-5%] w-[700px] h-[700px] rounded-full blur-[180px]"
-            style={{ background: "radial-gradient(circle, hsl(12 76% 56% / 0.05), transparent 70%)" }}
+            className="absolute top-[-15%] left-[-5%] w-[740px] h-[740px] rounded-full blur-[190px]"
+            style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.09), transparent 72%)" }}
           />
           <div
-            className="absolute bottom-[-15%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[160px]"
-            style={{ background: "radial-gradient(circle, hsl(158 32% 45% / 0.04), transparent 70%)" }}
+            className="absolute bottom-[-15%] right-[-5%] w-[620px] h-[620px] rounded-full blur-[170px]"
+            style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.08), transparent 72%)" }}
           />
           <div
-            className="absolute top-[50%] left-[50%] w-[500px] h-[500px] rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"
-            style={{ background: "radial-gradient(circle, hsl(42 72% 52% / 0.025), transparent 70%)" }}
+            className="absolute top-[50%] left-[50%] w-[540px] h-[540px] rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2"
+            style={{ background: "radial-gradient(circle, hsl(192 80% 70% / 0.05), transparent 72%)" }}
           />
         </div>
 

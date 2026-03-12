@@ -24,7 +24,7 @@ const NotFound = () => {
         <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 flex-wrap">
           <Link to="/">
             <button className="btn-primary text-xs flex items-center gap-2">
               <Home className="w-3.5 h-3.5" /> Back to Home

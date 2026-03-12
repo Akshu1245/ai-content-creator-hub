@@ -4,7 +4,7 @@ const testimonials = [
   {
     name: "Arjun Mehta",
     role: "Faceless Creator · 240K subs",
-    quote: "FacelessForge cut my production time from 8 hours to 20 minutes. The compliance scorer alone saved me from 3 demonetizations.",
+    quote: "VORAX cut my production time from 8 hours to 20 minutes. The compliance scorer alone saved me from 3 demonetizations.",
     avatar: "AM",
     rating: 5,
   },
@@ -49,15 +49,22 @@ const TestimonialsSection = () => {
           {testimonials.map((t, i) => (
             <div
               key={t.name}
-              className="surface-raised p-7 surface-hover relative group"
+              className={`surface-raised p-7 surface-hover relative group overflow-hidden border ${i === 0 ? "border-primary/35" : "border-border/40"}`}
               style={{ animation: `fade-in 0.5s ease-out ${i * 0.1}s both` }}
             >
-              {/* Quote mark */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
               <div className="absolute top-5 right-6 text-[48px] font-display text-muted/20 leading-none select-none pointer-events-none">
                 "
               </div>
 
-              <div className="flex items-center gap-1 mb-4">
+              {i === 0 && (
+                <div className="absolute left-6 top-5 px-2.5 py-1 rounded-full text-[9px] font-label bg-primary/12 text-primary border border-primary/25">
+                  TOP CREATOR
+                </div>
+              )}
+
+              <div className={`flex items-center gap-1 ${i === 0 ? "mb-6 mt-6" : "mb-4"}`}>
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <Star key={j} className="w-3.5 h-3.5 fill-gold text-gold" />
                 ))}
@@ -75,6 +82,10 @@ const TestimonialsSection = () => {
                   <p className="text-xs font-medium text-foreground">{t.name}</p>
                   <p className="text-[10px] text-muted-foreground">{t.role}</p>
                 </div>
+              </div>
+
+              <div className="mt-4 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+                Verified creator feedback
               </div>
             </div>
           ))}

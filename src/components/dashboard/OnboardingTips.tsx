@@ -28,13 +28,13 @@ const OnboardingTips = () => {
     <div className="surface-raised p-6 mb-8 relative overflow-hidden">
       <div
         className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-        style={{ background: "hsl(12 76% 56% / 0.06)" }}
+        style={{ background: "hsl(var(--primary) / 0.08)" }}
       />
       <button onClick={dismiss} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
         <X className="w-4 h-4" />
       </button>
 
-      <h3 className="font-display text-base text-foreground font-bold mb-1">Welcome to FacelessForge 🔥</h3>
+      <h3 className="font-display text-base text-foreground font-bold mb-1">Welcome to VORAX 🔥</h3>
       <p className="text-xs text-muted-foreground mb-5">Here's how to create your first monetized video in 4 steps.</p>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">

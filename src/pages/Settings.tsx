@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink, Check, Crown } from "lucide-react";
+import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink, Check, Crown, Film, Sparkles, Server, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
 import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,21 @@ interface NotificationPrefs {
   complianceWarnings: boolean;
   weeklySummary: boolean;
 }
+
+type EngineId = "pexels" | "replicate" | "runpod";
+
+interface EngineConfig {
+  engine: EngineId;
+  api_token: string;
+  api_key: string;
+  endpoint_url: string;
+}
+
+const API_URL =
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
+  "http://127.0.0.1:8000";
+
+const DEFAULT_ENGINE_CONFIG: EngineConfig = { engine: "pexels", api_token: "", api_key: "", endpoint_url: "" };
 
 const Settings = () => {
   const { user, subscription, checkSubscription } = useAuth();
@@ -26,6 +41,19 @@ const Settings = () => {
     weeklySummary: false,
   });
   const [savingNotifs, setSavingNotifs] = useState(false);
+
+  // Video engine state
+  const [engineConfig, setEngineConfig] = useState<EngineConfig>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("vorax_engine_config") || "") as EngineConfig;
+    } catch {
+      return DEFAULT_ENGINE_CONFIG;
+    }
+  });
+  const [engineValidating, setEngineValidating] = useState(false);
+  const [engineValidation, setEngineValidation] = useState<{ valid: boolean; message: string } | null>(null);
+  const [showReplicateToken, setShowReplicateToken] = useState(false);
+  const [showRunpodKey, setShowRunpodKey] = useState(false);
 
   // Check for checkout result in URL
   useEffect(() => {
@@ -103,6 +131,29 @@ const Settings = () => {
     }
   };
 
+  const handleSaveEngine = () => {
+    localStorage.setItem("vorax_engine_config", JSON.stringify(engineConfig));
+    toast.success("Engine settings saved");
+  };
+
+  const handleValidateEngine = async () => {
+    setEngineValidating(true);
+    setEngineValidation(null);
+    try {
+      const res = await fetch(`${API_URL}/api/engine/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(engineConfig),
+      });
+      const json = await res.json();
+      setEngineValidation({ valid: json.valid, message: json.message });
+    } catch (e: any) {
+      setEngineValidation({ valid: false, message: e.message || "Connection failed" });
+    } finally {
+      setEngineValidating(false);
+    }
+  };
+
   const handlePasswordReset = async () => {
     if (!user?.email) return;
     try {
@@ -177,6 +228,7 @@ const Settings = () => {
     <DashboardLayout>
       <div className="max-w-2xl mx-auto">
         <div className="mb-10">
+          <span className="font-label text-primary tracking-widest text-[10px]">SYSTEM CONFIG</span>
           <h1 className="text-2xl font-display text-foreground font-bold tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage your account and preferences.</p>
         </div>
@@ -285,7 +337,7 @@ const Settings = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {plans.map((plan) => {
                 const isCurrent = subscription.tier === plan.key;
                 const isUpgrade = !isCurrent && plan.priceId;
@@ -361,6 +413,183 @@ const Settings = () => {
                   className="w-4 h-4 rounded accent-primary" />
               </label>
             ))}
+          </section>
+
+          {/* Video Generation Engine */}
+          <section className="surface-raised p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
+                <Film className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div>
+                <h2 className="text-sm font-display text-foreground font-bold">Video Generation Engine</h2>
+                <p className="text-[10px] text-muted-foreground">Choose how VORAX generates your video visuals</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {/* Card 1 — Pexels */}
+              <div
+                onClick={() => { setEngineConfig((c) => ({ ...c, engine: "pexels" })); setEngineValidation(null); }}
+                className={`rounded-xl border p-4 cursor-pointer transition-all ${
+                  engineConfig.engine === "pexels"
+                    ? "border-sky-500/60 bg-sky-500/5 shadow-[0_0_12px_rgba(14,165,233,0.08)]"
+                    : "border-border/50 bg-secondary/20 hover:border-border"
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <Film className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-display font-bold text-foreground">Pexels Stock Footage</span>
+                        <span className="text-[8px] font-label bg-emerald/15 text-emerald px-1.5 py-0.5 rounded-full">FREE</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Uses Pexels stock footage library. No API key needed. 10M+ clips available.</p>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 transition-all ${
+                    engineConfig.engine === "pexels" ? "border-sky-500 bg-sky-500" : "border-border"
+                  }`} />
+                </div>
+              </div>
+
+              {/* Card 2 — Replicate */}
+              <div
+                onClick={() => { setEngineConfig((c) => ({ ...c, engine: "replicate" })); setEngineValidation(null); }}
+                className={`rounded-xl border p-4 cursor-pointer transition-all ${
+                  engineConfig.engine === "replicate"
+                    ? "border-sky-500/60 bg-sky-500/5 shadow-[0_0_12px_rgba(14,165,233,0.08)]"
+                    : "border-border/50 bg-secondary/20 hover:border-border"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-display font-bold text-foreground">Replicate AI</span>
+                        <span className="text-[8px] font-label bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">AI POWERED</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Generate unique AI visuals using LTX-Video. Bring your own Replicate API token.</p>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 transition-all ${
+                    engineConfig.engine === "replicate" ? "border-sky-500 bg-sky-500" : "border-border"
+                  }`} />
+                </div>
+                {engineConfig.engine === "replicate" && (
+                  <div className="space-y-2 pt-2 border-t border-border/30" onClick={(e) => e.stopPropagation()}>
+                    <label className="text-[10px] font-label text-muted-foreground block">REPLICATE API TOKEN</label>
+                    <div className="relative">
+                      <input
+                        type={showReplicateToken ? "text" : "password"}
+                        value={engineConfig.api_token}
+                        onChange={(e) => setEngineConfig((c) => ({ ...c, api_token: e.target.value }))}
+                        placeholder="r8_xxxxxxxxxxxxxxxxxxxx"
+                        className="w-full px-4 py-2.5 pr-10 rounded-lg text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                      />
+                      <button onClick={() => setShowReplicateToken((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        {showReplicateToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground">
+                      Get your free token at replicate.com — includes $5 free credits ·{" "}
+                      <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        Get Replicate Token →
+                      </a>
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 3 — RunPod */}
+              <div
+                onClick={() => { setEngineConfig((c) => ({ ...c, engine: "runpod" })); setEngineValidation(null); }}
+                className={`rounded-xl border p-4 cursor-pointer transition-all ${
+                  engineConfig.engine === "runpod"
+                    ? "border-sky-500/60 bg-sky-500/5 shadow-[0_0_12px_rgba(14,165,233,0.08)]"
+                    : "border-border/50 bg-secondary/20 hover:border-border"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Server className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-display font-bold text-foreground">RunPod</span>
+                        <span className="text-[8px] font-label bg-secondary text-muted-foreground px-1.5 py-0.5 rounded-full">ADVANCED</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Use your own RunPod GPU endpoint for maximum control and lowest cost.</p>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 transition-all ${
+                    engineConfig.engine === "runpod" ? "border-sky-500 bg-sky-500" : "border-border"
+                  }`} />
+                </div>
+                {engineConfig.engine === "runpod" && (
+                  <div className="space-y-2 pt-2 border-t border-border/30" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <label className="text-[10px] font-label text-muted-foreground block mb-1.5">RUNPOD ENDPOINT URL</label>
+                      <input
+                        type="text"
+                        value={engineConfig.endpoint_url}
+                        onChange={(e) => setEngineConfig((c) => ({ ...c, endpoint_url: e.target.value }))}
+                        placeholder="https://api.runpod.ai/v2/xxxxxxxx"
+                        className="w-full px-4 py-2.5 rounded-lg text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-label text-muted-foreground block mb-1.5">RUNPOD API KEY</label>
+                      <div className="relative">
+                        <input
+                          type={showRunpodKey ? "text" : "password"}
+                          value={engineConfig.api_key}
+                          onChange={(e) => setEngineConfig((c) => ({ ...c, api_key: e.target.value }))}
+                          placeholder="rpa_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2.5 pr-10 rounded-lg text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                        />
+                        <button onClick={() => setShowRunpodKey((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                          {showRunpodKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground">
+                      Deploy the VORAX worker on RunPod for ~₹3 per video ·{" "}
+                      <a href="/docs/runpod-setup.md" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        RunPod Setup Guide →
+                      </a>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Validate + Save */}
+            <div className="flex items-center gap-3 mt-4">
+              {engineConfig.engine !== "pexels" && (
+                <button
+                  onClick={handleValidateEngine}
+                  disabled={engineValidating}
+                  className="btn-ghost text-xs flex items-center gap-2"
+                >
+                  {engineValidating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                  Test Connection
+                </button>
+              )}
+              <button onClick={handleSaveEngine} className="btn-primary text-xs">
+                Save Engine Settings
+              </button>
+            </div>
+
+            {engineValidation && (
+              <div className={`mt-3 flex items-center gap-2 text-[10px] ${engineValidation.valid ? "text-emerald" : "text-destructive"}`}>
+                {engineValidation.valid
+                  ? <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                  : <XCircle className="w-3.5 h-3.5 shrink-0" />}
+                {engineValidation.message}
+              </div>
+            )}
           </section>
 
           {/* Danger Zone */}

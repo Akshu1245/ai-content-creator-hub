@@ -6,19 +6,19 @@ interface WordCyclerProps {
   interval?: number;
 }
 
-/* Warm earthy gradients — terracotta, ochre, sage, mauve */
+/* Luxury cinematic keyword gradients */
 const WORD_COLORS = [
-  "from-[hsl(12,76%,56%)] to-[hsl(32,65%,48%)]",
-  "from-[hsl(42,72%,52%)] to-[hsl(16,55%,42%)]",
-  "from-[hsl(158,32%,45%)] to-[hsl(185,40%,48%)]",
-  "from-[hsl(320,22%,48%)] to-[hsl(345,45%,52%)]",
+  "from-[hsl(42,52%,64%)] to-[hsl(32,44%,56%)]",
+  "from-[hsl(356,66%,56%)] to-[hsl(8,62%,52%)]",
+  "from-[hsl(38,24%,94%)] to-[hsl(42,52%,64%)]",
+  "from-[hsl(271,32%,66%)] to-[hsl(42,52%,64%)]",
 ];
 
 const WORD_GLOWS = [
-  "0 0 25px hsla(12,76%,56%,0.4)",
-  "0 0 25px hsla(42,72%,52%,0.4)",
-  "0 0 25px hsla(158,32%,45%,0.35)",
-  "0 0 25px hsla(320,22%,48%,0.35)",
+  "0 0 20px hsla(42,52%,64%,0.44)",
+  "0 0 20px hsla(356,66%,56%,0.34)",
+  "0 0 20px hsla(38,24%,94%,0.22)",
+  "0 0 20px hsla(271,32%,66%,0.3)",
 ];
 
 const WordCycler = ({ words, className = "", interval = 2800 }: WordCyclerProps) => {

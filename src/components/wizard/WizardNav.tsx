@@ -50,8 +50,8 @@ const WizardNav = ({ steps, currentStep, onStepClick }: WizardNavProps) => {
 
         <defs>
           <linearGradient id="wizard-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="hsl(12, 76%, 56%)" />
-            <stop offset="100%" stopColor="hsl(158, 32%, 45%)" />
+            <stop offset="0%" stopColor="hsl(236, 50%, 60%)" />
+            <stop offset="100%" stopColor="hsl(174, 60%, 40%)" />
           </linearGradient>
           <filter id="node-glow">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -75,7 +75,7 @@ const WizardNav = ({ steps, currentStep, onStepClick }: WizardNavProps) => {
               style={{ cursor: isComplete ? "pointer" : "default" }}
             >
               {isCurrent && (
-                <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="hsl(12, 76%, 56%)" strokeWidth="1.5" opacity="0.3">
+                <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="hsl(236, 50%, 60%)" strokeWidth="1.5" opacity="0.3">
                   <animate attributeName="r" values={`${r + 2};${r + 8};${r + 2}`} dur="2.5s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite" />
                 </circle>
@@ -86,7 +86,7 @@ const WizardNav = ({ steps, currentStep, onStepClick }: WizardNavProps) => {
                 cy={cy}
                 r={r}
                 fill={
-                  isComplete ? "url(#wizard-grad)" : isCurrent ? "hsl(12, 76%, 56%, 0.1)" : "hsl(24, 12%, 6%)"
+                  isComplete ? "url(#wizard-grad)" : isCurrent ? "hsl(236, 50%, 60%, 0.12)" : "hsl(240, 5%, 7%)"
                 }
                 stroke={
                   isComplete ? "none" : isCurrent ? "hsl(12, 76%, 56%)" : "hsl(22, 8%, 18%)"
@@ -118,7 +118,7 @@ const WizardNav = ({ steps, currentStep, onStepClick }: WizardNavProps) => {
                 x={cx}
                 y={cy + r + 14}
                 textAnchor="middle"
-                fill={isComplete ? "hsl(158, 32%, 45%)" : isCurrent ? "hsl(12, 76%, 56%)" : "hsl(28, 10%, 42%)"}
+                fill={isComplete ? "hsl(174, 60%, 44%)" : isCurrent ? "hsl(236, 50%, 64%)" : "hsl(240, 5%, 42%)"}
                 fontSize="9"
                 fontFamily="'Inter', sans-serif"
                 fontWeight="600"

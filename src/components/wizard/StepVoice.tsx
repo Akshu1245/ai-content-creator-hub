@@ -1,21 +1,21 @@
 import { useState, useRef, useCallback } from "react";
 import { WizardData } from "@/pages/NewProject";
-import { Play, Square, Volume2, Loader2, Download } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Play, Square, Volume2, Loader2, Download, Mic } from "lucide-react";
+import { generateVoice } from "@/lib/api";
 import { toast } from "sonner";
 
 interface Props { data: WizardData; updateData: (u: Partial<WizardData>) => void; }
 
 const voices = [
-  { id: "roger", name: "Marcus", desc: "Deep, authoritative narrator", gender: "Male", sarvamVoice: "shubh", sample: "Welcome to the world of faceless content creation. Today, we'll explore how compound interest can transform your financial future." },
-  { id: "sarah", name: "Sophia", desc: "Warm, engaging voice", gender: "Female", sarvamVoice: "priya", sample: "Have you ever wondered what makes a video truly captivating? Let me walk you through something fascinating." },
-  { id: "george", name: "Atlas", desc: "Classic documentary style", gender: "Male", sarvamVoice: "ratan", sample: "In the depths of the ocean, a world exists that few have ever seen. This is the story of discovery." },
-  { id: "lily", name: "Nova", desc: "Young, energetic presenter", gender: "Female", sarvamVoice: "simran", sample: "Okay so here's the thing, nobody talks about this, and honestly it's kind of wild." },
-  { id: "brian", name: "Leo", desc: "Calm, educational tone", gender: "Male", sarvamVoice: "amit", sample: "Let's take a step back and understand the fundamentals. When we look at the data, a clear pattern emerges." },
-  { id: "jessica", name: "Zara", desc: "Professional, clear delivery", gender: "Female", sarvamVoice: "shreya", sample: "The numbers don't lie. In today's analysis, we're examining three key trends that will shape the industry." },
-  { id: "amelia", name: "Luna", desc: "Soft, storytelling warmth", gender: "Female", sarvamVoice: "amelia", sample: "Picture this: a quiet morning, the sun just rising, and a story waiting to be told." },
-  { id: "tanya", name: "Aria", desc: "Bold, confident anchor", gender: "Female", sarvamVoice: "tanya", sample: "Breaking it down for you today, here are the facts you need to know right now." },
-  { id: "neha", name: "Ivy", desc: "Friendly, conversational host", gender: "Female", sarvamVoice: "neha", sample: "Hey there! So I've been digging into this topic and honestly, the results blew my mind." },
+  { id: "roger",   name: "Marcus",   desc: "Deep, authoritative narrator",    gender: "Male",   sarvamVoice: "shubh",    sample: "Welcome to the world of faceless content creation. Today, we'll explore how compound interest can transform your financial future." },
+  { id: "sarah",   name: "Sophia",   desc: "Warm, engaging voice",            gender: "Female", sarvamVoice: "priya",    sample: "Have you ever wondered what makes a video truly captivating? Let me walk you through something fascinating." },
+  { id: "george",  name: "Atlas",    desc: "Classic documentary style",       gender: "Male",   sarvamVoice: "ratan",    sample: "In the depths of the ocean, a world exists that few have ever seen. This is the story of discovery." },
+  { id: "lily",    name: "Nova",     desc: "Young, energetic presenter",      gender: "Female", sarvamVoice: "simran",   sample: "Okay so here's the thing, nobody talks about this, and honestly it's kind of wild." },
+  { id: "brian",   name: "Leo",      desc: "Calm, educational tone",          gender: "Male",   sarvamVoice: "amit",     sample: "Let's take a step back and understand the fundamentals. When we look at the data, a clear pattern emerges." },
+  { id: "jessica", name: "Zara",     desc: "Professional, clear delivery",    gender: "Female", sarvamVoice: "shreya",   sample: "The numbers don't lie. In today's analysis, we're examining three key trends that will shape the industry." },
+  { id: "amelia",  name: "Luna",     desc: "Soft, storytelling warmth",       gender: "Female", sarvamVoice: "amelia",   sample: "Picture this: a quiet morning, the sun just rising, and a story waiting to be told." },
+  { id: "tanya",   name: "Aria",     desc: "Bold, confident anchor",          gender: "Female", sarvamVoice: "tanya",    sample: "Breaking it down for you today, here are the facts you need to know right now." },
+  { id: "neha",    name: "Ivy",      desc: "Friendly, conversational host",   gender: "Female", sarvamVoice: "neha",     sample: "Hey there! So I've been digging into this topic and honestly, the results blew my mind." },
 ];
 
 const styles = [
@@ -28,6 +28,9 @@ const styles = [
 const StepVoice = ({ data, updateData }: Props) => {
   const [playingVoice, setPlayingVoice] = useState<string | null>(null);
   const [loadingVoice, setLoadingVoice] = useState<string | null>(null);
+  const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
+  const [isGeneratingFull, setIsGeneratingFull] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const stopPlayback = useCallback(() => {
@@ -45,28 +48,22 @@ const StepVoice = ({ data, updateData }: Props) => {
     setLoadingVoice(voiceId);
 
     try {
-      const { data: responseData, error } = await supabase.functions.invoke('generate-voice', {
-        body: { text: sampleText, speaker: voiceId, speed: 1.0 },
-      });
+      const responseData = await generateVoice(sampleText, voiceId, 1.0);
 
-      if (error) throw error;
       if (!responseData?.audio_base64) throw new Error('No audio returned');
 
-      // Play the base64 audio
       const audioSrc = `data:audio/wav;base64,${responseData.audio_base64}`;
       const audio = new Audio(audioSrc);
       audioRef.current = audio;
-
       audio.onplay = () => { setLoadingVoice(null); setPlayingVoice(voiceId); };
       audio.onended = () => { setPlayingVoice(null); audioRef.current = null; };
       audio.onerror = () => { setPlayingVoice(null); setLoadingVoice(null); audioRef.current = null; };
-
       await audio.play();
     } catch (err) {
       console.error('Voice preview error:', err);
       setLoadingVoice(null);
       toast.error('Voice preview failed. Falling back to browser voice.');
-      
+
       // Fallback to Web Speech API
       const utterance = new SpeechSynthesisUtterance(sampleText);
       const voiceSettings: Record<string, { pitch: number; rate: number }> = {
@@ -83,6 +80,26 @@ const StepVoice = ({ data, updateData }: Props) => {
       window.speechSynthesis.speak(utterance);
     }
   }, [playingVoice, stopPlayback]);
+
+  const generateFullVoiceover = useCallback(async () => {
+    const selectedVoice = voices.find((v) => v.id === data.voice);
+    if (!selectedVoice) { toast.error("Select a voice first."); return; }
+    if (!data.script?.trim()) { toast.error("No script found. Complete the script step first."); return; }
+    setIsGeneratingFull(true);
+    try {
+      const responseData = await generateVoice(data.script, data.voice, 1.0);
+      if (!responseData?.audio_base64) throw new Error("No audio returned");
+      const audioSrc = `data:audio/wav;base64,${responseData.audio_base64}`;
+      setGeneratedAudioUrl(audioSrc);
+      setAudioDuration(null);
+      toast.success("Voiceover generated!");
+    } catch (err) {
+      console.error("Voiceover generation error:", err);
+      toast.error(err instanceof Error ? err.message : "Voiceover generation failed.");
+    } finally {
+      setIsGeneratingFull(false);
+    }
+  }, [data.voice, data.script]);
 
   return (
     <div className="space-y-8">
@@ -138,6 +155,33 @@ const StepVoice = ({ data, updateData }: Props) => {
             );
           })}
         </div>
+      </div>
+
+      {/* Full voiceover generation */}
+      <div className="surface-raised p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xs font-display text-foreground font-bold">Full Script Voiceover</h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Generate the complete narration from your script</p>
+          </div>
+          <button
+            onClick={generateFullVoiceover}
+            disabled={isGeneratingFull || !data.voice || !data.script?.trim()}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {isGeneratingFull ? <><Loader2 className="w-3 h-3 animate-spin" /> Generating...</> : <><Mic className="w-3 h-3" /> Generate Voiceover</>}
+          </button>
+        </div>
+        {generatedAudioUrl && (
+          <div className="space-y-2">
+            <audio controls src={generatedAudioUrl} className="w-full h-9 rounded-lg" />
+            {audioDuration !== null && (
+              <p className="text-[10px] text-muted-foreground text-right">
+                Duration: {Math.floor(audioDuration / 60)}:{String(Math.round(audioDuration % 60)).padStart(2, "0")}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Speed */}

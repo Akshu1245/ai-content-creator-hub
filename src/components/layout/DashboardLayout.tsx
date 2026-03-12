@@ -1,11 +1,12 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, BarChart3, Settings, Plus, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, BarChart3, Settings, Plus, LogOut, Menu, X, HelpCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BarChart3, label: "Analytics", path: "/analytics" },
+  { icon: HelpCircle, label: "Why VORAX", path: "/why-vorax" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
@@ -31,15 +32,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </div>
 
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col relative z-20 shrink-0 border-r border-border/50 bg-sidebar">
+      <aside className="hidden md:flex w-64 flex-col relative z-20 shrink-0 border-r border-border/50 bg-sidebar/95 backdrop-blur-xl">
         <div className="p-5">
           <Link to="/" className="flex items-center gap-3 mb-8">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/15">
-              <span className="text-primary-foreground font-display text-sm font-bold">F</span>
-            </div>
-            <div>
-              <span className="text-sm font-display text-foreground tracking-tight block">FacelessForge</span>
-              <span className="text-[10px] font-label text-muted-foreground">PRO PLAN</span>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+              <span className="text-primary font-bold text-lg tracking-wider">VORAX</span>
             </div>
           </Link>
 
@@ -94,12 +92,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </aside>
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 w-full z-50 h-14 flex items-center justify-between px-4 bg-background/90 backdrop-blur-xl border-b border-border/50">
+      <div className="md:hidden fixed top-0 w-full z-50 h-14 flex items-center justify-between px-4 bg-background/92 backdrop-blur-xl border-b border-border/50">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
-            <span className="text-primary-foreground font-display text-xs font-bold">F</span>
-          </div>
-          <span className="font-display text-sm text-foreground">FacelessForge</span>
+          <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+          <span className="text-primary font-bold text-lg tracking-wider">VORAX</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link to="/new-project">
@@ -152,7 +148,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto relative z-10">
-        <div className="md:p-8 p-4 pt-18 md:pt-8">
+        <div className="p-4 pt-20 pb-20 md:p-8 md:pt-8 md:pb-8">
           {children}
         </div>
       </main>
