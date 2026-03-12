@@ -1,10 +1,42 @@
-import { TrendingUp, Sparkles, Shield, ArrowUpRight } from "lucide-react";
+import { Search, Cpu, ShieldCheck, Rocket } from "lucide-react";
 
 const steps = [
-  { step: "01", title: "Pick your niche", desc: "Choose a topic and discover high-opportunity angles with AI trend analysis.", icon: TrendingUp, iconColor: "primary" },
-  { step: "02", title: "AI generates", desc: "Script, voiceover, visuals — assembled automatically in minutes.", icon: Sparkles, iconColor: "gold" },
-  { step: "03", title: "Review & comply", desc: "Get a monetization score with actionable fixes before publishing.", icon: Shield, iconColor: "accent" },
-  { step: "04", title: "Publish", desc: "Push optimized videos to YouTube, Shorts, TikTok & Reels.", icon: ArrowUpRight, iconColor: "mauve" },
+  {
+    step: "01",
+    time: "30 sec",
+    title: "Find your goldmine topic",
+    desc: "Tell VORAX your niche. AI scans real-time search trends and finds high-demand, low-competition angles worth creating — with estimated monthly revenue shown upfront.",
+    icon: Search,
+    iconColor: "primary",
+    detail: "Niche gap analysis + RPM preview before you decide",
+  },
+  {
+    step: "02",
+    time: "4–6 min",
+    title: "AI builds the whole video",
+    desc: "Script, voiceover in your chosen voice, stock footage, captions, and music — assembled automatically. No timeline editing. No recording. Just your topic in, full video out.",
+    icon: Cpu,
+    iconColor: "gold",
+    detail: "Gemini script · Sarvam voice · Pexels footage · Auto-captions",
+  },
+  {
+    step: "03",
+    time: "Instant",
+    title: "Compliance scored, risk eliminated",
+    desc: "Every video gets a Monetization Shield score before you can export. Risky lines are flagged. Auto-fix rewrites them. Your video is either safe or fixed — never published blind.",
+    icon: ShieldCheck,
+    iconColor: "accent",
+    detail: "Unique to VORAX · No competitor does this step",
+  },
+  {
+    step: "04",
+    time: "1 click",
+    title: "Publish to 4 platforms at once",
+    desc: "Push optimized exports to YouTube (long-form + Shorts), TikTok, and Instagram Reels — each auto-sized and captioned for the platform. One creation, four audiences.",
+    icon: Rocket,
+    iconColor: "mauve",
+    detail: "YouTube · Shorts · TikTok · Reels — all from one export",
+  },
 ];
 
 const HowItWorksSection = () => {
@@ -14,11 +46,11 @@ const HowItWorksSection = () => {
         <div className="text-center mb-20">
           <span className="font-label text-primary tracking-widest">HOW IT WORKS</span>
           <h2 className="text-3xl md:text-5xl font-display text-foreground font-bold tracking-tight mt-4">
-            Idea to published in{" "}
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">minutes</span>
+            Idea to paid in{" "}
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">under 10 minutes</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-4 max-w-xl mx-auto">
-            A focused four-step production system designed for speed, quality, and monetization safety.
+            The only 4-step pipeline in the world where step 3 is a monetization safety check — not an afterthought.
           </p>
         </div>
 
@@ -33,8 +65,14 @@ const HowItWorksSection = () => {
                 <span className="text-[64px] font-display font-bold leading-none text-muted/30 absolute -top-2 -right-1 select-none pointer-events-none">
                   {item.step}
                 </span>
+
+                {/* Time badge */}
+                <div className="inline-flex items-center gap-1 mb-4 px-2 py-0.5 rounded-full text-[9px] font-label border border-primary/20 bg-primary/8 text-primary">
+                  ⏱ {item.time}
+                </div>
+
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300"
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
                   style={{
                     background: `linear-gradient(135deg, hsl(var(--${item.iconColor}) / 0.12), hsl(var(--${item.iconColor}) / 0.04))`,
                     border: `1px solid hsl(var(--${item.iconColor}) / 0.15)`,
@@ -42,10 +80,11 @@ const HowItWorksSection = () => {
                 >
                   <item.icon className="w-5 h-5" style={{ color: `hsl(var(--${item.iconColor}))` }} />
                 </div>
-                <h3 className="text-base font-display text-foreground mb-2 tracking-tight">{item.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-                <div className="mt-5 h-px bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
-                <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">Step {item.step}</p>
+                <h3 className="text-base font-display text-foreground mb-2 tracking-tight group-hover:text-primary transition-colors">{item.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-4">{item.desc}</p>
+
+                <div className="h-px bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 mb-3" />
+                <p className="text-[9px] font-label text-muted-foreground/60">{item.detail}</p>
               </div>
             </div>
           ))}

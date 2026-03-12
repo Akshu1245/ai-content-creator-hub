@@ -229,7 +229,6 @@ const NewProject = () => {
 
             if (queryError) return;
 
-            console.log('Poll response:', queryData);
 
             if (queryData?.status === 'completed' && queryData?.video_url) {
               if (pollingRef.current) clearInterval(pollingRef.current);

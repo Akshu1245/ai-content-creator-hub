@@ -134,7 +134,7 @@ const Auth = () => {
             {[
               "Generate videos in under 5 minutes",
               "Built-in compliance scoring",
-              "6 premium AI voices",
+              "9 premium AI voices",
             ].map((f) => (
               <div key={f} className="flex items-center gap-2.5 text-xs text-muted-foreground">
                 <div className="w-1.5 h-1.5 rounded-full bg-accent" />
@@ -230,6 +230,7 @@ const Auth = () => {
                     type={showPw ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={mode === "signup" ? "new-password" : "current-password"}
                     className="w-full px-4 py-3 rounded-xl text-sm text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all pr-10"
                     placeholder="••••••••"
                   />

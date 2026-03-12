@@ -19,7 +19,7 @@ const updates = [
     date: "February 2026",
     items: [
       { icon: Sparkles, text: "Multi-clip timeline editor with drag-and-drop reordering", tag: "New" },
-      { icon: Zap, text: "6 premium AI voices with natural inflection via Sarvam AI", tag: "New" },
+      { icon: Zap, text: "9 premium AI voices with natural inflection via Sarvam AI", tag: "New" },
       { icon: Shield, text: "Revenue estimator with CPM-based projections per niche", tag: "New" },
     ],
   },

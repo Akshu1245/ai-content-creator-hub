@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link, useSearchParams } from "react-router-dom";
-import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2, Map } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import EmptyState from "@/components/shared/EmptyState";
 import { SkeletonCard, SkeletonRow } from "@/components/shared/Skeletons";
@@ -9,6 +9,7 @@ import RevenueCommandCenter from "@/components/differentiators/RevenueCommandCen
 import OnboardingTips from "@/components/dashboard/OnboardingTips";
 import WhatsNewModal from "@/components/dashboard/WhatsNewModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTour, TOUR_COMPLETED_KEY } from "@/contexts/TourContext";
 
 import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
@@ -27,6 +28,7 @@ const getStatusStyle = (status: string) => {
 
 const Dashboard = () => {
   const { user, checkSubscription } = useAuth();
+  const { startTour } = useTour();
   usePageTitle("Dashboard");
   const queryClient = useQueryClient();
   const welcomeShown = useRef(false);
@@ -34,6 +36,23 @@ const Dashboard = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Auto-trigger tour for first-time users
+  useEffect(() => {
+    if (!user) return;
+    const tourStatus = localStorage.getItem(TOUR_COMPLETED_KEY);
+    if (!tourStatus) {
+      const t = setTimeout(() => startTour(), 1800);
+      return () => clearTimeout(t);
+    }
+  }, [user, startTour]);
+
+  // Keyboard shortcut: T = replay tour
+  useEffect(() => {
+    const handler = () => startTour();
+    window.addEventListener("vorax:replay-tour", handler);
+    return () => window.removeEventListener("vorax:replay-tour", handler);
+  }, [startTour]);
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Subscription activated! 🎉");
@@ -97,23 +116,32 @@ const Dashboard = () => {
               Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}.
             </p>
           </div>
-          <Link to="/new-project">
-            <button className="btn-primary flex items-center gap-2 text-xs">
-              <Plus className="w-3.5 h-3.5" /> Create Video
+          <div className="flex items-center gap-2">
+            <button
+              onClick={startTour}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-border text-[10px] font-label tracking-widest transition-all"
+              title="Replay tour"
+            >
+              <Map className="w-3 h-3" /> TOUR
             </button>
-          </Link>
+            <Link to="/new-project">
+              <button className="btn-primary flex items-center gap-2 text-xs">
+                <Plus className="w-3.5 h-3.5" /> Create Video
+              </button>
+            </Link>
+          </div>
         </div>
 
         {/* Onboarding Tips (first visit only) */}
-        <OnboardingTips />
+        <div data-tour="tour-compliance">
+          <OnboardingTips />
+        </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div data-tour="tour-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {stats.map((stat, i) => (
             <div key={stat.label} className="surface-raised p-5 surface-hover border border-border/45 group cursor-pointer hover:border-primary/40 transition-all duration-300" style={{
-              animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
-              animationDelay: `${0.3 + (i * 0.08)}s`,
-              animationFillMode: "both",
+              animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.3 + (i * 0.08)}s both` : "none",
             }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
@@ -130,17 +158,17 @@ const Dashboard = () => {
         </div>
 
         {/* Revenue Center */}
-        <div className="mb-10">
+        <div data-tour="tour-revenue-center" className="mb-10">
           <RevenueCommandCenter />
         </div>
 
         {/* YPP + Projects */}
         <div className="grid lg:grid-cols-12 gap-6 mb-10">
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5" data-tour="tour-ypp-tracker">
             <YPPTrackerCard />
           </div>
 
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 space-y-4" data-tour="tour-projects">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-display text-foreground font-bold">Your Projects</h2>
               <span className="text-[10px] font-label text-muted-foreground">{projects.length} PROJECTS</span>
@@ -157,9 +185,7 @@ const Dashboard = () => {
             ) : (
               projects.slice(0, 10).map((project, index) => (
                 <div key={project.id} className="surface-raised p-5 surface-hover group relative border border-border/45 overflow-hidden hover:border-primary/40 hover:shadow-[0_0_20px_rgba(212,180,117,0.16)] transition-all duration-300" style={{
-                  animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
-                  animationDelay: `${0.5 + (index * 0.08)}s`,
-                  animationFillMode: "both",
+                  animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + (index * 0.08)}s both` : "none",
                 }}>
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <Link to={`/project/${project.id}`} className="block">
@@ -201,9 +227,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="grid lg:grid-cols-2 gap-6">
           <div style={{
-            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
-            animationDelay: "1s",
-            animationFillMode: "both",
+            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1s both" : "none",
           }}>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Quick Actions</h2>
             <div className="space-y-2">
@@ -213,9 +237,7 @@ const Dashboard = () => {
               ].map((action, i) => (
                 <Link key={action.to} to={action.to}>
                   <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer border border-border/45 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(212,180,117,0.14)] transition-all duration-300" style={{
-                    animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
-                    animationDelay: `${1.1 + (i * 0.08)}s`,
-                    animationFillMode: "both",
+                    animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${1.1 + (i * 0.08)}s both` : "none",
                   }}>
                     <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 hover:bg-primary/20 transition-colors duration-300">
                       <action.icon className="w-4 h-4 text-primary" />
@@ -233,9 +255,7 @@ const Dashboard = () => {
 
           {/* Recent Activity */}
           <div style={{
-            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
-            animationDelay: "1.1s",
-            animationFillMode: "both",
+            animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both" : "none",
           }}>
             <h2 className="text-sm font-display text-foreground font-bold mb-3">Recent Activity</h2>
             <div className="surface-raised p-5 space-y-4 border border-border/45 hover:border-primary/40 transition-colors duration-300" style={{

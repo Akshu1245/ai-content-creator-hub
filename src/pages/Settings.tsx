@@ -21,9 +21,7 @@ interface EngineConfig {
   endpoint_url: string;
 }
 
-const API_URL =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
-  "http://127.0.0.1:8000";
+const API_URL = "";
 
 const DEFAULT_ENGINE_CONFIG: EngineConfig = { engine: "pexels", api_token: "", api_key: "", endpoint_url: "" };
 
@@ -211,7 +209,7 @@ const Settings = () => {
       key: "pro",
       name: "Pro",
       price: "₹999/mo",
-      features: ["20 videos/mo", "All platforms", "Auto-fix", "All 6 voices", "AI insights"],
+      features: ["20 videos/mo", "All platforms", "Auto-fix", "All 9 voices", "AI insights"],
       priceId: SUBSCRIPTION_TIERS.pro.price_id,
       popular: true,
     },
@@ -286,7 +284,7 @@ const Settings = () => {
             </div>
             {[
               { name: "Gemini AI", connected: true, desc: "Script, captions, research" },
-              { name: "Sarvam AI", connected: true, desc: "Voice synthesis (6 voices)" },
+              { name: "Sarvam AI", connected: true, desc: "Voice synthesis (9 voices)" },
               { name: "JSON2Video", connected: true, desc: "Video rendering engine" },
               { name: "Pexels", connected: true, desc: "Stock photos & videos" },
               { name: "Stripe", connected: true, desc: "Payment processing" },
