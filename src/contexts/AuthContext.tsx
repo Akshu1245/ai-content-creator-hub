@@ -57,18 +57,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkSubscription = useCallback(async () => {
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData?.session?.user?.email;
-      if (!email) {
-        setSubscription({ subscribed: false, tier: "free", subscriptionEnd: null, loading: false });
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      if (error) {
+        console.error("Subscription check error:", error);
+        setSubscription(prev => ({ ...prev, loading: false }));
         return;
       }
-      const res = await fetch("/api/check-subscription", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
 
       let tier: SubscriptionTier = "free";
       if (data?.subscribed && data?.product_id) {

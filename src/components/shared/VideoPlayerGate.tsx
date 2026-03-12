@@ -26,14 +26,6 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
     });
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPhase("opening");
-      setTimeout(() => setPhase("open"), 1400);
-    }, 3200);
-    return () => clearTimeout(timer);
-  }, []);
-
   const handleEnter = useCallback(() => {
     setPhase("opening");
     setTimeout(() => setPhase("open"), 1400);
@@ -288,19 +280,10 @@ const VideoPlayerGate = ({ children }: VideoPlayerGateProps) => {
         </div>
 
         <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] font-mono tracking-[0.22em] text-primary/60"
         >
-          <div className="flex items-center gap-3 text-[10px] font-mono tracking-[0.22em] text-primary/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            SYSTEM READY · V3.0 · NEURAL ENGINE
-          </div>
-          <button
-            onClick={handleEnter}
-            className="text-[10px] font-mono tracking-widest text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors underline underline-offset-2 cursor-pointer"
-            style={{ opacity: phase === "idle" ? 1 : 0, transition: "opacity 0.3s" }}
-          >
-            skip intro
-          </button>
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          SYSTEM READY · V3.0 · NEURAL ENGINE
         </div>
 
         {/* Open transition flash */}

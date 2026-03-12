@@ -42,12 +42,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </Link>
 
           <Link to="/new-project">
-            <button data-tour="tour-new-video" className="btn-primary w-full flex items-center justify-center gap-2 mb-8 text-xs">
+            <button className="btn-primary w-full flex items-center justify-center gap-2 mb-8 text-xs">
               <Plus className="w-3.5 h-3.5" /> New Video
             </button>
           </Link>
 
-          <nav className="space-y-1" data-tour="tour-sidebar-nav">
+          <nav className="space-y-1">
             {navItems.map((item) => {
               const active = location.pathname === item.path;
               return (

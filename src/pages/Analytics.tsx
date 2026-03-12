@@ -141,7 +141,9 @@ const Analytics = () => {
               key={stat.label}
               className="surface-raised p-5 surface-hover border border-border/45 group hover:border-primary/40 transition-all duration-300"
               style={{
-                animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + (i * 0.08)}s both` : "none",
+                animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                animationDelay: `${0.2 + (i * 0.08)}s`,
+                animationFillMode: "both",
               }}
             >
               <div className="flex items-center justify-between mb-4">
@@ -305,7 +307,9 @@ const Analytics = () => {
                         key={v.title}
                         className="border-b border-border/30 last:border-b-0 hover:bg-secondary/20 hover:shadow-[0_0_16px_rgba(212,180,117,0.12)] transition-all cursor-pointer group"
                         style={{
-                          animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.8 + (i * 0.06)}s both` : "none",
+                          animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                          animationDelay: `${0.8 + (i * 0.06)}s`,
+                          animationFillMode: "both",
                         }}
                       >
                         <td className="px-5 py-4 text-foreground font-medium max-w-[220px] group-hover:text-primary transition-colors">
@@ -346,7 +350,9 @@ const Analytics = () => {
           {/* AI Insights */}
           <div className="lg:col-span-4">
             <h2 className="text-sm font-display text-foreground font-bold mb-4 flex items-center gap-2" style={{
-              animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both" : "none",
+              animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.8s",
+              animationFillMode: "both",
             }}>
               <Sparkles className="w-4 h-4 text-primary animate-pulse" /> AI Insights
             </h2>
@@ -368,7 +374,9 @@ const Analytics = () => {
                     className="surface-raised p-4 surface-hover group hover:border-primary/30 transition-all duration-300"
                     style={{ 
                       borderLeft: `3px solid ${borderColor}`,
-                      animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.9 + (i * 0.08)}s both` : "none",
+                      animation: mounted ? `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                      animationDelay: `${0.9 + (i * 0.08)}s`,
+                      animationFillMode: "both",
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -384,7 +392,9 @@ const Analytics = () => {
 
             {/* Engagement Summary */}
             <div className="surface-raised p-5 mt-4 group hover:border-primary/30 transition-all duration-300" style={{
-              animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.3s both" : "none",
+              animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "1.3s",
+              animationFillMode: "both",
             }}>
               <h3 className="text-[10px] font-label text-muted-foreground mb-4">ENGAGEMENT SUMMARY</h3>
               <div className="space-y-3">

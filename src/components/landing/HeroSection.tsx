@@ -1,97 +1,17 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Sparkles, ShieldCheck, TrendingUp, IndianRupee } from "lucide-react";
+import { ArrowRight, Check, Sparkles, ShieldCheck, TrendingUp } from "lucide-react";
+import WordCycler from "@/components/shared/WordCycler";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
 import { useEffect, useState } from "react";
 
-const cyclingLines = [
-  "before you hit publish.",
-  "before YouTube decides.",
-  "while rivals publish blind.",
-  "before you regret it.",
-];
-
-const toastEvents = [
-  { avatar: "AM", name: "Arjun M.", text: "Demonetization prevented — score 94", city: "Mumbai", color: "text-emerald-400" },
-  { avatar: "KN", name: "Kavya N.", text: "Tamil video published — 0 issues", city: "Chennai", color: "text-primary" },
-  { avatar: "RP", name: "Rohit P.", text: "Paycheck Preview: ₹7,400/mo projected", city: "Ahmedabad", color: "text-gold" },
-  { avatar: "VR", name: "Vikram R.", text: "YPP milestone hit — 4,000 watch hours", city: "Hyderabad", color: "text-accent" },
-  { avatar: "SI", name: "Sneha I.", text: "4-Platform Blitz completed in 6 min", city: "Bengaluru", color: "text-emerald-400" },
-];
-
 const HeroSection = () => {
   const [mounted, setMounted] = useState(false);
-  const [lineIndex, setLineIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [toastIndex, setToastIndex] = useState(0);
-  const [toastVisible, setToastVisible] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const lineInterval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setLineIndex((i) => (i + 1) % cyclingLines.length);
-        setFade(true);
-      }, 350);
-    }, 3000);
-
-    const showToast = () => {
-      setToastVisible(true);
-      setTimeout(() => {
-        setToastVisible(false);
-        setTimeout(() => {
-          setToastIndex((i) => (i + 1) % toastEvents.length);
-        }, 800);
-      }, 3500);
-    };
-
-    const toastTimeout = setTimeout(() => {
-      showToast();
-      const toastInterval = setInterval(showToast, 5500);
-      return () => clearInterval(toastInterval);
-    }, 2200);
-
-    return () => {
-      clearInterval(lineInterval);
-      clearTimeout(toastTimeout);
-    };
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <section className="relative pt-40 pb-28 px-6 z-10 overflow-hidden">
-      {/* Floating live toast */}
-      {mounted && (
-        <div
-          className="fixed bottom-8 left-6 z-50 max-w-[280px] pointer-events-none"
-          style={{
-            animation: toastVisible
-              ? "toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both"
-              : "toastSlideOut 0.35s ease-in both",
-            opacity: toastVisible ? 1 : 0,
-          }}
-        >
-          <div className="bg-card/95 backdrop-blur-xl border border-border/60 rounded-2xl p-3.5 shadow-2xl">
-            <div className="flex items-start gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/20 to-accent/10 border border-border flex items-center justify-center shrink-0 mt-0.5">
-                <span className="text-[9px] font-bold text-foreground">{toastEvents[toastIndex].avatar}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="live-dot" />
-                  <span className="text-[9px] font-label text-emerald-400 tracking-widest">JUST NOW</span>
-                </div>
-                <p className="text-[11px] font-semibold text-foreground truncate">{toastEvents[toastIndex].name}</p>
-                <p className={`text-[10px] leading-relaxed mt-0.5 ${toastEvents[toastIndex].color}`}>
-                  {toastEvents[toastIndex].text}
-                </p>
-                <p className="text-[9px] text-muted-foreground/50 mt-0.5">{toastEvents[toastIndex].city}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{
-        backgroundImage: `linear-gradient(hsl(var(--primary) / 0.15) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.15) 1px, transparent 1px)`,
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.12) 1px, transparent 1px)`,
         backgroundSize: "80px 80px",
       }} />
 
@@ -106,104 +26,98 @@ const HeroSection = () => {
             transform: mounted ? "translateX(0)" : "translateX(-40px)",
             transition: "all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
           }}>
-            {/* Live badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-label mb-8 border border-primary/35 bg-primary/12" style={{
-              animation: mounted ? "glowPulse 3s ease-in-out 0.5s infinite" : "none",
+              animation: mounted ? "glowPulse 3s ease-in-out infinite" : "none",
+              animationDelay: "0.5s",
             }}>
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              <span className="text-primary font-bold tracking-widest">2,100+ DEMONETIZATIONS PREVENTED · INDIA'S COMPLIANCE ENGINE</span>
+              <span className="text-primary font-bold tracking-widest">CINEMATIC AI STUDIO · LIVE</span>
             </div>
 
-            {/* Main headline */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.05] font-display font-bold mb-8" style={{
-              animation: mounted ? "slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both" : "none",
+            <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.02] font-display font-bold mb-8" style={{
+              animation: mounted ? "slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.3s",
+              animationFillMode: "both",
             }}>
-              <span className="text-foreground">Know your</span>
+              <span className="text-foreground">Build faceless</span>
               <br />
-              <span className="bg-gradient-to-r from-primary via-gold to-accent bg-clip-text text-transparent" style={{
-                backgroundSize: "200% 100%",
-                animation: mounted ? "gradientShift 4s ease-in-out infinite" : "none",
-              }}>paycheck</span>
+              <span className="text-foreground">video systems</span>
               <br />
-              <span
-                className="text-foreground text-4xl md:text-5xl lg:text-6xl"
-                style={{
-                  opacity: fade ? 1 : 0,
-                  transition: "opacity 0.35s ease-in-out",
-                }}
-              >
-                {cyclingLines[lineIndex]}
-              </span>
+              <span className="bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent">that stay </span>
+              <WordCycler words={["monetized", "compliant", "views", "results"]} interval={2500} />
             </h1>
 
             <p className="text-base md:text-lg max-w-xl mb-10 text-muted-foreground leading-relaxed" style={{
-              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both" : "none",
+              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.5s",
+              animationFillMode: "both",
             }}>
-              The only AI video studio that scores every video against YouTube's monetization policy{" "}
-              <span className="text-foreground font-semibold">before you can upload.</span>{" "}
-              Most platforms skip this step entirely.{" "}
-              <span className="text-primary font-semibold">We never do.</span>
+              Plan, script, voice, score, and export from one command center.
+              <span className="text-foreground font-semibold"> VORAX checks monetization risk before you publish.</span>
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-10" style={{
-              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both" : "none",
+              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.6s",
+              animationFillMode: "both",
             }}>
               <Link to="/auth">
                 <button className="btn-primary text-sm px-10 py-4 flex items-center gap-2 group hover:shadow-[0_0_24px_rgba(212,180,117,0.4)]" style={{
                   transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}>
-                  <span>Start Creating Free</span>
+                  <span>Start Creating</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
-              <Link to="/why-vorax">
-                <button className="btn-ghost py-4 px-8 text-sm">Why VORAX wins →</button>
+              <Link to="/auth">
+                <button className="btn-ghost py-4 px-8 text-sm">Book Live Demo</button>
               </Link>
             </div>
 
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground" style={{
-              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both" : "none",
+              animation: mounted ? "slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+              animationDelay: "0.7s",
+              animationFillMode: "both",
             }}>
-              {[
-                { text: "No credit card", icon: Check },
-                { text: "2 free videos/mo", icon: Sparkles },
-                { text: "₹999/mo flat · INR billing", icon: IndianRupee },
-              ].map(({ text, icon: Icon }, i) => (
+              {["No credit card", "2 free videos/mo", "Policy safe"].map((text, i) => (
                 <span key={text} className="flex items-center gap-2" style={{
-                  animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.7 + (i * 0.1)}s both` : "none",
+                  animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+                  animationDelay: `${0.7 + (i * 0.1)}s`,
+                  animationFillMode: "both",
                 }}>
                   <div className="w-4 h-4 rounded-full bg-accent/15 flex items-center justify-center">
-                    <Icon className="w-2.5 h-2.5 text-accent" />
+                    <Check className="w-2.5 h-2.5 text-accent" />
                   </div>
                   {text}
                 </span>
               ))}
             </div>
 
-            {/* Metrics bar */}
-            <div className="mt-8 grid grid-cols-3 gap-3 max-w-xl">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
               {[
-                { label: "Avg Output Time", value: "6 min", icon: Sparkles },
-                { label: "Policy Match Rate", value: "94%", icon: ShieldCheck },
-                { label: "Avg Growth Lift", value: "2.8×", icon: TrendingUp },
+                { label: "Avg Output Time", value: "6m", icon: Sparkles },
+                { label: "Policy Match", value: "94%", icon: ShieldCheck },
+                { label: "Growth Lift", value: "2.8x", icon: TrendingUp },
               ].map((metric, i) => (
-                <div key={metric.label} className="surface p-4 rounded-2xl hover:surface-hover transition-all duration-300 cursor-pointer group" style={{
-                  animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.8 + (i * 0.1)}s both` : "none",
+                <div key={metric.label} className="surface p-4 rounded-2xl hover:surface-hover transition-all duration-300" style={{
+                  animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+                  animationDelay: `${0.8 + (i * 0.1)}s`,
+                  animationFillMode: "both",
+                  cursor: "pointer",
                 }}>
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <metric.icon className="w-3.5 h-3.5" />
                     <span className="font-label text-[9px]">{metric.label}</span>
                   </div>
-                  <p className="font-display text-2xl text-foreground group-hover:text-primary transition-colors">{metric.value}</p>
+                  <p className="font-display text-2xl text-foreground">{metric.value}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right — Compliance UI */}
           <div style={{
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateX(0) rotate(0deg)" : "translateX(40px) rotate(2deg)",
@@ -215,24 +129,14 @@ const HeroSection = () => {
                 animation: mounted ? "blobFloat 6s ease-in-out infinite" : "none",
               }} />
 
-              {/* Competitor comparison callout */}
-              <div className="relative z-10 mb-3 flex items-center justify-between px-4 py-2.5 rounded-xl border border-destructive/20 bg-destructive/5" style={{
-                animation: mounted ? "slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both" : "none",
-              }}>
-                <span className="text-[10px] text-muted-foreground/70">
-                  Most platforms publish without this step →
-                </span>
-                <span className="text-[10px] font-label text-destructive/80 px-2 py-0.5 rounded-full bg-destructive/8 border border-destructive/15">MISSING</span>
-              </div>
-
               <div className="relative z-10 flex items-center justify-between px-5 py-2 rounded-t-2xl border border-b-0 border-border/60 bg-card hover:border-primary/40 transition-colors duration-300" style={{
                 animation: mounted ? "slideDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both" : "none",
               }}>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                  <span className="text-[9px] font-mono text-muted-foreground tracking-widest">LIVE MONETIZATION SCAN</span>
+                  <span className="text-[9px] font-mono text-muted-foreground tracking-widest">LIVE SCAN</span>
                 </div>
-                <span className="text-[9px] font-mono text-muted-foreground/40">VORAX ENGINE v3.0</span>
+                <span className="text-[9px] font-mono text-muted-foreground/40">COMPLIANCE v3.0</span>
               </div>
 
               <div className="surface-overlay rounded-t-none p-8 relative z-10 group-hover:border-primary/30 transition-colors duration-300" style={{
@@ -249,19 +153,20 @@ const HeroSection = () => {
                       { label: "Value Score", score: 88, color: "from-gold to-ochre" },
                     ].map((s, i) => (
                       <div key={s.label} style={{
-                        animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.8 + (i * 0.1)}s both` : "none",
+                        animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+                        animationDelay: `${0.8 + (i * 0.1)}s`,
+                        animationFillMode: "both",
                       }}>
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-[10px] font-label text-muted-foreground">{s.label.toUpperCase()}</span>
                           <span className="text-xs font-mono font-semibold text-foreground">{s.score}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-secondary overflow-hidden hover:shadow-[0_0_12px_rgba(212,180,117,0.22)] transition-shadow duration-300">
                           <div
-                            className={`h-full rounded-full bg-gradient-to-r ${s.color}`}
-                            style={{
+                            className={`h-full rounded-full bg-gradient-to-r ${s.color} transition-all duration-1000`}
+                            style={{ 
                               width: mounted ? `${s.score}%` : "0%",
-                              transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${0.9 + i * 0.15}s`,
-                              animation: mounted ? "gradientFlow 3s ease-in-out infinite" : "none",
+                              animation: mounted ? `gradientFlow 3s ease-in-out infinite` : "none",
                               backgroundSize: "200% 100%",
                             }}
                           />
@@ -269,7 +174,9 @@ const HeroSection = () => {
                       </div>
                     ))}
                     <div className="pt-2" style={{
-                      animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both" : "none",
+                      animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+                      animationDelay: "1.1s",
+                      animationFillMode: "both",
                     }}>
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-label bg-accent/10 text-accent border border-accent/20 hover:border-accent/50 hover:bg-accent/15 transition-all duration-300" style={{
                         animation: "glowPulse 3s ease-in-out infinite",
@@ -279,14 +186,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Revenue preview callout */}
-              <div className="relative z-10 mt-3 flex items-center justify-between px-4 py-2.5 rounded-xl border border-primary/20 bg-primary/5" style={{
-                animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both" : "none",
-              }}>
-                <span className="text-[10px] text-muted-foreground">Estimated monthly revenue for this video</span>
-                <span className="text-sm font-display font-bold text-primary">₹4,200 – ₹8,800</span>
               </div>
             </div>
           </div>

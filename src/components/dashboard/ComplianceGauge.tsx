@@ -38,9 +38,12 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
 
   return (
     <div className="flex flex-col items-center gap-6">
+      {/* Clean vertical bar with score */}
       <div className="flex flex-col items-center gap-4" style={{
-        animation: mounted ? "slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0s both" : "none",
+        animation: mounted ? "slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+        animationFillMode: "both",
       }}>
+        {/* Large score number */}
         <div className="text-center">
           <div className="font-display text-7xl font-bold leading-none" style={{
             color: color.bg,
@@ -51,18 +54,20 @@ const ComplianceGauge = ({ score, size = 180, label, delay = 300 }: ComplianceGa
           <div className="text-xl text-muted-foreground font-mono tracking-widest mt-1">%</div>
         </div>
 
+        {/* Animated progress bar */}
         <div className="w-24 h-2 rounded-full bg-secondary overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-1000"
             style={{
               width: `${mounted ? animatedScore : 0}%`,
               background: color.bg,
-              boxShadow: `0 0 15px ${color.bg}60`,
+                boxShadow: `0 0 15px ${color.bg}60`,
             }}
           />
         </div>
       </div>
 
+      {/* Status label */}
       <p
         className="text-[10px] font-label tracking-[0.15em] uppercase px-3 py-2 rounded-lg border"
         style={{

@@ -2,59 +2,21 @@ import { Link } from "react-router-dom";
 import { Check, Zap } from "lucide-react";
 
 const pricingPlans = [
-  {
-    name: "Starter",
-    price: "Free",
-    period: "",
-    desc: "Test everything, no commitment",
-    features: ["2 videos/month", "YouTube only", "Basic compliance score", "2 voice options", "Community support"],
-    cta: "Start Free",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: "₹999",
-    period: "/mo",
-    desc: "Best for consistent creators",
-    features: ["20 videos/month", "All 4 platforms", "Full compliance + auto-fix", "Revenue estimator", "YPP progress tracker", "Consistency Engine", "All 9 voices", "AI growth insights"],
-    cta: "Go Pro",
-    popular: true,
-  },
-  {
-    name: "Agency",
-    price: "₹2,999",
-    period: "/mo",
-    desc: "For teams and power creators",
-    features: ["Unlimited videos", "Everything in Pro", "Full analytics history", "API access", "Priority queue", "Custom branding", "Dedicated account manager"],
-    cta: "Contact Us",
-    popular: false,
-  },
+  { name: "Starter", price: "Free", period: "", features: ["2 videos/month", "YouTube only", "Basic compliance score", "2 voice options"], cta: "Start Free", popular: false },
+  { name: "Pro", price: "₹999", period: "/mo", features: ["20 videos/month", "All 4 platforms", "Full compliance + auto-fix", "Consistency Engine", "All 6 voices", "AI growth insights"], cta: "Go Pro", popular: true },
+  { name: "Agency", price: "₹2,999", period: "/mo", features: ["Unlimited videos", "Everything in Pro", "Full analytics history", "API access", "Priority queue", "Custom branding"], cta: "Contact Us", popular: false },
 ];
 
 const PricingSection = () => {
   return (
     <section id="pricing" className="py-28 px-6 relative z-10">
       <div className="container mx-auto max-w-4xl">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <span className="font-label text-primary tracking-widest">PRICING</span>
           <h2 className="text-3xl md:text-5xl font-display text-foreground font-bold tracking-tight mt-4 mb-3">
             Built to scale with your output
           </h2>
           <p className="text-muted-foreground text-sm">Start free. Upgrade only when your content engine is ready.</p>
-        </div>
-
-        {/* Competitor anchoring */}
-        <div className="mb-10 p-4 rounded-2xl bg-card/60 border border-border/40 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
-          <div className="text-xs text-muted-foreground">
-            <span className="text-foreground/50 line-through">InVideo Plus ≈ ₹2,500/mo</span>
-            <span className="mx-2 text-muted-foreground/40">·</span>
-            <span className="text-foreground/50 line-through">Pictory Pro ≈ ₹2,400/mo</span>
-            <span className="mx-2 text-muted-foreground/40">·</span>
-            <span className="text-foreground/50 line-through">Fliki Standard ≈ ₹2,300/mo</span>
-          </div>
-          <div className="px-3 py-1 rounded-full text-[10px] font-label bg-primary/10 border border-primary/25 text-primary">
-            VORAX Pro — just ₹999/mo · INR billing · No forex charges
-          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -81,13 +43,13 @@ const PricingSection = () => {
                 )}
 
                 <h3 className="text-lg font-display text-foreground mt-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mt-3 mb-2">
+                <div className="flex items-baseline gap-1 mt-3 mb-8">
                   <span className="text-4xl font-display text-foreground font-bold">{plan.price}</span>
                   {plan.period && <span className="text-xs text-muted-foreground">{plan.period}</span>}
                 </div>
 
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-7">
-                  {plan.desc}
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-6">
+                  {plan.popular ? "Best for consistent creators" : "Flexible start"}
                 </p>
 
                 <ul className="space-y-3 mb-10">
@@ -115,7 +77,7 @@ const PricingSection = () => {
                 </Link>
 
                 <p className="mt-4 text-[10px] text-center text-muted-foreground/70">
-                  Cancel anytime · INR billing
+                  Cancel anytime
                 </p>
               </div>
             </div>
