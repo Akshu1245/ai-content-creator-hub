@@ -49,7 +49,7 @@ const ResetPassword = () => {
       <div className="bg-noise" />
       <div className="w-full max-w-sm relative z-10">
         <div className="flex items-center gap-2.5 mb-8 justify-center">
-          <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+          <img src="/vorax-logo.png" alt="VORAX" className="h-8 w-auto object-contain" loading="lazy" />
           <span className="font-display text-foreground text-sm tracking-wide">VORAX</span>
         </div>
 

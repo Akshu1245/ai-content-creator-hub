@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -24,3 +25,16 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Python backend artifacts and secrets
+backend/.env
+**/__pycache__/
+*.pyc
+
+# Generated/build artifacts
+dist-server/
+src.zip
+
+# Local agent metadata
+.claude/
+CLAUDE.md

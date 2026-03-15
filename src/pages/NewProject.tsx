@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2, Pencil, Youtube, Merge, Calendar } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Upload, Download, ExternalLink, RotateCcw, Loader2, Pencil, Youtube, Merge, Calendar, ArrowRight } from "lucide-react";
 import VideoEditor from "@/components/editor/VideoEditor";
 import VideoExporter from "@/components/editor/VideoExporter";
 import AudioVideoMerger from "@/components/editor/AudioVideoMerger";
@@ -56,6 +56,8 @@ const steps = [
 export interface WizardData {
   niche: string;
   topic: string;
+  quality: string;
+  platform: string;
   trendData: unknown;
   script: string;
   voice: string;
@@ -81,6 +83,7 @@ const NewProject = () => {
   const [progress, setProgress] = useState(0);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
+  const [generationResult, setGenerationResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showYouTube, setShowYouTube] = useState(false);
@@ -94,7 +97,7 @@ const NewProject = () => {
   const [editorOverlays, setEditorOverlays] = useState<OverlayDraft[]>([]);
 
   const [data, setData] = useState<WizardData>({
-    niche: "", topic: "", trendData: null, script: "",
+    niche: "", topic: "", quality: "balanced", platform: "youtube", trendData: null, script: "",
     voice: "roger", style: "cinematic", complianceScore: null,
     platforms: ["youtube"], scheduledAt: "", selectedMedia: [],
     musicTrack: null, musicVolume: 30,
@@ -123,6 +126,22 @@ const NewProject = () => {
   useEffect(() => {
     return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
   }, []);
+
+  // Keyboard navigation through wizard steps
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (["input", "textarea", "select"].includes(tag)) return;
+      if (launched) return;
+      if (e.key === "Enter" && currentStep < steps.length - 1) {
+        setCurrentStep((p) => Math.min(steps.length - 1, p + 1));
+      } else if (e.key === "Escape" && currentStep > 0) {
+        setCurrentStep((p) => Math.max(0, p - 1));
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [currentStep, launched]);
 
   // Save project to DB on launch
   const saveProject = async (status: string, videoUrl?: string | null, audioBase64?: string | null) => {
@@ -166,9 +185,9 @@ const NewProject = () => {
     // Load BYOK engine config from localStorage (set in Settings → Video Generation Engine)
     const engineConfig = (() => {
       try {
-        return JSON.parse(localStorage.getItem('vorax_engine_config') || '{"engine":"pexels"}');
+        return JSON.parse(localStorage.getItem('vorax_engine_config') || '{"engine":"kieai"}');
       } catch {
-        return { engine: 'pexels' };
+        return { engine: 'kieai' };
       }
     })();
 
@@ -201,11 +220,26 @@ const NewProject = () => {
       const videoPrompt = `${data.style} style video about: ${data.topic}. ${data.niche} niche. High quality, professional faceless content.`;
 
       const { data: createData, error: createError } = await supabase.functions.invoke('generate-video', {
-        body: { action: 'create', prompt: videoPrompt, duration: '5', aspect_ratio: '16:9', media_urls: data.selectedMedia, engine_config: engineConfig },
+        body: {
+          action: 'create',
+          prompt: videoPrompt,
+          script: data.script,
+          niche: data.niche,
+          style: data.style,
+          language: 'en-IN',
+          quality: data.quality,
+          platform: data.platform,
+          duration: '5',
+          aspect_ratio: data.platform === 'youtube' ? '16:9' : '9:16',
+          media_urls: data.selectedMedia,
+          engine: engineConfig?.engine || 'kieai',
+          engine_config: engineConfig,
+        },
       });
 
       if (createError) throw new Error(`Video creation failed: ${createError.message}`);
       if (!createData?.task_id) throw new Error('No task ID returned from video API');
+      setGenerationResult(createData);
 
       const taskId = createData.task_id;
 
@@ -224,16 +258,25 @@ const NewProject = () => {
 
           try {
             const { data: queryData, error: queryError } = await supabase.functions.invoke('generate-video', {
-              body: { action: 'query', task_id: taskId },
+              body: {
+                action: 'query',
+                task_id: taskId,
+                model: createData?.model_selected,
+              },
             });
 
             if (queryError) return;
+            setGenerationResult(queryData);
 
             console.log('Poll response:', queryData);
 
-            if (queryData?.status === 'completed' && queryData?.video_url) {
+            if (queryData?.status === 'completed') {
               if (pollingRef.current) clearInterval(pollingRef.current);
-              resolve(queryData.video_url);
+              resolve(
+                queryData?.video_url ||
+                queryData?.video_clips?.find((clip: any) => clip?.video_url)?.video_url ||
+                null,
+              );
             } else if (queryData?.status === 'failed') {
               if (pollingRef.current) clearInterval(pollingRef.current);
               reject(new Error(queryData?.error || 'Video generation failed on API side'));
@@ -290,13 +333,14 @@ const NewProject = () => {
     setProgress(0);
     setVideoUrl(null);
     setAudioBase64(null);
+    setGenerationResult(null);
     setError(null);
     setCurrentStep(0);
     setProjectId(null);
     setShowEditor(false);
     setShowYouTube(false);
     setShowTimeline(false);
-    setData({ niche: "", topic: "", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "", selectedMedia: [] });
+    setData({ niche: "", topic: "", quality: "balanced", platform: "youtube", trendData: null, script: "", voice: "roger", style: "cinematic", complianceScore: null, platforms: ["youtube"], scheduledAt: "", selectedMedia: [] });
   };
 
   if (launched) {
@@ -321,7 +365,7 @@ const NewProject = () => {
                       {generationPhase === 'voiceover' ? 'Generating voiceover...' : 'Rendering video...'}
                     </p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {generationPhase === 'voiceover' ? `Voice: ${data.voice}` : `Style: ${data.style} · ${data.topic}`}
+                      {generationPhase === 'voiceover' ? `Voice: ${data.voice}` : `Style: ${data.style} · ${data.topic} · ${generationResult?.model_selected || 'auto model'}`}
                     </p>
                   </div>
                 </div>
@@ -406,7 +450,7 @@ const NewProject = () => {
                   <div>
                     <span className="text-[10px] font-label text-accent block mb-2">COMPLETE</span>
                     <h1 className="text-xl font-display text-foreground font-bold tracking-tight mb-1">Your Video is Ready</h1>
-                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + JSON2Video rendering.</p>
+                    <p className="text-xs text-muted-foreground">Generated with Sarvam AI voice + {generationResult?.engine === 'kieai' ? 'Kie.ai auto-model pipeline' : 'video rendering engine'}.</p>
                   </div>
                   <div className="surface-raised overflow-hidden rounded-xl border border-border/45">
                     {videoUrl ? (
@@ -467,7 +511,24 @@ const NewProject = () => {
                       <div><span className="text-muted-foreground">Niche:</span> <span className="text-foreground">{data.niche}</span></div>
                       <div><span className="text-muted-foreground">Voice:</span> <span className="text-foreground">{data.voice}</span></div>
                       <div><span className="text-muted-foreground">Style:</span> <span className="text-foreground">{data.style}</span></div>
+                      <div><span className="text-muted-foreground">Quality:</span> <span className="text-foreground">{data.quality}</span></div>
+                      <div><span className="text-muted-foreground">Platform:</span> <span className="text-foreground">{data.platform}</span></div>
+                      <div><span className="text-muted-foreground">Model:</span> <span className="text-foreground">{generationResult?.model_selected || 'auto'}</span></div>
+                      <div><span className="text-muted-foreground">Reason:</span> <span className="text-foreground">{generationResult?.model_reason || 'Balanced default'}</span></div>
                     </div>
+                    {Array.isArray(generationResult?.video_clips) && generationResult.video_clips.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <p className="text-[10px] font-label text-muted-foreground">CLIPS</p>
+                        <div className="grid gap-2">
+                          {generationResult.video_clips.map((clip: any, idx: number) => (
+                            <div key={clip.task_id || idx} className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/20 px-3 py-2 text-[10px]">
+                              <span className="text-foreground">Clip {idx + 1}</span>
+                              <span className="text-muted-foreground">{clip.status || (clip.success ? 'completed' : 'processing')}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -500,6 +561,7 @@ const NewProject = () => {
                       ? "text-emerald cursor-pointer hover:bg-secondary/50 border border-transparent"
                       : "text-muted-foreground border border-transparent"
                   }`}
+                  style={i === currentStep ? { boxShadow: "0 0 12px hsl(199 89% 48% / 0.5)" } : undefined}
                 >
                   <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-mono font-bold ${
                     i < currentStep ? "bg-emerald/15 text-emerald" :
@@ -518,6 +580,9 @@ const NewProject = () => {
           </div>
         </div>
 
+        <p className="font-label text-[10px] text-muted-foreground mb-4">
+          STEP {currentStep + 1} OF {steps.length}
+        </p>
         <div className="animate-fade-in min-h-[400px]" key={currentStep}>
           {currentStep === 0 && <StepNiche data={data} updateData={updateData} />}
           {currentStep === 1 && <StepTrends data={data} updateData={updateData} />}
@@ -548,12 +613,19 @@ const NewProject = () => {
               disabled={!canProceed()}
               className="btn-primary flex items-center gap-1.5 text-xs disabled:opacity-20"
             >
-              Continue <ChevronRight className="w-3.5 h-3.5" />
+              Continue <ArrowRight className="w-3.5 h-3.5" />
             </button>
           ) : (
-            <button className="btn-primary flex items-center gap-2 px-10 py-3.5" onClick={handleLaunch}>
-              <Upload className="w-3.5 h-3.5" /> Launch Video
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                className="btn-primary flex items-center gap-2 px-10 py-3.5"
+                onClick={handleLaunch}
+                style={{ boxShadow: "0 0 30px hsl(199 89% 48% / 0.4)", animation: "glowPulse 2s ease-in-out infinite" }}
+              >
+                <Upload className="w-3.5 h-3.5" /> Launch Video
+              </button>
+              <p className="text-[10px] text-muted-foreground">⚡ Estimated generation time: ~6 minutes</p>
+            </div>
           )}
         </div>
       </div>

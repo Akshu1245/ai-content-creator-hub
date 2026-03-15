@@ -54,6 +54,31 @@ export async function complianceCheck(script: string, topic: string, niche: stri
   return apiFetch("/compliance-check", { script, topic, niche });
 }
 
+// New model-based compliance scoring using DistilBERT
+export async function scoreCompliance(text: string, context: string = "") {
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  const response = await fetch(`${API_URL}/api/compliance/score`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, context }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Request failed" }));
+    throw new Error(err.error || "Request failed");
+  }
+  return response.json();
+}
+
+// Get model info
+export async function getComplianceModelInfo() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  const response = await fetch(`${API_URL}/api/compliance/model-info`);
+  if (!response.ok) {
+    throw new Error("Failed to get model info");
+  }
+  return response.json();
+}
+
 export async function complianceFix(script: string, warnings: string[], recommendations: string[]) {
   return apiFetch("/compliance-fix", { script, warnings, recommendations });
 }

@@ -41,20 +41,27 @@ const RevenueCalculatorSection = () => {
     let frame: number;
     const duration = 600;
     const start = performance.now();
-    const startMin = displayed.min;
-    const startMax = displayed.max;
-    const animate = (now: number) => {
-      const p = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setDisplayed({
-        min: Math.round(startMin + (minRevenue - startMin) * ease),
-        max: Math.round(startMax + (maxRevenue - startMax) * ease),
-      });
-      if (p < 1) frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
+
+    setDisplayed((prev) => {
+      const startMin = prev.min;
+      const startMax = prev.max;
+
+      const animate = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        setDisplayed({
+          min: Math.round(startMin + (minRevenue - startMin) * ease),
+          max: Math.round(startMax + (maxRevenue - startMax) * ease),
+        });
+        if (p < 1) frame = requestAnimationFrame(animate);
+      };
+
+      frame = requestAnimationFrame(animate);
+      return prev;
+    });
+
     return () => cancelAnimationFrame(frame);
-  }, [selectedNiche, selectedViews]);
+  }, [minRevenue, maxRevenue]);
 
   const invideoCost = 2817;
   const voraxCost = 999;

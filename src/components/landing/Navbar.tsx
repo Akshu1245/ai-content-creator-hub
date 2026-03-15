@@ -2,27 +2,62 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("howitworks");
   const links = ["How it works", "Features", "Pricing", "FAQ", "Why VORAX"];
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = ["howitworks", "features", "pricing", "faq"];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target?.id) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        threshold: [0.2, 0.5, 0.75],
+        rootMargin: "-15% 0px -55% 0px",
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <nav className="fixed top-0 w-full z-50 border-b border-border/40 bg-background/78 backdrop-blur-2xl">
+    <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl transition-all duration-300 ${scrolled ? "border-b border-primary/20 bg-background/95" : "border-b border-border/40 bg-background/78"}`}>
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
 
       <div className="container mx-auto flex items-center justify-between h-[74px] px-6">
         <Link to="/" aria-label="Go to home" className="flex items-center gap-3 group">
           <img
-            src="/logo.png"
+            src="/vorax-logo.png"
             alt="VORAX logo"
-            className="h-11 w-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+            className="h-8 max-w-[120px] w-auto object-contain transition-all duration-500 group-hover:scale-[1.03] group-hover:[filter:drop-shadow(0_0_12px_hsl(199_89%_48%_/_0.6))]"
           />
-          <span className="font-display text-primary text-4xl leading-none tracking-wide transition-opacity duration-300 group-hover:opacity-90">
-            VORAX
-          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground rounded-full border border-border/70 bg-card/70 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.28)]">
@@ -30,7 +65,7 @@ const Navbar = () => {
             <a
               key={item}
               href={item === "Why VORAX" ? "/why-vorax" : `#${item.toLowerCase().replace(/\s/g, "")}`}
-              className="hover:text-foreground transition-all duration-300 relative group px-4 py-1.5 rounded-full hover:bg-primary/12"
+              className={`hover:text-foreground transition-all duration-300 relative group px-4 py-1.5 rounded-full hover:bg-primary/12 ${item !== "Why VORAX" && activeSection === item.toLowerCase().replace(/\s/g, "") ? "text-primary bg-primary/10" : ""}`}
             >
               {item}
               <span className="absolute -bottom-0.5 left-1/2 h-px w-0 -translate-x-1/2 bg-gradient-to-r from-primary/0 via-primary to-primary/0 group-hover:w-[70%] transition-all duration-300" />
@@ -55,7 +90,7 @@ const Navbar = () => {
                 </Button>
               </Link>
               <Link to="/auth">
-                <button className="btn-primary text-xs px-6 py-2.5">Get Started</button>
+                <button className="btn-primary text-xs px-6 py-2.5" style={{ boxShadow: "0 0 15px hsl(199 89% 48% / 0.4)" }}>Get Started</button>
               </Link>
             </>
           )}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink, Check, Crown, Film, Sparkles, Server, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { User, Key, CreditCard, Bell, Loader2, Shield, ExternalLink, Check, Crown, Film, Sparkles, Server, Eye, EyeOff, CheckCircle, XCircle, X } from "lucide-react";
 import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
 import usePageTitle from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,10 +12,11 @@ interface NotificationPrefs {
   weeklySummary: boolean;
 }
 
-type EngineId = "pexels" | "replicate" | "runpod";
+type EngineId = "kieai" | "pexels" | "replicate" | "runpod";
 
 interface EngineConfig {
   engine: EngineId;
+  kieai_key: string;
   api_token: string;
   api_key: string;
   endpoint_url: string;
@@ -25,7 +26,7 @@ const API_URL =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
   "http://127.0.0.1:8000";
 
-const DEFAULT_ENGINE_CONFIG: EngineConfig = { engine: "pexels", api_token: "", api_key: "", endpoint_url: "" };
+const DEFAULT_ENGINE_CONFIG: EngineConfig = { engine: "kieai", kieai_key: "", api_token: "", api_key: "", endpoint_url: "" };
 
 const Settings = () => {
   const { user, subscription, checkSubscription } = useAuth();
@@ -35,6 +36,7 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [notifPrefs, setNotifPrefs] = useState<NotificationPrefs>({
     videoComplete: true,
     complianceWarnings: true,
@@ -52,6 +54,7 @@ const Settings = () => {
   });
   const [engineValidating, setEngineValidating] = useState(false);
   const [engineValidation, setEngineValidation] = useState<{ valid: boolean; message: string } | null>(null);
+  const [showKieKey, setShowKieKey] = useState(false);
   const [showReplicateToken, setShowReplicateToken] = useState(false);
   const [showRunpodKey, setShowRunpodKey] = useState(false);
 
@@ -428,6 +431,67 @@ const Settings = () => {
             </div>
 
             <div className="space-y-3">
+              {/* Card 0 — Kie.ai (Primary) */}
+              <div
+                onClick={() => { setEngineConfig((c) => ({ ...c, engine: "kieai" })); setEngineValidation(null); }}
+                className={`rounded-xl border p-4 cursor-pointer transition-all ${
+                  engineConfig.engine === "kieai"
+                    ? "border-sky-500/60 bg-sky-500/5 shadow-[0_0_12px_rgba(14,165,233,0.08)]"
+                    : "border-border/50 bg-secondary/20 hover:border-border"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-display font-bold text-foreground">Kie.ai</span>
+                        <span className="text-[8px] font-label bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">PRIMARY</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Primary AI engine with automatic model selection based on prompt, niche, style and quality.</p>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 transition-all ${
+                    engineConfig.engine === "kieai" ? "border-sky-500 bg-sky-500" : "border-border"
+                  }`} />
+                </div>
+
+                {engineConfig.engine === "kieai" && (
+                  <div className="space-y-3 pt-2 border-t border-border/30" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <label className="text-[10px] font-label text-muted-foreground block mb-1.5">KIE.AI API KEY</label>
+                      <div className="relative">
+                        <input
+                          type={showKieKey ? "text" : "password"}
+                          value={engineConfig.kieai_key}
+                          onChange={(e) => setEngineConfig((c) => ({ ...c, kieai_key: e.target.value }))}
+                          placeholder="kie_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-2.5 pr-10 rounded-lg text-xs text-foreground bg-secondary/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                        />
+                        <button onClick={() => setShowKieKey((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                          {showKieKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-border/40 bg-secondary/20 p-3">
+                      <p className="text-[10px] font-label text-muted-foreground mb-1.5">AUTO MODEL SELECTION LOGIC</p>
+                      <div className="space-y-1 text-[10px] text-muted-foreground">
+                        <p>• Indian languages → <span className="text-foreground">wan2.6-t2v-plus</span></p>
+                        <p>• Creative/artistic prompts → <span className="text-foreground">runway-duration-5-generate</span></p>
+                        <p>• Story/multi-scene content → <span className="text-foreground">wan2.6-t2v-plus</span></p>
+                        <p>• Premium quality/commercial → <span className="text-foreground">veo3_quality</span></p>
+                        <p>• Default balanced mode → <span className="text-foreground">veo3_fast</span></p>
+                      </div>
+                    </div>
+
+                    <p className="text-[9px] text-muted-foreground">
+                      Create your key at kie.ai and paste it here to enable full video pipeline rendering.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* Card 1 — Pexels */}
               <div
                 onClick={() => { setEngineConfig((c) => ({ ...c, engine: "pexels" })); setEngineValidation(null); }}
@@ -445,7 +509,7 @@ const Settings = () => {
                         <span className="text-xs font-display font-bold text-foreground">Pexels Stock Footage</span>
                         <span className="text-[8px] font-label bg-emerald/15 text-emerald px-1.5 py-0.5 rounded-full">FREE</span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Uses Pexels stock footage library. No API key needed. 10M+ clips available.</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Fallback mode that uses stock footage. No API key needed. 10M+ clips available.</p>
                     </div>
                   </div>
                   <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 transition-all ${
@@ -594,14 +658,42 @@ const Settings = () => {
 
           {/* Danger Zone */}
           <section className="surface-raised p-6 border border-destructive/20">
-            <h2 className="text-sm font-display text-destructive font-bold mb-3">Danger Zone</h2>
-            <p className="text-[10px] text-muted-foreground mb-4">Permanently delete your account and all associated data.</p>
-            <button className="btn-ghost text-xs text-destructive border border-destructive/20 hover:bg-destructive/10">
+            <h2 className="text-sm font-display text-red-400 font-bold mb-1">Danger Zone</h2>
+            <p className="text-xs text-muted-foreground mb-4">Permanently delete your account and all data. This cannot be undone.</p>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="px-4 py-2 text-xs rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500/10 transition-colors"
+            >
               Delete Account
             </button>
           </section>
         </div>
       </div>
+
+      {/* Delete confirmation dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="surface-raised p-6 max-w-sm w-full rounded-2xl border border-red-500/20">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-lg text-foreground">Delete account?</h3>
+              <button onClick={() => setShowDeleteDialog(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-sm text-muted-foreground mb-6">
+              This will permanently delete all your videos, settings and data. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowDeleteDialog(false)} className="btn-ghost flex-1 text-xs">
+                Cancel
+              </button>
+              <button className="flex-1 text-xs px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors">
+                Yes, delete forever
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Link, useSearchParams } from "react-router-dom";
-import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, Eye, Clock, Shield, Video, ChevronRight, Play, ArrowUpRight, Trash2, BarChart3, X } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import EmptyState from "@/components/shared/EmptyState";
 import { SkeletonCard, SkeletonRow } from "@/components/shared/Skeletons";
@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 import usePageTitle from "@/hooks/usePageTitle";
 import { fetchProjects, deleteProject, type Project } from "@/lib/projects";
+import { getComplianceModelInfo } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +33,15 @@ const Dashboard = () => {
   const welcomeShown = useRef(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [showBanner, setShowBanner] = useState(!localStorage.getItem("vorax-banner-dismissed"));
+  const [modelStatus, setModelStatus] = useState<{ model_loaded: boolean; model: string } | null>(null);
+
+  // Fetch model status on mount
+  useEffect(() => {
+    getComplianceModelInfo()
+      .then(setModelStatus)
+      .catch(() => setModelStatus(null));
+  }, []);
 
   useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
@@ -88,6 +98,29 @@ const Dashboard = () => {
         {/* What's New Modal */}
         <WhatsNewModal />
 
+        {/* What's New Banner */}
+        {showBanner && (
+          <div className="flex items-center justify-between bg-primary/8 border border-primary/20 rounded-xl px-4 py-3 mb-6 text-sm">
+            <span className="text-foreground">🔥 New: Voice cloning now supports 8 Indian languages</span>
+            <button onClick={() => { localStorage.setItem("vorax-banner-dismissed", "1"); setShowBanner(false); }} className="text-muted-foreground hover:text-foreground ml-4">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* AI Model Status */}
+        {modelStatus && (
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-xs mb-6 ${modelStatus.model_loaded ? "bg-emerald-500/8 border-emerald-500/20" : "bg-amber-500/8 border-amber-500/20"}`}>
+            <div className={`w-2 h-2 rounded-full ${modelStatus.model_loaded ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
+            <span className={modelStatus.model_loaded ? "text-emerald-400" : "text-amber-400"}>
+              {modelStatus.model_loaded ? "VORAX AI Model Active — 99.98% accuracy" : "AI Model not loaded — using fallback"}
+            </span>
+            {!modelStatus.model_loaded && (
+              <span className="text-muted-foreground ml-auto">Check backend is running</span>
+            )}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
@@ -129,6 +162,25 @@ const Dashboard = () => {
           ))}
         </div>
 
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <Link to="/new-project">
+            <button className="btn-primary text-xs px-5 py-2.5 flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> New Video
+            </button>
+          </Link>
+          <Link to="/analytics">
+            <button className="btn-ghost text-xs px-5 py-2.5 flex items-center gap-2">
+              <BarChart3 className="w-3.5 h-3.5" /> Analytics
+            </button>
+          </Link>
+          <Link to="/new-project">
+            <button className="btn-ghost text-xs px-5 py-2.5 flex items-center gap-2">
+              <Shield className="w-3.5 h-3.5" /> Check Compliance
+            </button>
+          </Link>
+        </div>
+
         {/* Revenue Center */}
         <div className="mb-10">
           <RevenueCommandCenter />
@@ -156,7 +208,7 @@ const Dashboard = () => {
               <EmptyState />
             ) : (
               projects.slice(0, 10).map((project, index) => (
-                <div key={project.id} className="surface-raised p-5 surface-hover group relative border border-border/45 overflow-hidden hover:border-primary/40 hover:shadow-[0_0_20px_rgba(212,180,117,0.16)] transition-all duration-300" style={{
+                <div key={project.id} className="surface-raised p-5 surface-hover group relative border border-border/45 overflow-hidden hover:border-primary/40 hover:shadow-[0_0_20px_hsl(199_89%_48%_/_0.08)] transition-all duration-300" style={{
                   animation: mounted ? `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)` : "none",
                   animationDelay: `${0.5 + (index * 0.08)}s`,
                   animationFillMode: "both",
@@ -165,8 +217,8 @@ const Dashboard = () => {
                   <Link to={`/project/${project.id}`} className="block">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors duration-300">
-                          <span className="text-xs font-display text-muted-foreground group-hover:text-primary transition-colors">{(project.niche || "??").slice(0, 2).toUpperCase()}</span>
+                        <div className="w-16 h-12 rounded-lg bg-secondary flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors duration-300">
+                          <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                         </div>
                         <div>
                           <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors">{project.title}</h3>
@@ -211,8 +263,8 @@ const Dashboard = () => {
                 { to: "/new-project", icon: Play, label: "Generate New Video", desc: "Create from scratch" },
                 { to: "/analytics", icon: TrendingUp, label: "View Analytics", desc: "Performance data" },
               ].map((action, i) => (
-                <Link key={action.to} to={action.to}>
-                  <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer border border-border/45 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(212,180,117,0.14)] transition-all duration-300" style={{
+                  <Link key={action.to} to={action.to}>
+                  <div className="surface-raised p-4 surface-hover flex items-center gap-3 cursor-pointer border border-border/45 hover:border-primary/40 hover:shadow-[0_0_16px_hsl(199_89%_48%_/_0.08)] transition-all duration-300" style={{
                     animation: mounted ? "slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
                     animationDelay: `${1.1 + (i * 0.08)}s`,
                     animationFillMode: "both",

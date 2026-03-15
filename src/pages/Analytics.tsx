@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info, AlertTriangle } from "lucide-react";
+import { Eye, Clock, TrendingUp, DollarSign, Sparkles, ArrowUpRight, ArrowDownRight, BarChart3, Users, ThumbsUp, Share2, Info, AlertTriangle, X } from "lucide-react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -70,16 +70,17 @@ const aiInsights = [
 ];
 
 const chartConfig = {
-   views: { label: "Views", color: "hsl(236, 50%, 60%)" },
+   views: { label: "Views", color: "hsl(199, 89%, 48%)" },
    watchTime: { label: "Watch Time (hrs)", color: "hsl(152, 58%, 42%)" },
    retention: { label: "Retention %", color: "hsl(43, 85%, 55%)" },
-   uploads: { label: "Uploads", color: "hsl(236, 50%, 60%)" },
+   uploads: { label: "Uploads", color: "hsl(199, 89%, 48%)" },
 };
 
 const Analytics = () => {
   usePageTitle("Analytics");
   const [range, setRange] = useState<TimeRange>("30d");
   const [mounted, setMounted] = useState(false);
+  const [showDataBanner, setShowDataBanner] = useState(!localStorage.getItem("analytics-banner-dismissed"));
   useEffect(() => { setMounted(true); }, []);
   
   const viewsData = useMemo(() => generateViewsData(range), [range]);
@@ -124,15 +125,19 @@ const Analytics = () => {
         </div>
 
         {/* Demo Data Banner */}
-        <div className="mb-6 p-4 rounded-xl bg-gold/8 border border-gold/20 flex items-start gap-3">
-          <AlertTriangle className="w-4 h-4 text-gold mt-0.5 shrink-0" />
-          <div>
-            <p className="text-xs text-foreground font-medium">Sample Analytics Data</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              This dashboard displays simulated data to preview the analytics experience. Connect the YouTube Data API in Settings to see real channel metrics.
-            </p>
+        {showDataBanner && (
+          <div className="mb-6 flex items-center justify-between bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs text-amber-400 font-medium">📊 Showing sample data. Connect YouTube in Settings to see your real analytics.</p>
+              </div>
+            </div>
+            <button onClick={() => { localStorage.setItem("analytics-banner-dismissed", "1"); setShowDataBanner(false); }} className="ml-4 shrink-0">
+              <X className="w-4 h-4 text-amber-400/60 hover:text-amber-400 transition-colors" />
+            </button>
           </div>
-        </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -175,8 +180,8 @@ const Analytics = () => {
               <AreaChart data={viewsData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                 <defs>
                   <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(236, 50%, 60%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(236, 50%, 60%)" stopOpacity={0} />
+                    <stop offset="0%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="watchGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="hsl(152, 58%, 42%)" stopOpacity={0.2} />
@@ -187,7 +192,7 @@ const Analytics = () => {
                 <XAxis dataKey="day" tick={false} axisLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="views" stroke="hsl(236, 50%, 60%)" strokeWidth={2} fill="url(#viewsGrad)" />
+                <Area type="monotone" dataKey="views" stroke="hsl(199, 89%, 48%)" strokeWidth={2} fill="url(#viewsGrad)" />
                 <Area type="monotone" dataKey="watchTime" stroke="hsl(152, 58%, 42%)" strokeWidth={2} fill="url(#watchGrad)" />
               </AreaChart>
             </ChartContainer>
@@ -277,7 +282,7 @@ const Analytics = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "hsl(28, 10%, 42%)" }} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="uploads" fill="hsl(236, 50%, 60%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="uploads" fill="hsl(199, 89%, 48%)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </div>
@@ -359,7 +364,7 @@ const Analytics = () => {
             <div className="space-y-3">
               {aiInsights.map((insight, i) => {
                 const borderColor = insight.priority === "high"
-                  ? "hsl(236, 50%, 60%, 0.4)"
+                  ? "hsl(199 89% 48% / 0.4)"
                   : insight.priority === "medium"
                   ? "hsl(43, 85%, 55%, 0.3)"
                   : "hsl(152, 58%, 42%, 0.2)";

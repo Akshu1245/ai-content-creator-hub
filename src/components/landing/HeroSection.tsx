@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Sparkles, ShieldCheck, TrendingUp } from "lucide-react";
+import { ArrowRight, Check, Sparkles, ShieldCheck, TrendingUp, ChevronDown } from "lucide-react";
 import WordCycler from "@/components/shared/WordCycler";
 import ComplianceGauge from "@/components/dashboard/ComplianceGauge";
 import { useEffect, useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const HeroSection = () => {
   const [mounted, setMounted] = useState(false);
@@ -18,9 +19,11 @@ const HeroSection = () => {
       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[760px] h-[760px] rounded-full blur-[170px] opacity-45 pointer-events-none"
         style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.2), transparent 70%)" }}
       />
+      <div className="absolute top-[8%] right-[6%] w-[300px] h-[300px] rounded-full blur-[120px] pointer-events-none" style={{ background: "hsl(199 89% 48% / 0.04)" }} />
+      <div className="absolute bottom-[8%] left-[6%] w-[250px] h-[250px] rounded-full blur-[110px] pointer-events-none" style={{ background: "hsl(220 60% 65% / 0.03)" }} />
 
       <div className="container mx-auto max-w-6xl">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div style={{
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateX(0)" : "translateX(-40px)",
@@ -96,26 +99,32 @@ const HeroSection = () => {
               ))}
             </div>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
+            <TooltipProvider>
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
               {[
-                { label: "Avg Output Time", value: "6m", icon: Sparkles },
-                { label: "Policy Match", value: "94%", icon: ShieldCheck },
-                { label: "Growth Lift", value: "2.8x", icon: TrendingUp },
+                { label: "Avg Output Time", value: "6m", icon: Sparkles, tip: "Average from prompt to rendered video" },
+                { label: "Policy Match", value: "94%", icon: ShieldCheck, tip: "Alignment with monetization policies" },
+                { label: "Growth Lift", value: "2.8x", icon: TrendingUp, tip: "Average reach gain with optimized scripts" },
               ].map((metric, i) => (
-                <div key={metric.label} className="surface p-4 rounded-2xl hover:surface-hover transition-all duration-300" style={{
-                  animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
-                  animationDelay: `${0.8 + (i * 0.1)}s`,
-                  animationFillMode: "both",
-                  cursor: "pointer",
-                }}>
-                  <div className="flex items-center gap-2 mb-2 text-primary">
-                    <metric.icon className="w-3.5 h-3.5" />
-                    <span className="font-label text-[9px]">{metric.label}</span>
-                  </div>
-                  <p className="font-display text-2xl text-foreground">{metric.value}</p>
-                </div>
+                <Tooltip key={metric.label}>
+                  <TooltipTrigger asChild>
+                    <div className="surface p-4 rounded-2xl hover:surface-hover transition-all duration-300 cursor-pointer" style={{
+                      animation: mounted ? "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+                      animationDelay: `${0.8 + (i * 0.1)}s`,
+                      animationFillMode: "both",
+                    }}>
+                      <div className="flex items-center gap-2 mb-2 text-primary">
+                        <metric.icon className="w-3.5 h-3.5" />
+                        <span className="font-label text-[9px]">{metric.label}</span>
+                      </div>
+                      <p className="font-display text-2xl text-foreground">{metric.value}</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-xs">{metric.tip}</TooltipContent>
+                </Tooltip>
               ))}
-            </div>
+              </div>
+            </TooltipProvider>
           </div>
 
           <div style={{
@@ -123,10 +132,10 @@ const HeroSection = () => {
             transform: mounted ? "translateX(0) rotate(0deg)" : "translateX(40px) rotate(2deg)",
             transition: "all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s",
           }}>
-            <div className="relative group">
+            <div className="relative group" style={{ animation: "float 4s ease-in-out infinite" }}>
               <div className="absolute -inset-8 rounded-3xl blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-500" style={{
                 background: "radial-gradient(ellipse at center, hsl(var(--primary) / 0.16), hsl(var(--accent) / 0.08), transparent 72%)",
-                animation: mounted ? "blobFloat 6s ease-in-out infinite" : "none",
+                animation: mounted ? "orbFloat 6s ease-in-out infinite" : "none",
               }} />
 
               <div className="relative z-10 flex items-center justify-between px-5 py-2 rounded-t-2xl border border-b-0 border-border/60 bg-card hover:border-primary/40 transition-colors duration-300" style={{
@@ -142,6 +151,9 @@ const HeroSection = () => {
               <div className="surface-overlay rounded-t-none p-8 relative z-10 group-hover:border-primary/30 transition-colors duration-300" style={{
                 animation: mounted ? "slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both" : "none",
               }}>
+                <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                  <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" style={{ animation: "scanLine 3s ease-in-out infinite" }} />
+                </div>
                 <div className="grid grid-cols-2 gap-8 items-center">
                   <div className="flex justify-center">
                     <ComplianceGauge score={94} size={140} />
@@ -189,6 +201,11 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-2 mt-14 opacity-0 animate-fade-in" style={{ animationDelay: "2s", animationFillMode: "forwards" }}>
+          <span className="text-xs text-muted-foreground tracking-widest">SCROLL TO EXPLORE</span>
+          <ChevronDown className="w-4 h-4 text-primary animate-bounce" />
         </div>
       </div>
     </section>

@@ -16,7 +16,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, signOut, subscription } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
@@ -36,14 +36,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="p-5">
           <Link to="/" className="flex items-center gap-3 mb-8">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+              <img src="/vorax-icon.png" alt="VORAX" className="h-8 w-auto object-contain" loading="lazy" />
               <span className="text-primary font-bold text-lg tracking-wider">VORAX</span>
             </div>
           </Link>
 
           <Link to="/new-project">
-            <button className="btn-primary w-full flex items-center justify-center gap-2 mb-8 text-xs">
-              <Plus className="w-3.5 h-3.5" /> New Video
+            <button className="btn-primary w-full flex items-center justify-center gap-2 mb-8 text-xs group">
+              <Plus className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-90" /> New Video
             </button>
           </Link>
 
@@ -56,7 +56,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   to={item.path}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
                     active
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_-4px_0_12px_hsl(199_89%_48%_/_0.08)]"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
@@ -81,6 +81,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <p className="text-[9px] text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
+            <span className={`text-[8px] font-label px-1.5 py-0.5 rounded ${(subscription as any)?.subscribed ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+              {((subscription as any)?.tier?.toUpperCase()) || 'FREE'}
+            </span>
           </div>
           <button
             onClick={signOut}
@@ -88,13 +91,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           >
             <LogOut className="w-3.5 h-3.5" /> Sign out
           </button>
+          <p className="text-[10px] text-muted-foreground/40 text-center mt-2">Press ⌘K for commands</p>
         </div>
       </aside>
 
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 w-full z-50 h-14 flex items-center justify-between px-4 bg-background/92 backdrop-blur-xl border-b border-border/50">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+          <img src="/vorax-icon.png" alt="VORAX" className="h-8 w-auto object-contain" loading="lazy" />
           <span className="text-primary font-bold text-lg tracking-wider">VORAX</span>
         </Link>
         <div className="flex items-center gap-2">
@@ -154,17 +158,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </main>
 
       {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 w-full z-50 h-14 flex items-center justify-around bg-background/90 backdrop-blur-xl border-t border-border/50">
+      <div className="md:hidden fixed bottom-0 w-full z-50 h-14 px-1 flex items-center justify-between bg-background/90 backdrop-blur-xl border-t border-border/50">
         {navItems.map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 ${active ? "text-primary" : "text-muted-foreground"}`}
+              className={`flex-1 min-w-0 flex flex-col items-center gap-0.5 py-1 px-1 ${active ? "text-primary" : "text-muted-foreground"}`}
             >
               <item.icon className="w-4 h-4" />
-              <span className="text-[9px]">{item.label}</span>
+              <span className="text-[8px] leading-none truncate">{item.label}</span>
             </Link>
           );
         })}

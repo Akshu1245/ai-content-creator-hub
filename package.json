@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently \"tsx watch server/index.ts\" \"vite\"",
     "dev:client": "vite",
+    "backend:start": "powershell -ExecutionPolicy Bypass -File ./scripts/start-backend.ps1",
     "server": "tsx watch server/index.ts",
     "build": "vite build && tsc -p tsconfig.server.json",
     "build:client": "vite build",

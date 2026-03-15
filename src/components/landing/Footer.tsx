@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-1">
             <Link to="/" className="inline-flex items-center mb-4">
-              <img src="/logo.png" alt="VORAX" className="h-8 w-auto object-contain" />
+              <img src="/vorax-icon.png" alt="VORAX" className="h-8 w-auto object-contain" loading="lazy" />
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
               AI-powered faceless video creation with compliance scoring built in.
